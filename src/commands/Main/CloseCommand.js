@@ -44,7 +44,7 @@ module.exports = class CloseCommand extends BaseCommand {
       .setColor('RANDOM')
       .setTimestamp()
       .setTitle('Ticket-logs')
-      .setDescription(`<@${message.author.id}> has close the following ticket: ${message.channel.name} successfully.`)
+      .setDescription(`<@${message.author.id}> has close the following ticket: ${message.channel.name} successfully. \n\n All tickets are removed of our server within 24 hours.`)
 
     const notclosed = new MessageEmbed()
       .setColor('RANDOM')
@@ -80,7 +80,7 @@ module.exports = class CloseCommand extends BaseCommand {
         let guildElement = document.createElement('div');
         let guildText = document.createTextNode(message.guild.name);
         let guildImg = document.createElement('img');
-        guildImg.setAttribute('src', message.guild.iconURL);
+        guildImg.setAttribute('src', message.guild.iconURL());
         guildImg.setAttribute('width', '150');
         guildElement.appendChild(guildImg);
         guildElement.appendChild(guildText);
@@ -145,7 +145,7 @@ module.exports = class CloseCommand extends BaseCommand {
             const TranscriptLogs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
 
             SupportLogs.send(Logs)
-            TranscriptLogs.send(`The transcript for ticket: ${message.channel.name}. The file can be found below or by our server: https://shard1.ticketbots.tk/Tickets/${generator}.html`, { files: [`./src/dashboard/Tickets/${generator}.html`] })
+            TranscriptLogs.send(`The transcript for ticket: ${message.channel.name}. The file can be found below or by our server: http://shard1.ticketbots.tk/Tickets/${generator}.html`, { files: [`./src/dashboard/Tickets/${generator}.html`] })
           }, 5000);
         }).catch(() => {
           m.edit(notclosed)

@@ -57,6 +57,7 @@ module.exports = class HelpCommand extends BaseCommand {
       .addField('!restart', 'Restart the bot')
       .addField('!Eval', 'Bot infomation')
       .addField('!shutdown', 'Shutdown the bot')
+      .addField('!servers', 'List all of the servers')
       .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
       .setFooter('Ticket Bot Help', 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
       .setColor('#58b9ff')
