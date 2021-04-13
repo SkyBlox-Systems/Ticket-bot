@@ -13,17 +13,17 @@ module.exports = class SetupCommand extends BaseCommand {
       .setTitle('Main Setup')
       .setDescription('Welcome to the main setup. Before we get everything ready for you, please read everything underneath:\n\n- The bot will make 2 new roles: `ticket manager` and `ticket support`. These two roles have different job and will be told soon\n- A category will be made called `support` in that channel, there will be 3 new channels: `Ticket`, `Staff-room` and `Transcript`.\n- Bot might lag at some point when making the transcript \n- transcript are random generated\n\nPlease react with ✅ if you are ready!')
       .setFooter('Got 2 minutes to react')
-      .setColor('BLUE')
+      .setColor('#f6f7f8')
 
     const ready = new MessageEmbed()
       .setTitle('Started!')
       .setDescription('We have started!')
-      .setColor('BLUE')
+      .setColor('#f6f7f8')
 
     const Done = new MessageEmbed()
       .setTitle('Finished')
       .setDescription('The setup have been completed. Please give the roles to the staff members who needs the following role: `ticket support` to help customers. Give Higher ranks `ticket managers`. You might need to move the channels around.')
-      .setColor('GREEN')
+      .setColor('#f6f7f8')
 
     const Error = new MessageEmbed()
       .setTitle('Error')
@@ -39,6 +39,10 @@ module.exports = class SetupCommand extends BaseCommand {
 
     if(message.author.id != message.guild.owner.id)
     return message.channel.send(ServerOwner);
+
+    if (message.guild.roles.cache.find(roles => roles.name === 'ticket manager')) {
+      return message.channel.send(Error)      
+    }
 
     message.channel.send(Welcome)
       .then(m => {
@@ -139,25 +143,25 @@ module.exports = class SetupCommand extends BaseCommand {
               const TranscriptChannelMessage = new MessageEmbed()
                 .setTitle('Transcript!')
                 .setDescription('In this channel, this is where all of the close tickets and transcripts get logged. Only Ticket managers can talk in this channel.')
-                .setColor('BLUE')
+                .setColor('#f6f7f8')
   
               const TicketChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'text');
               const TicketChannelMessage = new MessageEmbed()
                 .setTitle('Ticket')
                 .setDescription('In this channel, You can only open a ticket. If you try and run the command in any other channel, it will not work. To make a ticket, please use the command `!ticket`.')
-                .setColor('BLUE')
+                .setColor('#f6f7f8')
   
               const StaffroomChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == 'text');
               const StaffroomChannelMessage = new MessageEmbed()
                 .setTitle('Staff room')
                 .setDescription('In this channel, This is where the support team hang out. You can chat to the managers and the team about the tickets. Nothing in this channel should be leaked at any time. Commands can be listed here: N/A.')
-                .setColor('BLUE')
+                .setColor('#f6f7f8')
 
                 const TicketLogsChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-logs' && ch.type == 'text');
                 const TicketLogsChannelMessage = new MessageEmbed()
                 .setTitle('Staff room')
                 .setDescription('In this channel, this is where all of the tickets in this server will be logged. Such as: Close, add, remove, creation etc.')
-                .setColor('BLUE')
+                .setColor('#f6f7f8')
                 
                TranscriptChannel.send(TranscriptChannelMessage).then((msg) => msg.pin())
                TicketChannel.send(TicketChannelMessage).then((msg) => msg.pin())

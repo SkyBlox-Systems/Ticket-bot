@@ -41,7 +41,7 @@ client.on('guildCreate', guild => {
     .setTitle('Setup')
     .setDescription('Thank you for adding Ticket bot to your server. To setup the ticket system, please run `!setup` in any of your channels. The bot is on shard #0. Any issues with setting up the bot, please head to our support page: https://ticketbots.tk/discord or https://docs.ticketbots.tk')
     .setImage('https://cdn.discordapp.com/attachments/787688783743025152/799263407190310932/Untitled.jpg')
-    .setColor('#58b9ff')
+    .setColor('#f6f7f8')
 
 
   defaultChannel.send(welcome)

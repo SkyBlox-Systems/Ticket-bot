@@ -8,14 +8,15 @@ const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 const dom = new JSDOM();
 const document = dom.window.document;
-
+const CloseSchema = require('../../schemas/TicketLogs-schema');
+const mongo = require('../../mongo');
 
 module.exports = class CloseCommand extends BaseCommand {
   constructor() {
     super('close', 'Main', []);
   }
 
- async run(client, message, args) {
+  async run(client, message, args) {
     function makeURL(length) {
       var result = '';
       var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -29,31 +30,31 @@ module.exports = class CloseCommand extends BaseCommand {
 
 
     const ticketembed = new MessageEmbed()
-      .setColor('RANDOM')
+      .setColor('#f6f7f8')
       .setTimestamp()
       .setTitle(`Ticket`)
       .setDescription(`<@${message.author.id}>, are you sure you want to close this ticket? **yes**. If not, it will automatticaly close within 10 seconds.`)
 
     const closed = new MessageEmbed()
-      .setColor('RANDOM')
+      .setColor('#f6f7f8')
       .setTimestamp()
       .setTitle(`Ticket`)
       .setDescription(`<@${message.author.id}> has closed the following ticket: ${message.channel.name}.`)
 
     const Logs = new MessageEmbed()
-      .setColor('RANDOM')
+      .setColor('#f6f7f8')
       .setTimestamp()
       .setTitle('Ticket-logs')
       .setDescription(`<@${message.author.id}> has close the following ticket: ${message.channel.name} successfully. \n\n All tickets are removed of our server within 24 hours.`)
 
     const notclosed = new MessageEmbed()
-      .setColor('RANDOM')
+      .setColor('#f6f7f8')
       .setTimestamp()
       .setTitle(`Ticket`)
       .setDescription(`Close cancelled.`)
 
     const closing = new MessageEmbed()
-      .setColor('GREEN')
+      .setColor('#f6f7f8')
       .setTimestamp()
       .setTitle(`Ticket`)
       .setDescription(`Your ticket will be closed in 5 seconds`)
@@ -130,48 +131,61 @@ module.exports = class CloseCommand extends BaseCommand {
     if (!message.channel.name.startsWith("ticket-")) return message.channel.send("This is not a valid ticket")
     if (!message.member.hasPermission("MANAGE_CHANNELS")) return message.channel.send("You need MANAGE_CHANNELS permission to use this command")
     message.channel.send(ticketembed).then((m) => {
-        message.channel.awaitMessages(response => response.content == "yes", {
-          max: 1,
-          time: 10000,
-          errors: ['time']
-        }).then(() => {
-          message.channel.send(closing)
-          Transcriptmain();
-          setTimeout(() => {
-            message.channel.delete()
-            message.author.send(closed)
-
-            const SupportLogs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "text")
-            const TranscriptLogs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
-
-            SupportLogs.send(Logs)
-            TranscriptLogs.send(`The transcript for ticket: ${message.channel.name}. The file can be found below or by our server: http://shard1.ticketbots.tk/Tickets/${generator}.html`, { files: [`./src/dashboard/Tickets/${generator}.html`] })
-          }, 5000);
-        }).catch(() => {
-          m.edit(notclosed)
-        })
-      }).catch(() => {
-        m.edit(notclosed)
-      })
-
-      message.channel.awaitMessages(response => response.content == "staff", {
+      message.channel.awaitMessages(response => response.content == "yes", {
         max: 1,
         time: 10000,
         errors: ['time']
       }).then(() => {
-        message.channel.send(staff)
-        message.channel.awaitMessages(response => response.content == "yes", {
-          max: 1,
-          time: 10000,
-          errors: ['time']
-        }).then(() => {
+        message.channel.send(closing)
+        Transcriptmain();
+        setTimeout(() => {
           message.channel.delete()
-          message.guild.channels.cache.get("650007254795288576").send(Logs)
-        }).catch(() => {
-          m.edit(notclosed)
-        })
+          message.author.send(closed)
+
+          const SupportLogs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "text")
+          const TranscriptLogs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
+
+          SupportLogs.send(Logs)
+          TranscriptLogs.send(`The transcript for ticket: ${message.channel.name}. The file can be found below or by our server: http://shard1.ticketbots.tk/Tickets/${generator}.html`, { files: [`./src/dashboard/Tickets/${generator}.html`] })
+
+          const guildId = message.guild.id
+          const userId = message.member.id
+          const DatabaseMessage = (`The transcript for ticket: ${message.channel.name}. The file can be found below or by our server: http://shard1.ticketbots.tk/Tickets/${generator}.html`, { files: [`./src/dashboard/Tickets/${generator}.html`] })
+
+          const Database2 = {
+            author: message.member.user.tag,
+            timestamp: new Date().getTime(),
+            DatabaseMessage,
+          }
+
+          mongo().then(async (mongoose) => {
+            try {
+              await CloseSchema.findOneAndUpdate(
+                {
+                  guildId,
+                  userId,
+                },
+                {
+                  guildId,
+                  userId,
+                  $push: {
+                    ticket: Database2,
+                  },
+                },
+                {
+                  upsert: true,
+                }
+              )
+            } finally {
+              mongoose.connection.close()
+            }
+          })
+        }, 5000);
       }).catch(() => {
         m.edit(notclosed)
       })
+    }).catch(() => {
+      m.edit(notclosed)
+    })
   }
 }

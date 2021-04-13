@@ -32,8 +32,8 @@ module.exports = class BanCommand extends BaseCommand {
     .setTitle('Member Banned')
     .setThumbnail(member.user.displayAvatarURL())
     .addField('User Banned', member)
-    .addField('Kicked by', message.author)
-    .setFooter('Time kicked', client.user.displayAvatarURL())
+    .addField('Banned by', message.author)
+    .setFooter('Time Banned', client.user.displayAvatarURL())
     .setTimestamp()
 
     message.channel.send(banembed);

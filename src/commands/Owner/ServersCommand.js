@@ -16,15 +16,8 @@ module.exports = class ServersCommand extends BaseCommand {
     return message.channel.send(NotOwner)
   }
   client.guilds.cache.forEach(guild => {
-    console.log(`${guild.name} | ${guild.id}`);
 
-    const Main = new MessageEmbed()
-    .setTitle('Servers')
-    .setDescription(`${guild.name} | ${guild.id}`)
-    .setColor('GREEN')
-    .setFooter('List all servers!')
-
-    message.channel.send(Main)
+    message.channel.send(`${guild.name} | ${guild.id}`)
   })
   }
 }

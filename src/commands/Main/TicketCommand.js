@@ -51,7 +51,7 @@ module.exports = class TicketCommand extends BaseCommand {
           })
 
         const open = new MessageEmbed()
-          .setColor('RANDOM')
+          .setColor('#f6f7f8')
           .setTimestamp()
           .setFooter(`Ticket ID: <#${chan.id}>`)
           .setTitle(`Ticket`)
@@ -59,8 +59,16 @@ module.exports = class TicketCommand extends BaseCommand {
           .addField('Channel', `Your ticket is <#${chan.id}>`, true)
         await message.channel.send(open);
 
+        const DmPerson = new MessageEmbed()
+        .setColor('#f6f7f8')
+        .setTimestamp()
+        .setTitle('Ticket open')
+        .setDescription(`You have open a ticket! You can found your ticket here: <#${chan.id}>`)
+       .addField('Issue', `${MSG}.`, true)
+        await message.author.send(DmPerson);
+
         const thankyou = new MessageEmbed()
-          .setColor('RANDOM')
+          .setColor('#f6f7f8')
           .setTimestamp()
           .setFooter(`Ticket ID: <#${chan.id}>`)
           .setTitle('Ticket')
