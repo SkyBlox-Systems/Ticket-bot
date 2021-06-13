@@ -8,7 +8,7 @@ module.exports = class StatusCommand extends BaseCommand {
     super('status', 'Info', []);
   }
 
- async run(client, message, args) {
+  async run(client, message, args) {
     axios.get('https://api.hetrixtools.com/v1/eb4ff9803da2be0d631e3fe73d0685a6/server/stats/3025cef345ebb827fea3a390ab4564e3/')
       .then((res) => {
         const API = new MessageEmbed()
@@ -25,4 +25,5 @@ module.exports = class StatusCommand extends BaseCommand {
         console.error('ERR:', err)
       })
   }
+
 }

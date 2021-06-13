@@ -10,6 +10,7 @@ const dom = new JSDOM();
 const document = dom.window.document;
 const CloseSchema = require('../../schemas/TicketLogs-schema');
 const mongo = require('../../mongo');
+const ClaimTicket = require('../../schemas/ticketclaim')
 
 module.exports = class CloseCommand extends BaseCommand {
   constructor() {
@@ -26,7 +27,7 @@ module.exports = class CloseCommand extends BaseCommand {
       }
       return result;
     }
-    const generator = makeURL(20)
+    const generators = makeURL(20)
 
 
     const ticketembed = new MessageEmbed()
@@ -77,7 +78,7 @@ module.exports = class CloseCommand extends BaseCommand {
       let msgs = messageCollection.array().reverse();
       let data = await fs.readFile('./src/dashboard/template.html', 'utf8').catch(err => console.log(err));
       if (data) {
-        await fs.writeFile(`./src/dashboard/Tickets/${generator}.html`, data).catch(err => console.log(err));
+        await fs.writeFile(`./src/dashboard/Tickets/${generators}.html`, data).catch(err => console.log(err));
         let guildElement = document.createElement('div');
         let guildText = document.createTextNode(message.guild.name);
         let guildImg = document.createElement('img');
@@ -86,7 +87,7 @@ module.exports = class CloseCommand extends BaseCommand {
         guildElement.appendChild(guildImg);
         guildElement.appendChild(guildText);
         console.log(guildElement.outerHTML);
-        await fs.appendFile(`./src/dashboard/Tickets/${generator}.html`, guildElement.outerHTML).catch(err => console.log(err));
+        await fs.appendFile(`./src/dashboard/Tickets/${generators}.html`, guildElement.outerHTML).catch(err => console.log(err));
 
         msgs.forEach(async msg => {
           let parentContainer = document.createElement("div");
@@ -123,7 +124,7 @@ module.exports = class CloseCommand extends BaseCommand {
             messageContainer.appendChild(msgNode);
           }
           parentContainer.appendChild(messageContainer);
-          await fs.appendFile(`./src/dashboard/Tickets/${generator}.html`, parentContainer.outerHTML).catch(err => console.log(err));
+          await fs.appendFile(`./src/dashboard/Tickets/${generators}.html`, parentContainer.outerHTML).catch(err => console.log(err));
         });
       }
     }
@@ -139,47 +140,56 @@ module.exports = class CloseCommand extends BaseCommand {
         message.channel.send(closing)
         Transcriptmain();
         setTimeout(() => {
-          message.channel.delete()
-          message.author.send(closed)
+          ClaimTicket.findOne({ id: message.author.id }, async (err, data) => {
+            if (err) throw err;
+            if (data) {
+
+                const DMTicketCreatorClosed = new MessageEmbed()
+                .setColor('#f5f5f5')
+                .setTimestamp()
+                .setTitle(`Ticket`)
+                .setDescription(`<@${data.ClaimUserID}> has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you.`)
+
+                const DMTicketClaimClosed = new MessageEmbed()
+                .setColor('#f5f5f5')
+                .setTimestamp()
+                .setTitle(`Ticket`)
+                .setDescription(`You have closed the following ticket ${data.ChannelID} for the following user <@${data.id}>.`)
+
+
+                const ticketttcreator = client.users.cache.get(data.id)
+                ticketttcreator.send(DMTicketCreatorClosed)
+
+                const ticketttClaimer = client.users.cache.get(data.ClaimUserID)
+                ticketttClaimer.send(DMTicketClaimClosed)
+                setTimeout(() => {
+                    ClaimTicket.findOneAndDelete({ id: message.author.id }, async (err2, data2) => {
+                        if (err2) throw err;
+                        if (data2) {
+                            console.log('Ticket logs been removed from the database')
+                        } 
+                    })
+                }, 5000);
+
+
+            }
+  
+          })
+        message.channel.delete()
+
+          
 
           const SupportLogs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "text")
           const TranscriptLogs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
 
           SupportLogs.send(Logs)
-          TranscriptLogs.send(`The transcript for ticket: ${message.channel.name}. The file can be found below or by our server: http://shard1.ticketbots.tk/Tickets/${generator}.html`, { files: [`./src/dashboard/Tickets/${generator}.html`] })
+          TranscriptLogs.send(`The transcript for ticket: ${message.channel.name}. The file can be found below or by our server: http://shard1.ticketbots.tk/Tickets/${generators}.html`, { files: [`./src/dashboard/Tickets/${generators}.html`] })
 
           const guildId = message.guild.id
           const userId = message.member.id
-          const DatabaseMessage = (`The transcript for ticket: ${message.channel.name}. The file can be found below or by our server: http://shard1.ticketbots.tk/Tickets/${generator}.html`, { files: [`./src/dashboard/Tickets/${generator}.html`] })
+          const DatabaseMessage = (`The transcript for ticket: ${message.channel.name}. The file can be found below or by our server: http://shard1.ticketbots.tk/Tickets/${generators}.html`, { files: [`./src/dashboard/Tickets/${generators}.html`] })
 
-          const Database2 = {
-            author: message.member.user.tag,
-            timestamp: new Date().getTime(),
-            DatabaseMessage,
-          }
-
-          mongo().then(async (mongoose) => {
-            try {
-              await CloseSchema.findOneAndUpdate(
-                {
-                  guildId,
-                  userId,
-                },
-                {
-                  guildId,
-                  userId,
-                  $push: {
-                    ticket: Database2,
-                  },
-                },
-                {
-                  upsert: true,
-                }
-              )
-            } finally {
-              mongoose.connection.close()
-            }
-          })
+      
         }, 5000);
       }).catch(() => {
         m.edit(notclosed)
