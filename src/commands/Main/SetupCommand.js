@@ -3,7 +3,7 @@ const { Discord, Channel } = require('discord.js');
 const { MessageEmbed } = require('discord.js');
 const mongo = require('../../mongo2');
 const mongoose = require('mongoose');
-const DatabaseSchema = require('../../schemas/Database-creation');
+const TicketDataMain = require('../../schemas/TicketData')
 
 
 module.exports = class SetupCommand extends BaseCommand {
@@ -67,14 +67,16 @@ module.exports = class SetupCommand extends BaseCommand {
             message.guild.roles.cache.find(role => role.name === 'ticket support').delete();
 
             const Supportcat = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "category");
-            let channel1 = message.guild.channels.cache.find(ch => ch.name.toLowerCase() === 'Ticket')
-            let channel2 = message.guild.channels.cache.find(ch => ch.name.toLowerCase() === 'Ticket-staff')
-            let channel3 = message.guild.channels.cache.find(ch => ch.name.toLowerCase() === 'Transcript')
-            let channel4 = message.guild.channels.cache.find(ch => ch.name.toLowerCase() === 'Ticket-logs')
-            channel1.delete();
-            channel2.delete();
-            channel3.delete();
-            channel4.delete();
+               message.guild.channels.cache.find(ch => ch.name === 'ticket').delete();
+               message.guild.channels.cache.find(ch => ch.name === 'ticket-staff').delete();
+               message.guild.channels.cache.find(ch => ch.name === 'transcript').delete();
+               message.guild.channels.cache.find(ch => ch.name === 'ticket-logs').delete();
+               TicketDataMain.findOne({ ServerID: message.guild.id }, async (err04, data04 ) => {
+                 if (err04) throw err04;
+                 if (data04) {
+                  message.guild.channels.cache.find(ch => ch.name === `Tickets: ${data04.TicketNumber}` && ch.type == "voice").delete();
+                 }
+               })
             message.guild.roles.create({
               data: {
                 name: 'ticket manager',
@@ -166,9 +168,15 @@ module.exports = class SetupCommand extends BaseCommand {
               })
             })
 
+            message.guild.channels.create('Tickets: 0', {type: 'voice', parent: Supportcat}).then(async (chan) => {
+              chan.updateOverwrite(message.guild.roles.everyone, {
+                VIEW_CHANNEL: true
+              })
+            })
+
 
             setTimeout(() => {
-              m.edit(Done)
+              m.channel.send(Done)
               const TranscriptChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'transcript' && ch.type == 'text');
               const TranscriptChannelMessage = new MessageEmbed()
                 .setTitle('Transcript!')
@@ -239,6 +247,15 @@ module.exports = class SetupCommand extends BaseCommand {
                 VIEW_CHANNEL: true,
               })
             })
+
+            message.guild.channels.create('Tickets: 0', {type: 'voice', parent: Supportcat}).then(async (chan) => {
+              chan.updateOverwrite(message.guild.roles.everyone, {
+                VIEW_CHANNEL: true
+              })
+              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
+                VIEW_CHANNEL: true
+              })
+            })
             message.guild.channels.create('Ticket-staff', { parent: Supportcat }).then(async (chan) => {
               chan.updateOverwrite(message.guild.roles.everyone, {
                 SEND_MESSAGES: false,
@@ -299,25 +316,6 @@ module.exports = class SetupCommand extends BaseCommand {
               const guildId = message.guild.id
 
               m.edit(CreatingDatabase)
-
-              mongo().then(async (mongoose) => {
-                try {
-                  await DatabaseSchema.findOneAndUpdate(
-                    {
-                      guildId,
-                    },
-
-                    {
-                      guildId,
-                    },
-                    {
-                      upsert: true,
-                    }
-                  )
-                } finally {
-                  mongoose.connection.close()
-                }
-              })
             }, 4000);
 
             setTimeout(() => {
@@ -350,6 +348,39 @@ module.exports = class SetupCommand extends BaseCommand {
               TicketChannel.send(TicketChannelMessage).then((msg) => msg.pin())
               StaffroomChannel.send(StaffroomChannelMessage).then((msg) => msg.pin())
               TicketLogsChannel.send(TicketLogsChannelMessage).then((msg) => msg.pin())
+
+              TicketDataMain.findOne({ GuildID: message.guild.id }, async (err2, data2) => {
+                if (err2) throw err2;
+
+                if (data2) {
+                  console.log('N/a')
+                  
+
+            
+                } else {
+
+                  console.log('test')
+                  const TicketChannelIdChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'text');
+                  const TicketTrackerIdChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'voice');
+                  data2 = new TicketDataMain({
+                    TicketChannelID: TicketChannelIdChannel.id,
+                    GuildID: message.guild.id,
+                    TicketNumber: "0",
+                    TicketTrackerChannelID: "N/A",
+                    BotPrefix: client.prefix,
+                    SupportRoleID: "N/A",
+                    ManagerRoleID: "N/A",
+                    AdminRoleID: "N/A",
+                    BetaKey: "N/A",
+                    PaidGuild: "No",
+                    BotVersion: "2.1"
+                  })
+                  data2.save()
+
+                }
+              })
+
+
             }, 5000);
           }
 

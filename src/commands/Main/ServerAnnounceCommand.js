@@ -1,6 +1,8 @@
 const BaseCommand = require('../../utils/structures/BaseCommand');
 const { Discord, Channel } = require('discord.js');
 const { MessageEmbed } = require('discord.js');
+const MainDatabase = require('../../schemas/TicketData')
+
 
 
 module.exports = class ServerAnnounceCommand extends BaseCommand {
@@ -9,7 +11,12 @@ module.exports = class ServerAnnounceCommand extends BaseCommand {
   }
 
   async run(client, message, args) {
-    const ServerOwner = new MessageEmbed()
+
+    MainDatabase.findOne({ ServerID: message.guild.id }, async (err01, data01) => {
+      if (err01) throw err01;
+      if (data01) {
+
+        const ServerOwner = new MessageEmbed()
       .setTitle('Error')
       .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
       .setColor('#f9f9fa')
@@ -76,5 +83,15 @@ module.exports = class ServerAnnounceCommand extends BaseCommand {
           }, 5000);
         })
       })
+
+      } else {
+        const NoData = new MessageEmbed()
+        .setTitle('Not updated')
+        .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
+
+        message.channel.send(NoData)
+      }
+    })
+  
   }
 }
