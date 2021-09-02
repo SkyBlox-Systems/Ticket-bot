@@ -82,7 +82,11 @@ module.exports = class UpdateCommand extends BaseCommand {
                         AdminRoleID: "N/A",
                         BetaKey: "N/A",
                         PaidGuild: "No",
-                        BotVersion: "2.1"
+                        Transcript: "Yes",
+                        UseTicketReactions: "Yes",
+                        UseDashboard: "Yes",
+                        APIKey: "N/A",
+                        BotVersion: "2.2"
                       })
                       data.save()
                       message.channel.send('Updated completed!')

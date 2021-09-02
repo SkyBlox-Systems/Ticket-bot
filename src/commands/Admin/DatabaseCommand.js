@@ -2,7 +2,8 @@ const BaseCommand = require('../../utils/structures/BaseCommand');
 const { MessageEmbed } = require('discord.js');
 const mongo = require('../../mongo');
 const mongoose  = require('mongoose');
-// const MainDataBase = require('../../schemas/Database-creation')
+const MainDatabase = require('../../schemas/TicketData');
+const TicketClaim = require('../../schemas/ticketclaim')
 
 
 
@@ -20,15 +21,25 @@ module.exports = class DatabaseCommand extends BaseCommand {
   if (message.author.id != message.guild.owner.id)
             return message.channel.send(ServerOwner);
 
+  MainDatabase.findOne({ ServerID: message.guild.id }, async (err, data) => {
+    if (err) throw err;
+    if (data) {
+      if (data.BetaKey === '6YMCKXgBcAd9yLrcd35E') {
+        TicketClaim.findOne({ ServerID: message.guild.id }, async (err1, data1) => {
+          if (err1) throw err1;
+          if (data1) {
+        
+          }
+        })
+        
+      } else {
+        const NoBetaBuild = new MessageEmbed()
+        .setTitle('Error')
+        .setDescription('This server is not part of the beta updates.')
 
-   const Error = new MessageEmbed()
-   .setTitle('Error')
-   .setDescription('We have already found a database created on this discord guild. If you think this is a issue, Please contact one of the TicketBot Moderators.')
-   .setColor('#f6f7f8')
-
-   const Welcome1 = new MessageEmbed()
-   .setTitle('Database')
-   .setDescription('N/A')
-
+        message.channel.send(NoBetaBuild)
+      }
+    }
+  })
   }
 }

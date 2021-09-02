@@ -2,6 +2,8 @@ const { registerCommands, registerEvents } = require('./utils/registry');
 const config = require('../slappey.json');
 const { MessageEmbed } = require('discord.js');
 const DatabaseMongo = require('./mongo');
+const MainDatabase = require('./schemas/TicketData')
+const getprefix = require('../src/utils/getprefix')
 
 const Discord = require("discord.js");
 const DiscordSlash = require("discord.js-slash-command");
@@ -13,7 +15,6 @@ const slash = new DiscordSlash.Slash(client);
 (async () => {
   client.commands = new Map();
   client.events = new Map();
-  client.prefix = config.prefix
   await registerCommands(client, '../commands');
   await registerEvents(client, '../events');
   await client.login(config.token);
@@ -23,34 +24,16 @@ const slash = new DiscordSlash.Slash(client);
 
 client.on("ready",  guild => {
 
-  // commands
-  let TicketCommand = new DiscordSlash.CommandBuilder();
-  let testcommand = new DiscordSlash.CommandBuilder();
-  let test2Command = new DiscordSlash.CommandBuilder();
+  let mainCommand = new DiscordSlash.CommandBuilder();
+  let subCommand1 = new DiscordSlash.CommandBuilder();
 
-  // Sub commands
+  mainCommand.setName("Ticket");
+  mainCommand.setDescription("Create a ticket");
 
-  let TicketSubCommand = new DiscordSlash.CommandBuilder()
+  subCommand1.setName("Reason");
+  subCommand1.setType(DiscordSlash.CommandType.SUB_COMMAND);
+  subCommand1.setRequired(true);
 
-
-  // Main settings
-  test2Command.setName("test2")
-  test2Command.setDescription('test');
-
-  testcommand.setName("test");
-  testcommand.setDescription('test');
-
-  TicketCommand.setName("ticket");
-  TicketCommand.setDescription('ticket command');
-
-  TicketSubCommand.setName("reason");
-  TicketSubCommand.setDescription("reason for ticket");
-  TicketSubCommand.setType(DiscordSlash.CommandType.STRING);
-  TicketSubCommand.setRequired(true);
-
-  //  Adding Sub-Command to Option
-
-  TicketCommand.addOption(TicketSubCommand)
 
 
 })
@@ -91,6 +74,16 @@ client.on('guildCreate', guild => {
 
 
   defaultChannel.send(welcome)
+})
+
+client.on('guildDelete', guild => {
+  MainDatabase.findOneAndDelete({ ServerID: guild.id }, async (err01, data01) => {
+    if (err01) throw err01;
+    if (data01) {
+      data01.save()
+      console.log(`Removed ${guild.id} from the database.`)
+    }
+  })
 })
 
 

@@ -22,6 +22,13 @@ module.exports = class TicketCommand extends BaseCommand {
           message.channel.send(ErrorDataBase)
         } else {
 
+          const MSG = args.slice(0).join(" ")
+
+          const InvaildCode2 = new MessageEmbed()
+            .setTitle(`No reason is provided. ${client.prefix}ticket <reason>`)
+      
+          if (!MSG) return message.channel.send(InvaildCode2)
+
           function makeURL(length) {
             var result = '';
             var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -91,7 +98,7 @@ module.exports = class TicketCommand extends BaseCommand {
                 .setDescription(`You have open a ticket in the server ${message.guild.name}. You can found your ticket here: <#${chan.id}>`)
                 .addField('Issue', `${MSG}.`, true)
                 .addField('TicketID', `${generator}`, true)
-                .setFooter(`${message.guild.name}| ${message.guild.id}`, `${message.guild.iconURL()}`)
+                .setFooter(`${message.guild.name}| ${message.guild.id}`)
               await message.author.send(DmPerson);
 
               const TicketSupportID2 = message.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
@@ -169,6 +176,7 @@ module.exports = class TicketCommand extends BaseCommand {
                     ServerID: message.guild.id,
                     ChannelID: chan.id,
                     Reason: MSG,
+                    Time: currentDateAndTime,
                     ClaimUserID: ""
                   })
                   data.save()

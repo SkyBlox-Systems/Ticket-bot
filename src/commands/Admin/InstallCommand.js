@@ -83,7 +83,11 @@ module.exports = class InstallCommand extends BaseCommand {
                     AdminRoleID: "N/A",
                     BetaKey: "N/A",
                     PaidGuild: "No",
-                    BotVersion: "2.1"
+                    Transcript: "Yes",
+                    UseTicketReactions: "Yes",
+                    UseDashboard: "Yes",
+                    APIKey: "N/A",
+                    BotVersion: "2.2"
                   })
                   data.save()
                   console.log('Data Saved in the database correctly!')

@@ -63,8 +63,8 @@ module.exports = class SetupCommand extends BaseCommand {
           const ErrorCollector1 = m.createReactionCollector(ErrorFilter1, { max: 1, time: 2 * 60 * 1000 });
           ErrorCollector1.on('collect', () => {
             m.delete()
-            message.guild.roles.cache.find(role => role.name === 'ticket manager').delete();
-            message.guild.roles.cache.find(role => role.name === 'ticket support').delete();
+            message.guild.roles.cache.find((r) => r.name === 'ticket support').delete();
+            message.guild.roles.cache.find((r2) => r2.name === 'ticket manager').delete();
 
             const Supportcat = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "category");
                message.guild.channels.cache.find(ch => ch.name === 'ticket').delete();
@@ -360,10 +360,11 @@ module.exports = class SetupCommand extends BaseCommand {
                 } else {
 
                   console.log('test')
-                  const TicketChannelIdChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'text');
-                  const TicketTrackerIdChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'voice');
+                  const TicketChannelIdChannel = await message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'text');
+                  const TicketTrackerIdChannel = await message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'voice');
                   data2 = new TicketDataMain({
-                    TicketChannelID: TicketChannelIdChannel.id,
+                    ServerID: message.guild.id,
+                    TicketChannelID: 'N/A',
                     GuildID: message.guild.id,
                     TicketNumber: "0",
                     TicketTrackerChannelID: "N/A",
@@ -373,7 +374,11 @@ module.exports = class SetupCommand extends BaseCommand {
                     AdminRoleID: "N/A",
                     BetaKey: "N/A",
                     PaidGuild: "No",
-                    BotVersion: "2.1"
+                    Transcript: "Yes",
+                    UseTicketReactions: "Yes",
+                    UseDashboard: "Yes",
+                    APIKey: "N/A",
+                    BotVersion: "2.2"
                   })
                   data2.save()
 

@@ -13,6 +13,10 @@ const TicketData = mongoose.Schema({
   AdminRoleID: String,
   BetaKey: String,
   PaidGuild: String,
+  Transcript: String,
+  UseTicketReactions: String,
+  UseDashboard: String,
+  APIKey: String,
   BotVersion: String
 })
 
