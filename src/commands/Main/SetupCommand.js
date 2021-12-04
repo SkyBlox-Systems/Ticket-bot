@@ -349,7 +349,7 @@ module.exports = class SetupCommand extends BaseCommand {
               StaffroomChannel.send(StaffroomChannelMessage).then((msg) => msg.pin())
               TicketLogsChannel.send(TicketLogsChannelMessage).then((msg) => msg.pin())
 
-              TicketDataMain.findOne({ GuildID: message.guild.id }, async (err2, data2) => {
+              TicketDataMain.findOne({ ServerID: message.guild.id }, async (err2, data2) => {
                 if (err2) throw err2;
 
                 if (data2) {
@@ -364,6 +364,7 @@ module.exports = class SetupCommand extends BaseCommand {
                   const TicketTrackerIdChannel = await message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'voice');
                   data2 = new TicketDataMain({
                     ServerID: message.guild.id,
+                    OwnerID: message.guild.owner.id,
                     TicketChannelID: 'N/A',
                     GuildID: message.guild.id,
                     TicketNumber: "0",
@@ -378,7 +379,13 @@ module.exports = class SetupCommand extends BaseCommand {
                     UseTicketReactions: "Yes",
                     UseDashboard: "Yes",
                     APIKey: "N/A",
-                    BotVersion: "2.2"
+                    TicketMessage: "Thank you for contacting Support! Please wait for a customer support to claim your ticket.",
+                    CloseMessage: "has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you.",
+                    ClaimTicketMessage: "has open a ticket and needs support.",
+                    DisabledCommands: "N/A",
+                    TranscriptMessage: "Transcript for",
+                    EnableTicket: 'Enabled',
+                    BotVersion: "2.3"
                   })
                   data2.save()
 

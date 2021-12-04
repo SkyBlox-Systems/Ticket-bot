@@ -74,6 +74,7 @@ module.exports = class InstallCommand extends BaseCommand {
                 .then(m2 => {
                   data = new MainDatabase({
                     ServerID: message.guild.id,
+                    OwnerID: "N/A",
                     TicketChannelID: TicketChannelMainID.id,
                     TicketNumber: "0",
                     TicketTrackerChannelID: "N/A",
@@ -87,7 +88,12 @@ module.exports = class InstallCommand extends BaseCommand {
                     UseTicketReactions: "Yes",
                     UseDashboard: "Yes",
                     APIKey: "N/A",
-                    BotVersion: "2.2"
+                    TicketMessage: 'Thank you for contacting Support! Please wait for a customer support to claim your ticket.',
+                    CloseMessage: 'has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you.',
+                    ClaimTicketMessage: 'has open a ticket and needs support.',
+                    DisabledCommands: 'N/A',
+                    TranscriptMessage: 'Transcript for',
+                    BotVersion: "2.3"
                   })
                   data.save()
                   console.log('Data Saved in the database correctly!')

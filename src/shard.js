@@ -11,3 +11,4 @@ shards.on("ShardCreate", async (shard) =>{
 })
 
 shards.spawn(shards.totalShards, 1000)
+require('./dashboard/server')

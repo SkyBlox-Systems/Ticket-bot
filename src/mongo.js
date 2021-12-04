@@ -7,13 +7,12 @@ module.exports = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       autoIndex: false,
-      poolSize: 5,
+      maxPoolSize: 20,
       connectTimeoutMS: 10000,
       family: 4
     };
 
     mongoose.connect(mongoPath,DatabaseOptions)
-    mongoose.set('useFindAndModify', false);
     mongoose.Promise = global.Promise;
 
     mongoose.connection.on('connected', () => {

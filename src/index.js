@@ -24,18 +24,6 @@ const slash = new DiscordSlash.Slash(client);
 
 client.on("ready",  guild => {
 
-  let mainCommand = new DiscordSlash.CommandBuilder();
-  let subCommand1 = new DiscordSlash.CommandBuilder();
-
-  mainCommand.setName("Ticket");
-  mainCommand.setDescription("Create a ticket");
-
-  subCommand1.setName("Reason");
-  subCommand1.setType(DiscordSlash.CommandType.SUB_COMMAND);
-  subCommand1.setRequired(true);
-
-
-
 })
 
 
