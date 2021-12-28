@@ -13,7 +13,7 @@ module.exports = class TicketCommand extends BaseCommand {
   }
 
   async run(client, message, args) {
-    const Xmas95 = new Date('December 25, 2021 00:00:00');
+    const Xmas95 = new Date('December 31, 2021 00:00:00');
     if (Xmas95.getDate() == dd) {
       const DisabledInAllServers = new MessageEmbed()
       .setTitle('Disabled!')
@@ -216,6 +216,8 @@ module.exports = class TicketCommand extends BaseCommand {
                 const disabledTicket = new MessageEmbed()
                 .setTitle('Disabled!')
                 .setDescription('Server owner has disabled the creation of tickets in this server.')
+
+                message.channel.send(disabledTicket)
   
               }
               
