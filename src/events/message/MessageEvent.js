@@ -14,7 +14,7 @@ module.exports = class MessageEvent extends BaseEvent {
 
   async run(client, message) {
 
-     client.prefix = await getprefix(message.guild.id);
+     client.prefix = await getprefix(message.guildId);
 
 
 
@@ -30,7 +30,7 @@ module.exports = class MessageEvent extends BaseEvent {
       const command = client.commands.get(cmdName);
       if (command) {
         const check = await db.findOne({ Guild: message.guild.id })
-        const versionCheck = await MainDatabase.findOne({ ServerID: message.guild.id })
+        const versionCheck = await MainDatabase.findOne({ ServerID: message.guildId })
        blacklist.findOne({ UserID: message.author.id }, async (err, data) => {
          if (err) throw err;
          if (!data) {
@@ -45,7 +45,7 @@ module.exports = class MessageEvent extends BaseEvent {
                 const UpdateBot = new MessageEmbed()
                 .setTitle('Update bot')
                 .setDescription(`You are currently running v2.2 of the bot. Please update it to v2.3. Run the command ${client.prefix}update to update the bot.`)
-                await message.channel.send(UpdateBot)
+                await message.channel.send({ embeds: [UpdateBot]})
       
       
               } else {
@@ -54,7 +54,7 @@ module.exports = class MessageEvent extends BaseEvent {
                     .setTitle('Disabled')
                     .setDescription(`The following command **${client.prefix}${command.name}** has been disabled in the server by an administrator`)
                     .setColor('#f6f7f8')
-                  if (check.Cmds.includes(command.name)) return message.channel.send(DisabledCommand)
+                  if (check.Cmds.includes(command.name)) return message.channel.send({ embeds: [DisabledCommand]})
                   command.run(client, message, cmdArgs)
                 } else {
                   command.run(client, message, cmdArgs)
@@ -73,7 +73,7 @@ module.exports = class MessageEvent extends BaseEvent {
           .addField('Time', `${data.Time} UTC`)
           .addField('Admin', `${data.Admin}`)
 
-          message.channel.send(BlacklistedFromBot)
+          message.channel.send({ embeds: [BlacklistedFromBot]})
          }
 
        })

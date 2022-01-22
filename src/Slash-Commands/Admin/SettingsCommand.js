@@ -4,17 +4,16 @@ const { MessageEmbed, Guild, MessageCollector, Collector } = require('discord.js
 const MainDatabase = require('../../schemas/TicketData')
 var today = new Date();
 var dd = String(today.getDate());
-const { SlashCommandBuilder } = require('@discordjs/builders')
+const { SlashCommandBuilder } = require("@discordjs/builders")
 
-module.exports = class SettingsCommand extends BaseCommand {
-  constructor() {
-    super('settings', 'Admin', []);
-  }
-
+module.exports = {
+  ...new SlashCommandBuilder()
+  .setName('Settings')
+  .setDescription('Settings command'),
+  
 
 
   async run(client, message, args) {
-    
 
     const ServerOwner = new MessageEmbed()
       .setTitle('Error')

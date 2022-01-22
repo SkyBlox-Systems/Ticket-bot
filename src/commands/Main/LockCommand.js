@@ -2,7 +2,6 @@ const BaseCommand = require('../../utils/structures/BaseCommand');
 const { MessageEmbed } = require('discord.js');
 const bot = require('discord.js');
 const discord = require('discord.js');
-const client = new discord.Client();
 const fs = require('fs').promises;
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
@@ -21,7 +20,7 @@ module.exports = class LockCommand extends BaseCommand {
   }
 
   async run(client, message, args) {
-    MainDatabase.findOne({ ServerID: message.guild.id }, async (err01, data01) => {
+    MainDatabase.findOne({ ServerID: message.guildId }, async (err01, data01) => {
       if (err01) throw err01;
       if (data01) {
 
@@ -60,7 +59,7 @@ module.exports = class LockCommand extends BaseCommand {
               .setTitle('Locked')
               .setDescription(`<@${message.author.id}> has locked your ticket! This ticket can not be closed unless it has been unlocked once again. Please contact an Ticket Support manager if this was a mistake.`)
 
-              message.channel.send(NoLocked)
+              message.channel.send({ embeds: [NoLocked]})
 
               ClaimTicket.findOneAndUpdate({ ChannelID: message.channel.id }, { Locked: "Yes" },  async (err03, data03) => {
                 if (err03) throw err03
@@ -100,7 +99,7 @@ module.exports = class LockCommand extends BaseCommand {
                 .setDescription(`<@${message.author.id}> has unlocked your ticket! You can may use this ticket as normal.`)
 
   
-                message.channel.send(YesLocked)
+                message.channel.send({ embeds: [YesLocked]})
 
                 ClaimTicket.findOneAndUpdate({ ChannelID: message.channel.id }, { Locked: "No" },  async (err04, data04) => {
                   if (err04) throw err04
@@ -115,7 +114,7 @@ module.exports = class LockCommand extends BaseCommand {
               }
             }
           } else {
-            console.log('N/A')
+            message.channel.send('Not a vaild ticket')
           }
         })
       } else {
@@ -123,7 +122,7 @@ module.exports = class LockCommand extends BaseCommand {
           .setTitle('Not updated')
           .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.3** and the latest update is **v2.2** Please get the owner to run ${client.prefix}update`)
 
-        message.channel.send(NoData)
+        message.channel.send({ embeds: [NoData]})
       }
     })
   }

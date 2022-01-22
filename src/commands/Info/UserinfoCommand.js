@@ -75,6 +75,6 @@ module.exports = class UserinfoCommand extends BaseCommand {
             }
         )
 
-    await message.channel.send(embed)
+    await message.channel.send({ embeds: [embed]})
 }
 }

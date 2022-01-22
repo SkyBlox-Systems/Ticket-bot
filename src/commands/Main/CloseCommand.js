@@ -2,7 +2,6 @@ const BaseCommand = require('../../utils/structures/BaseCommand');
 const { MessageEmbed } = require('discord.js');
 const bot = require('discord.js');
 const discord = require('discord.js');
-const client = new discord.Client();
 const fs = require('fs').promises;
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
@@ -13,6 +12,7 @@ const mongo = require('../../mongo');
 const ClaimTicket = require('../../schemas/ticketclaim')
 const MainDatabase = require('../../schemas/TicketData');
 const { mainModule } = require('process');
+const { response } = require('express');
 
 
 module.exports = class CloseCommand extends BaseCommand {
@@ -28,10 +28,10 @@ module.exports = class CloseCommand extends BaseCommand {
           const cannotclose = new MessageEmbed()
           .setTitle('Can not close')
           .setDescription('This ticket can not be closed because it is currently locked. Please unlock it by one of the staff members.')
-          return message.channel.send(cannotclose)
+          return message.channel.send({ embeds: [cannotclose]})
         } else {
           if (data2001.Locked === 'No') {
-            MainDatabase.findOne({ ServerID: message.guild.id }, async (err01, data01) => {
+            MainDatabase.findOne({ ServerID: message.guildId }, async (err01, data01) => {
               if (err01) throw err01;
               if (data01) {
         
@@ -45,14 +45,14 @@ module.exports = class CloseCommand extends BaseCommand {
                           .setTitle('Error')
                           .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
         
-                        return message.channel.send(NoPerms2)
+                        return message.channel.send({ embeds: [NoPerms2]})
                       }
         
                       const NoClaimer = new MessageEmbed()
                         .setTitle('Error')
                         .setDescription('No staff member has not claimed the ticket. This ticket can not be closed')
         
-                      message.channel.send(NoClaimer)
+                      message.channel.send({ embeds: [NoClaimer]})
         
                     } else {
         
@@ -63,7 +63,7 @@ module.exports = class CloseCommand extends BaseCommand {
                             .setTitle('Error')
                             .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
           
-                          return message.channel.send(NoPerms3)
+                          return message.channel.send({ embeds: [NoPerms3]})
                         }
         
                         function makeURL(length) {
@@ -109,92 +109,94 @@ module.exports = class CloseCommand extends BaseCommand {
                           .setDescription(`Your ticket will be closed in 5 seconds`)
                           .setFooter(`Making a transcript....`)
           
-                        async function Transcriptmain() {
-                          let messageCollection = new discord.Collection();
-                          let channelMessages = await message.channel.messages.fetch({
-                            limit: 100
-                          }).catch(err => console.log(err));
+                        // async function Transcriptmain() {
+                        //   let messageCollection = new discord.Collection();
+                        //   let channelMessages = await message.channel.messages.fetch({
+                        //     limit: 100
+                        //   }).catch(err => console.log(err));
           
-                          messageCollection = messageCollection.concat(channelMessages);
+                        //   messageCollection = messageCollection.concat(channelMessages);
           
-                          while (channelMessages.size === 100) {
-                            let lastMessageId = channelMessages.lastKey();
-                            channelMessages = await message.channel.messages.fetch({ limit: 100, before: lastMessageId }).catch(err => console.log(err));
-                            if (channelMessages)
-                              messageCollection = messageCollection.concat(channelMessages);
-                          }
-                          let msgs = messageCollection.array().reverse();
-                          let data = await fs.readFile('./src/dashboard/template.html', 'utf8').catch(err => console.log(err));
-                          if (data) {
-                            await fs.writeFile(`./src/dashboard/Tickets/${message.guild.id}/${generators}.html`, data).catch(err => console.log(err));
-                            let guildElement = document.createElement('div');
-                            let guildText = document.createTextNode(message.guild.name);
-                            let guildImg = document.createElement('img');
-                            guildImg.setAttribute('src', message.guild.iconURL());
-                            guildImg.setAttribute('width', '150');
-                            guildElement.appendChild(guildImg);
-                            guildElement.appendChild(guildText);
-                            console.log(guildElement.outerHTML);
-                            await fs.appendFile(`./src/dashboard/Tickets/${message.guild.id}/${generators}.html`, guildElement.outerHTML).catch(err => console.log(err));
+                        //   while (channelMessages.size === 100) {
+                        //     let lastMessageId = channelMessages.lastKey();
+                        //     channelMessages = await message.channel.messages.fetch({ limit: 100, before: lastMessageId }).catch(err => console.log(err));
+                        //     if (channelMessages)
+                        //       messageCollection = messageCollection.concat(channelMessages);
+                        //   }
+                        //   let msgs = [messageCollection.values()];
+                        //   let data = await fs.readFile('./src/dashboard/template.html', 'utf8').catch(err => console.log(err));
+                        //   if (data) {
+                        //     await fs.writeFile(`./src/dashboard/Tickets/${message.guild.id}/${generators}.html`, data).catch(err => console.log(err));
+                        //     let guildElement = document.createElement('div');
+                        //     let guildText = document.createTextNode(message.guild.name);
+                        //     let guildImg = document.createElement('img');
+                        //     guildImg.setAttribute('src', message.guild.iconURL());
+                        //     guildImg.setAttribute('width', '150');
+                        //     guildElement.appendChild(guildImg);
+                        //     guildElement.appendChild(guildText);
+                        //     console.log(guildElement.outerHTML);
+                        //     await fs.appendFile(`./src/dashboard/Tickets/${message.guild.id}/${generators}.html`, guildElement.outerHTML).catch(err => console.log(err));
           
-                            msgs.forEach(async msg => {
-                              let parentContainer = document.createElement("div");
-                              parentContainer.className = "parent-container";
+                        //     msgs.forEach(async msg => {
+                        //       let parentContainer = document.createElement("div");
+                        //       parentContainer.className = "parent-container";
           
-                              let avatarDiv = document.createElement("div");
-                              avatarDiv.className = "avatar-container";
-                              let img = document.createElement('img');
-                              img.setAttribute('src', msg.author.displayAvatarURL());
-                              img.className = "avatar";
-                              avatarDiv.appendChild(img);
+                        //       let avatarDiv = document.createElement("div");
+                        //       avatarDiv.className = "avatar-container";
+                        //       let img = document.createElement('img');
+                        //       img.setAttribute('src', msg.author.displayAvatarURL());
+                        //       img.className = "avatar";
+                        //       avatarDiv.appendChild(img);
           
-                              parentContainer.appendChild(avatarDiv);
+                        //       parentContainer.appendChild(avatarDiv);
           
-                              let messageContainer = document.createElement('div');
-                              messageContainer.className = "message-container";
+                        //       let messageContainer = document.createElement('div');
+                        //       messageContainer.className = "message-container";
           
-                              let nameElement = document.createElement("span");
-                              let name = document.createTextNode(msg.author.tag + " " + msg.createdAt.toDateString() + " " + msg.createdAt.toLocaleTimeString() + " UTC");
-                              nameElement.appendChild(name);
-                              messageContainer.append(nameElement);
+                        //       let nameElement = document.createElement("span");
+                        //       let name = document.createTextNode(msg.author.tag + " " + msg.createdAt.toDateString() + " " + msg.createdAt.toLocaleTimeString() + " UTC");
+                        //       nameElement.appendChild(name);
+                        //       messageContainer.append(nameElement);
           
-                              if (msg.content.startsWith("```")) {
-                                let m = msg.content.replace(/```/g, "");
-                                let codeNode = document.createElement("code");
-                                let textNode = document.createTextNode(m);
-                                codeNode.appendChild(textNode);
-                                messageContainer.appendChild(codeNode);
-                              }
-                              else {
-                                let msgNode = document.createElement('span');
-                                let textNode = document.createTextNode(msg.content);
-                                msgNode.append(textNode);
-                                messageContainer.appendChild(msgNode);
-                              }
-                              parentContainer.appendChild(messageContainer);
+                        //       if (msg.content.startsWith("```")) {
+                        //         let m = msg.content.replace(/```/g, "");
+                        //         let codeNode = document.createElement("code");
+                        //         let textNode = document.createTextNode(m);
+                        //         codeNode.appendChild(textNode);
+                        //         messageContainer.appendChild(codeNode);
+                        //       }
+                        //       else {
+                        //         let msgNode = document.createElement('span');
+                        //         let textNode = document.createTextNode(msg.content);
+                        //         msgNode.append(textNode);
+                        //         messageContainer.appendChild(msgNode);
+                        //       }
+                        //       parentContainer.appendChild(messageContainer);
           
-                              await fs.appendFile(`./src/dashboard/Tickets/${message.guild.id}/${generators}.html`, parentContainer.outerHTML).catch(err => console.log(err));
-                            });
-                          }
-                        }
+                        //       await fs.appendFile(`./src/dashboard/Tickets/${message.guild.id}/${generators}.html`, parentContainer.outerHTML).catch(err => console.log(err));
+                        //     });
+                        //   }
+                        // }
           
                         if (!message.channel.name.startsWith("ticket-")) return message.channel.send("This is not a valid ticket")
-                        if (!message.member.hasPermission("MANAGE_CHANNELS")) return message.channel.send("You need MANAGE_CHANNELS permission to use this command")
-                        message.channel.send(ticketembed).then((m) => {
-                          message.channel.awaitMessages(response => response.content == "yes", {
+                        if (!message.member.permissions.has("MANAGE_CHANNELS")) return message.channel.send("You need MANAGE_CHANNELS permission to use this command")
+                        message.channel.send({ embeds: [ticketembed]})
+                        .then((m) => { 
+                          message.channel.awaitMessages({
+                            filter: response => response.content == "yes",
                             max: 1,
                             time: 10000,
                             errors: ['time']
                           }).then(() => {
-                            message.channel.send(closing)
-                            fs.mkdir(`./src/dashboard/Tickets/${message.guild.id}`, function (err) {
-                              if (err) {
-                                console.log(err)
-                              } else {
-                                console.log("New directory successfully created.")
-                              }
-                            })
-                            Transcriptmain();
+                            message.channel.send({ embeds: [closing]})
+                            // fs.mkdir(`./src/dashboard/Tickets/${message.guildId}`, function (err) {
+                            //   if (err) {
+                            //     console.log(err)
+                            //   } else {
+                            //     console.log("New directory successfully created.")
+                            //   }
+                            // })
+                            // Transcriptmain();
                             setTimeout(() => {
                               ClaimTicket.findOne({ ChannelID: message.channel.id }, async (err, data) => {
                                 if (err) throw err;
@@ -214,10 +216,10 @@ module.exports = class CloseCommand extends BaseCommand {
           
           
                                   const ticketttcreator = client.users.cache.get(data.id)
-                                  ticketttcreator.send(DMTicketCreatorClosed)
+                                  ticketttcreator.send({ embeds: [DMTicketCreatorClosed]})
           
                                   const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
-                                  ticketttClaimer.send(DMTicketClaimClosed)
+                                  ticketttClaimer.send({ embeds: [DMTicketClaimClosed]})
                                   setTimeout(() => {
                                     ClaimTicket.findOneAndDelete({ ChannelID: message.channel.id }, async (err02, data02) => {
                                       if (err02) throw err02;
@@ -239,31 +241,32 @@ module.exports = class CloseCommand extends BaseCommand {
                                 })
                                 message.channel.delete()
           
-                                const SupportLogs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "text")
-                                const TranscriptLogs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
+                                const SupportLogs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "GUILD_TEXT")
+                                const TranscriptLogs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
           
                                 const UserName = client.users.cache.find(user => user.id === data.id)
                                 console.log(UserName)
           
-                                SupportLogs.send(Logs)
+                                SupportLogs.send({ embeds: [Logs]})
           
                                 const CloseEmbed = new MessageEmbed()
                                   .setTitle('Transcript')
                                   .setDescription(`${data01.TranscriptMessage} ${message.channel.name}`)
-                                  .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
+                                  .addField('Transcript', `Disabled in v3.0 testing`)
+                                 // .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
                                   .addField('Reason', `${data.Reason}`)
                                   .addField('Time', `${data.Time}`)
                                   .addField('Claim User', `<@${data.ClaimUserID}>`)
-                                TranscriptLogs.send(CloseEmbed)
-                                TranscriptLogs.send({ files: [`./src/dashboard/Tickets/${message.guild.id}/${generators}.html`] })
+                                TranscriptLogs.send({ embeds: [CloseEmbed]})
+                               // TranscriptLogs.send({ files: [`./src/dashboard/Tickets/${message.guild.id}/${generators}.html`] })
                               })
           
                             }, 5000);
                           }).catch(() => {
-                            m.edit(notclosed)
+                            m.edit({ embeds: [notclosed]})
                           })
                         }).catch(() => {
-                          m.edit(notclosed)
+                          m.edit({ embeds: [notclosed]})
                         })
         
                       } else {
@@ -272,7 +275,7 @@ module.exports = class CloseCommand extends BaseCommand {
                             .setTitle('Error')
                             .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
           
-                          return message.channel.send(NoPerms)
+                          return message.channel.send({ embeds: [NoPerms]})
                       }
         
                       const ticketembed2 = new MessageEmbed()
@@ -305,91 +308,85 @@ module.exports = class CloseCommand extends BaseCommand {
                       .setTitle(`Ticket`)
                       .setDescription(`Your ticket will be closed in 5 seconds`)
         
-                    async function Transcriptmain() {
-                      let messageCollection = new discord.Collection();
-                      let channelMessages = await message.channel.messages.fetch({
-                        limit: 100
-                      }).catch(err => console.log(err));
+                    // async function Transcriptmain() {
+                    //   let messageCollection = new discord.Collection();
+                    //   let channelMessages = await message.channel.messages.fetch({
+                    //     limit: 100
+                    //   }).catch(err => console.log(err));
         
-                      messageCollection = messageCollection.concat(channelMessages);
+                    //   messageCollection = messageCollection.concat(channelMessages);
         
-                      while (channelMessages.size === 100) {
-                        let lastMessageId = channelMessages.lastKey();
-                        channelMessages = await message.channel.messages.fetch({ limit: 100, before: lastMessageId }).catch(err => console.log(err));
-                        if (channelMessages)
-                          messageCollection = messageCollection.concat(channelMessages);
-                      }
-                      let msgs = messageCollection.array().reverse();
-                      let data = await fs.readFile('./src/dashboard/template.html', 'utf8').catch(err => console.log(err));
-                      if (data) {
-                        await fs.writeFile(`./src/dashboard/Tickets/${message.guild.id}/${generators}.html`, data).catch(err => console.log(err));
-                        let guildElement = document.createElement('div');
-                        let guildText = document.createTextNode(message.guild.name);
-                        let guildImg = document.createElement('img');
-                        guildImg.setAttribute('src', message.guild.iconURL());
-                        guildImg.setAttribute('width', '150');
-                        guildElement.appendChild(guildImg);
-                        guildElement.appendChild(guildText);
-                        console.log(guildElement.outerHTML);
-                        await fs.appendFile(`./src/dashboard/Tickets/${message.guild.id}/${generators}.html`, guildElement.outerHTML).catch(err => console.log(err));
+                    //   while (channelMessages.size === 100) {
+                    //     let lastMessageId = channelMessages.lastKey();
+                    //     channelMessages = await message.channel.messages.fetch({ limit: 100, before: lastMessageId }).catch(err => console.log(err));
+                    //     if (channelMessages)
+                    //       messageCollection = messageCollection.concat({ embeds: [channelMessages]});
+                    //   }
+                    //   let msgs = messageCollection.array().reverse();
+                    //   let data = await fs.readFile('./src/dashboard/template.html', 'utf8').catch(err => console.log(err));
+                    //   if (data) {
+                    //     await fs.writeFile(`./src/dashboard/Tickets/${message.guildId}/${generators}.html`, data).catch(err => console.log(err));
+                    //     let guildElement = document.createElement('div');
+                    //     let guildText = document.createTextNode(message.guild.name);
+                    //     let guildImg = document.createElement('img');
+                    //     guildImg.setAttribute('src', message.guild.iconURL());
+                    //     guildImg.setAttribute('width', '150');
+                    //     guildElement.appendChild(guildImg);
+                    //     guildElement.appendChild(guildText);
+                    //     console.log(guildElement.outerHTML);
+                    //     await fs.appendFile(`./src/dashboard/Tickets/${message.guildId}/${generators}.html`, guildElement.outerHTML).catch(err => console.log(err));
         
-                        msgs.forEach(async msg => {
-                          let parentContainer = document.createElement("div");
-                          parentContainer.className = "parent-container";
+                    //     msgs.forEach(async msg => {
+                    //       let parentContainer = document.createElement("div");
+                    //       parentContainer.className = "parent-container";
         
-                          let avatarDiv = document.createElement("div");
-                          avatarDiv.className = "avatar-container";
-                          let img = document.createElement('img');
-                          img.setAttribute('src', msg.author.displayAvatarURL());
-                          img.className = "avatar";
-                          avatarDiv.appendChild(img);
+                    //       let avatarDiv = document.createElement("div");
+                    //       avatarDiv.className = "avatar-container";
+                    //       let img = document.createElement('img');
+                    //       img.setAttribute('src', msg.author.displayAvatarURL());
+                    //       img.className = "avatar";
+                    //       avatarDiv.appendChild(img);
         
-                          parentContainer.appendChild(avatarDiv);
+                    //       parentContainer.appendChild(avatarDiv);
         
-                          let messageContainer = document.createElement('div');
-                          messageContainer.className = "message-container";
+                    //       let messageContainer = document.createElement('div');
+                    //       messageContainer.className = "message-container";
         
-                          let nameElement = document.createElement("span");
-                          let name = document.createTextNode(msg.author.tag + " " + msg.createdAt.toDateString() + " " + msg.createdAt.toLocaleTimeString() + " UTC");
-                          nameElement.appendChild(name);
-                          messageContainer.append(nameElement);
+                    //       let nameElement = document.createElement("span");
+                    //       let name = document.createTextNode(msg.author.tag + " " + msg.createdAt.toDateString() + " " + msg.createdAt.toLocaleTimeString() + " UTC");
+                    //       nameElement.appendChild(name);
+                    //       messageContainer.append(nameElement);
         
-                          if (msg.content.startsWith("```")) {
-                            let m = msg.content.replace(/```/g, "");
-                            let codeNode = document.createElement("code");
-                            let textNode = document.createTextNode(m);
-                            codeNode.appendChild(textNode);
-                            messageContainer.appendChild(codeNode);
-                          }
-                          else {
-                            let msgNode = document.createElement('span');
-                            let textNode = document.createTextNode(msg.content);
-                            msgNode.append(textNode);
-                            messageContainer.appendChild(msgNode);
-                          }
-                          parentContainer.appendChild(messageContainer);
+                    //       if (msg.content.startsWith("```")) {
+                    //         let m = msg.content.replace(/```/g, "");
+                    //         let codeNode = document.createElement("code");
+                    //         let textNode = document.createTextNode(m);
+                    //         codeNode.appendChild(textNode);
+                    //         messageContainer.appendChild(codeNode);
+                    //       }
+                    //       else {
+                    //         let msgNode = document.createElement('span');
+                    //         let textNode = document.createTextNode(msg.content);
+                    //         msgNode.append(textNode);
+                    //         messageContainer.appendChild(msgNode);
+                    //       }
+                    //       parentContainer.appendChild(messageContainer);
         
-                          await fs.appendFile(`./src/dashboard/Tickets/${message.guild.id}/${generators}.html`, parentContainer.outerHTML).catch(err => console.log(err));
-                        });
-                      }
-                    }
+                    //     //  await fs.appendFile(`./src/dashboard/Tickets/${message.guildId}/${generators}.html`, parentContainer.outerHTML).catch(err => console.log(err));
+                    //     });
+                    //   }
+                    // }
         
                     if (!message.channel.name.startsWith("ticket-")) return message.channel.send("This is not a valid ticket")
-                    if (!message.member.hasPermission("MANAGE_CHANNELS")) return message.channel.send("You need MANAGE_CHANNELS permission to use this command")
-                    message.channel.send(ticketembed2).then((m) => {
-                      message.channel.awaitMessages(response => response.content == "yes", {
+                    if (!message.member.permissions.has("MANAGE_CHANNELS")) return message.channel.send("You need MANAGE_CHANNELS permission to use this command")
+                    message.channel.send({ embeds: [ticketembed2]}).then((m) => {
+                      message.channel.awaitMessages({
+                        filter: response => response.content == "yes",
                         max: 1,
                         time: 10000,
                         errors: ['time']
                       }).then(() => {
                         message.channel.send(closing2)
-                        fs.mkdir(`./src/dashboard/Tickets/${message.guild.id}`, function (err) {
-                          if (err) {
-                            console.log(err)
-                          } else {
-                            console.log("New directory successfully created.")
-                          }
-                        })
                         Transcriptmain();
                         setTimeout(() => {
                           ClaimTicket.findOne({ ChannelID: message.channel.id }, async (err, data) => {
@@ -410,10 +407,10 @@ module.exports = class CloseCommand extends BaseCommand {
         
         
                               const ticketttcreator = client.users.cache.get(data.id)
-                              ticketttcreator.send(DMTicketCreatorClosed)
+                              ticketttcreator.send({ embeds: [DMTicketCreatorClosed]})
         
                               const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
-                              ticketttClaimer.send(DMTicketClaimClosed)
+                              ticketttClaimer.send({ embeds: [DMTicketClaimClosed]})
                               setTimeout(() => {
                                 ClaimTicket.findOneAndDelete({ ChannelID: message.channel.id }, async (err02, data02) => {
                                   if (err02) throw err02;
@@ -426,7 +423,7 @@ module.exports = class CloseCommand extends BaseCommand {
         
                             }
         
-                            MainDatabase.findOne({ ServerID: message.guild.id }, async (err300, data300) => {
+                            MainDatabase.findOne({ ServerID: message.guildId }, async (err300, data300) => {
                               if (err300) throw err300;
                               if (data300) {
                                 const MainTicketTrackerChannel = message.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
@@ -441,17 +438,17 @@ module.exports = class CloseCommand extends BaseCommand {
                             const UserName = client.users.cache.find(user => user.id === data.id)
                             console.log(UserName)
         
-                            SupportLogs.send(Logs2)
+                            SupportLogs.send({ embeds: [Logs2]})
         
         
                           })
         
                         }, 5000);
                       }).catch(() => {
-                        m.edit(notclosed2)
+                        m.edit({ embeds: [notclosed2]})
                       })
                     }).catch(() => {
-                      m.edit(notclosed2)
+                      m.edit({ embeds: [notclosed2]})
                     })
                       }
         
@@ -464,7 +461,7 @@ module.exports = class CloseCommand extends BaseCommand {
                   .setTitle('Not updated')
                   .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
         
-                message.channel.send(NoData)
+                message.channel.send({ embeds: [NoData]})
               }
             })
 

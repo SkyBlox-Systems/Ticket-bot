@@ -49,32 +49,32 @@ module.exports = class SetupCommand extends BaseCommand {
       .setDescription('We are creating the database. Please stand by while we finish it.')
       .setColor('#f9f9fa')
 
-    const Maincategory = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Support' && ch.type === 'category')
+    const Maincategory = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Support' && ch.type === 'GUILD_CATEGORY')
 
-    if (message.author.id != message.guild.owner.id)
-      return message.channel.send(ServerOwner);
+    if (message.author.id != message.guild.ownerId)
+      return message.channel.send({ embeds: [ServerOwner]});
 
     if (message.guild.roles.cache.find(roles => roles.name === 'ticket manager')) {
-      return message.channel.send(Error)
+      return message.channel.send({ embeds: [Error]})
         .then(m => {
           m.react('✅')
           m.react('❌')
           const ErrorFilter1 = (reaction, user) => reaction.emoji.name === '✅' && user.id === message.author.id;
-          const ErrorCollector1 = m.createReactionCollector(ErrorFilter1, { max: 1, time: 2 * 60 * 1000 });
+          const ErrorCollector1 = m.createReactionCollector({ filter: ErrorFilter1,  max: 1, time: 2 * 60 * 1000 });
           ErrorCollector1.on('collect', () => {
             m.delete()
             message.guild.roles.cache.find((r) => r.name === 'ticket support').delete();
             message.guild.roles.cache.find((r2) => r2.name === 'ticket manager').delete();
 
-            const Supportcat = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "category");
+            const Supportcat = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY");
                message.guild.channels.cache.find(ch => ch.name === 'ticket').delete();
                message.guild.channels.cache.find(ch => ch.name === 'ticket-staff').delete();
                message.guild.channels.cache.find(ch => ch.name === 'transcript').delete();
                message.guild.channels.cache.find(ch => ch.name === 'ticket-logs').delete();
-               TicketDataMain.findOne({ ServerID: message.guild.id }, async (err04, data04 ) => {
+               TicketDataMain.findOne({ ServerID: message.guildId }, async (err04, data04 ) => {
                  if (err04) throw err04;
                  if (data04) {
-                  message.guild.channels.cache.find(ch => ch.name === `Tickets: ${data04.TicketNumber}` && ch.type == "voice").delete();
+                  message.guild.channels.cache.find(ch => ch.name === `Tickets: ${data04.TicketNumber}` && ch.type == "GUILD_VOICE").delete();
                  }
                })
             message.guild.roles.create({
@@ -105,26 +105,26 @@ module.exports = class SetupCommand extends BaseCommand {
               },
             })
 
-            message.guild.channels.create('Support', { type: 'category', position: 1 }).then(async (chan) => {
+            message.guild.channels.create('Support', { type: 'GUILD_CATEGORY', position: 1 }).then(async (chan) => {
             })
             message.guild.channels.create('Ticket', { parent: Supportcat }).then(async (chan) => {
-              chan.updateOverwrite(message.guild.roles.everyone, {
+              chan.permissionOverwrites.create(message.guild.roles.everyone, {
                 SEND_MESSAGES: true,
                 VIEW_CHANNEL: true,
               })
             })
             message.guild.channels.create('Ticket-staff', { parent: Supportcat }).then(async (chan) => {
-              chan.updateOverwrite(message.guild.roles.everyone, {
+              chan.permissionOverwrites.create(message.guild.roles.everyone, {
                 SEND_MESSAGES: false,
                 VIEW_CHANNEL: false,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
                 SEND_MESSAGES: true,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: false,
                 ATTACH_FILES: true,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
                 SEND_MESSAGES: true,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: true,
@@ -132,17 +132,17 @@ module.exports = class SetupCommand extends BaseCommand {
               })
             })
             message.guild.channels.create('Transcript', { parent: Supportcat }).then(async (chan) => {
-              chan.updateOverwrite(message.guild.roles.everyone, {
+              chan.permissionOverwrites.create(message.guild.roles.everyone, {
                 SEND_MESSAGES: false,
                 VIEW_CHANNEL: false,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
                 SEND_MESSAGES: false,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: false,
                 ATTACH_FILES: false,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
                 SEND_MESSAGES: true,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: true,
@@ -150,17 +150,17 @@ module.exports = class SetupCommand extends BaseCommand {
               })
             })
             message.guild.channels.create('Ticket-logs', { parent: Supportcat }).then(async (chan) => {
-              chan.updateOverwrite(message.guild.roles.everyone, {
+              chan.permissionOverwrites.create(message.guild.roles.everyone, {
                 SEND_MESSAGES: false,
                 VIEW_CHANNEL: false,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
                 SEND_MESSAGES: false,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: false,
                 ATTACH_FILES: false,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
                 SEND_MESSAGES: true,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: true,
@@ -169,58 +169,58 @@ module.exports = class SetupCommand extends BaseCommand {
             })
 
             message.guild.channels.create('Tickets: 0', {type: 'voice', parent: Supportcat}).then(async (chan) => {
-              chan.updateOverwrite(message.guild.roles.everyone, {
+              chan.permissionOverwrites.create(message.guild.roles.everyone, {
                 VIEW_CHANNEL: true
               })
             })
 
 
             setTimeout(() => {
-              m.channel.send(Done)
-              const TranscriptChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'transcript' && ch.type == 'text');
+              m.channel.send({ embeds: [Done]})
+              const TranscriptChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'transcript' && ch.type == 'GUILD_TEXT');
               const TranscriptChannelMessage = new MessageEmbed()
                 .setTitle('Transcript!')
                 .setDescription('In this channel, this is where all of the close tickets and transcripts get logged. Only Ticket managers can talk in this channel.')
                 .setColor('#f6f7f8')
 
-              const TicketChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'text');
+              const TicketChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
               const TicketChannelMessage = new MessageEmbed()
                 .setTitle('Ticket')
                 .setDescription('In this channel, You can only open a ticket. If you try and run the command in any other channel, it will not work. To make a ticket, please use the command `!ticket`.')
                 .setColor('#f6f7f8')
 
-              const StaffroomChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == 'text');
+              const StaffroomChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == 'GUILD_TEXT');
               const StaffroomChannelMessage = new MessageEmbed()
                 .setTitle('Staff room')
                 .setDescription('In this channel, This is where the support team hang out. You can chat to the managers and the team about the tickets. Nothing in this channel should be leaked at any time. Commands can be listed here: N/A.')
                 .setColor('#f6f7f8')
 
-              const TicketLogsChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-logs' && ch.type == 'text');
+              const TicketLogsChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-logs' && ch.type == 'GUILD_TEXT');
               const TicketLogsChannelMessage = new MessageEmbed()
                 .setTitle('Ticket logs')
                 .setDescription('In this channel, this is where all of the tickets in this server will be logged. Such as: Close, add, remove, creation etc.')
                 .setColor('#f6f7f8')
 
-              TranscriptChannel.send(TranscriptChannelMessage).then((msg) => msg.pin())
-              TicketChannel.send(TicketChannelMessage).then((msg) => msg.pin())
-              StaffroomChannel.send(StaffroomChannelMessage).then((msg) => msg.pin())
-              TicketLogsChannel.send(TicketLogsChannelMessage).then((msg) => msg.pin())
+              TranscriptChannel.send({ embeds: [TranscriptChannelMessage]}).then((msg) => msg.pin())
+              TicketChannel.send({ embeds: [TicketChannelMessage]}).then((msg) => msg.pin())
+              StaffroomChannel.send({ embeds: [StaffroomChannelMessage]}).then((msg) => msg.pin())
+              TicketLogsChannel.send({ embeds: [TicketLogsChannelMessage]}).then((msg) => msg.pin())
             }, 5000);
           })
         })
     }
 
-    message.channel.send(Welcome)
+    message.channel.send({ embeds: [Welcome]})
       .then(m => {
         m.react('✅')
         const filter24 = (reaction, user) => reaction.emoji.name === '✅' && user.id === message.author.id;
-        const collector24 = m.createReactionCollector(filter24, { max: 1, time: 2 * 60 * 1000 }); // 
+        const collector24 = m.createReactionCollector({ filter: filter24,  max: 1, time: 2 * 60 * 1000 }); // 
         collector24.on('collect', () => {
-          m.edit(ready)
+          m.edit({ embeds: [ready]})
 
           if (message.guild.roles.cache.find(roles => roles.name === 'ticket manager')) {
             m.delete()
-            message.channel.send(Error)
+            message.channel.send({ embeds: [Error]})
           } else {
             message.guild.roles.create({
               data: {
@@ -237,37 +237,37 @@ module.exports = class SetupCommand extends BaseCommand {
             })
 
 
-            const Supportcat = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "category")
+            const Supportcat = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY")
 
-            message.guild.channels.create('Support', { type: 'category', position: 1 }).then(async (chan) => {
+            message.guild.channels.create('Support', { type: 'GUILD_CATEGORY', position: 1 }).then(async (chan) => {
             })
             message.guild.channels.create('Ticket', { parent: Supportcat }).then(async (chan) => {
-              chan.updateOverwrite(message.guild.roles.everyone, {
+              chan.permissionOverwrites.create(message.guild.roles.everyone, {
                 SEND_MESSAGES: true,
                 VIEW_CHANNEL: true,
               })
             })
 
-            message.guild.channels.create('Tickets: 0', {type: 'voice', parent: Supportcat}).then(async (chan) => {
-              chan.updateOverwrite(message.guild.roles.everyone, {
+            message.guild.channels.create('Tickets: 0', {type: 'GUILD_VOICE', parent: Supportcat}).then(async (chan) => {
+              chan.permissionOverwrites.create(message.guild.roles.everyone, {
                 VIEW_CHANNEL: true
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
                 VIEW_CHANNEL: true
               })
             })
             message.guild.channels.create('Ticket-staff', { parent: Supportcat }).then(async (chan) => {
-              chan.updateOverwrite(message.guild.roles.everyone, {
+              chan.permissionOverwrites.create(message.guild.roles.everyone, {
                 SEND_MESSAGES: false,
                 VIEW_CHANNEL: false,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
                 SEND_MESSAGES: true,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: false,
                 ATTACH_FILES: true,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
                 SEND_MESSAGES: true,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: true,
@@ -275,17 +275,17 @@ module.exports = class SetupCommand extends BaseCommand {
               })
             })
             message.guild.channels.create('Transcript', { parent: Supportcat }).then(async (chan) => {
-              chan.updateOverwrite(message.guild.roles.everyone, {
+              chan.permissionOverwrites.create(message.guild.roles.everyone, {
                 SEND_MESSAGES: false,
                 VIEW_CHANNEL: false,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
                 SEND_MESSAGES: false,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: false,
                 ATTACH_FILES: false,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
                 SEND_MESSAGES: true,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: true,
@@ -293,17 +293,17 @@ module.exports = class SetupCommand extends BaseCommand {
               })
             })
             message.guild.channels.create('Ticket-logs', { parent: Supportcat }).then(async (chan) => {
-              chan.updateOverwrite(message.guild.roles.everyone, {
+              chan.permissionOverwrites.create(message.guild.roles.everyone, {
                 SEND_MESSAGES: false,
                 VIEW_CHANNEL: false,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
                 SEND_MESSAGES: false,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: false,
                 ATTACH_FILES: false,
               })
-              chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
+              chan.permissionOverwrites.create(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
                 SEND_MESSAGES: true,
                 VIEW_CHANNEL: true,
                 MANAGE_CHANNELS: true,
@@ -313,43 +313,43 @@ module.exports = class SetupCommand extends BaseCommand {
 
             setTimeout(() => {
 
-              const guildId = message.guild.id
+              const guildId = message.guildId
 
-              m.edit(CreatingDatabase)
+              m.edit({ embeds: [CreatingDatabase]})
             }, 4000);
 
             setTimeout(() => {
-              m.edit(Done)
-              const TranscriptChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'transcript' && ch.type == 'text');
+              m.edit({ embeds: [Done]})
+              const TranscriptChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'transcript' && ch.type == 'GUILD_TEXT');
               const TranscriptChannelMessage = new MessageEmbed()
                 .setTitle('Transcript!')
                 .setDescription('In this channel, this is where all of the close tickets and transcripts get logged. Only Ticket managers can talk in this channel.')
                 .setColor('#f6f7f8')
 
-              const TicketChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'text');
+              const TicketChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
               const TicketChannelMessage = new MessageEmbed()
                 .setTitle('Ticket')
                 .setDescription('In this channel, You can only open a ticket. If you try and run the command in any other channel, it will not work. To make a ticket, please use the command `!ticket`.')
                 .setColor('#f6f7f8')
 
-              const StaffroomChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == 'text');
+              const StaffroomChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == 'GUILD_TEXT');
               const StaffroomChannelMessage = new MessageEmbed()
                 .setTitle('Staff room')
                 .setDescription('In this channel, This is where the support team hang out. You can chat to the managers and the team about the tickets. Nothing in this channel should be leaked at any time. Commands can be listed here: N/A.')
                 .setColor('#f6f7f8')
 
-              const TicketLogsChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-logs' && ch.type == 'text');
+              const TicketLogsChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-logs' && ch.type == 'GUILD_TEXT');
               const TicketLogsChannelMessage = new MessageEmbed()
                 .setTitle('Staff room')
                 .setDescription('In this channel, this is where all of the tickets in this server will be logged. Such as: Close, add, remove, creation etc.')
                 .setColor('#f6f7f8')
 
-              TranscriptChannel.send(TranscriptChannelMessage).then((msg) => msg.pin())
-              TicketChannel.send(TicketChannelMessage).then((msg) => msg.pin())
-              StaffroomChannel.send(StaffroomChannelMessage).then((msg) => msg.pin())
-              TicketLogsChannel.send(TicketLogsChannelMessage).then((msg) => msg.pin())
+              TranscriptChannel.send({ embeds: [TranscriptChannelMessage]}).then((msg) => msg.pin())
+              TicketChannel.send({ embeds: [TicketChannelMessage]}).then((msg) => msg.pin())
+              StaffroomChannel.send({ embeds: [StaffroomChannelMessage]}).then((msg) => msg.pin())
+              TicketLogsChannel.send({ embeds: [TicketLogsChannelMessage]}).then((msg) => msg.pin())
 
-              TicketDataMain.findOne({ ServerID: message.guild.id }, async (err2, data2) => {
+              TicketDataMain.findOne({ ServerID: message.guildId }, async (err2, data2) => {
                 if (err2) throw err2;
 
                 if (data2) {
@@ -360,8 +360,8 @@ module.exports = class SetupCommand extends BaseCommand {
                 } else {
 
                   console.log('test')
-                  const TicketChannelIdChannel = await message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'text');
-                  const TicketTrackerIdChannel = await message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'voice');
+                  const TicketChannelIdChannel = await message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
+                  const TicketTrackerIdChannel = await message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'GUILD_VOICE');
                   data2 = new TicketDataMain({
                     ServerID: message.guild.id,
                     OwnerID: message.guild.owner.id,

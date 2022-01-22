@@ -7,10 +7,7 @@ module.exports = class ReadyEvent extends BaseEvent {
   }
   async run (client) {
     const activities = [
-			`${client.guilds.cache.size} servers!`,
-			`Shard #0`,
-			`${client.guilds.cache.reduce((a, b) => a + b.memberCount, 0)} users!`,
-			`Version 2.3`
+		`Testing Discord.js 13`
 		];
 
 		let i = 0;

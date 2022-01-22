@@ -7,6 +7,7 @@ module.exports = class AnnounceCommand extends BaseCommand {
   }
 
   async run(client, message, args) {
+
     let rChannel = message.guild.channels.cache.get(args[0]);
     if (!rChannel)
       return message.channel.send(
@@ -23,7 +24,7 @@ module.exports = class AnnounceCommand extends BaseCommand {
       .setDescription(`${MSG}`)
       .setFooter(`Announced by ${message.author.username}`)
       .setColor("RANDOM");
-    rChannel.send(_);
+    rChannel.send({ embeds: [_]});
     message.delete();
   }
 }

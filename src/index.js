@@ -1,44 +1,21 @@
-const { registerCommands, registerEvents } = require('./utils/registry');
+
+const { Client, Intents } = require('discord.js');
+const { registerCommands, registerEvents, registerSlashCommands } = require('./utils/registry');
 const config = require('../slappey.json');
-const { MessageEmbed } = require('discord.js');
-const DatabaseMongo = require('./mongo');
-const MainDatabase = require('./schemas/TicketData')
-const getprefix = require('../src/utils/getprefix')
-
-const Discord = require("discord.js");
-const DiscordSlash = require("discord.js-slash-command");
-
-const client = new Discord.Client();
-const slash = new DiscordSlash.Slash(client);
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_WEBHOOKS, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGE_TYPING, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, Intents.FLAGS.DIRECT_MESSAGE_TYPING, Intents.FLAGS.GUILD_SCHEDULED_EVENTS ] });
+const DataBaseMongo = require('./mongo');
+const { Handler } = require('discord-slash-command-handler');
 
 
 (async () => {
   client.commands = new Map();
   client.events = new Map();
+  client.prefix = config.prefix;
   await registerCommands(client, '../commands');
   await registerEvents(client, '../events');
   await client.login(config.token);
-  DatabaseMongo.init()
+  DataBaseMongo.init();
 })();
-
-
-client.on("ready",  guild => {
-
-})
-
-
-
-
-
-
-//client.on('guildDelete', async (guild) => {
-// prefixSchema.findOne({ Guild: guild.id }, async (err, data) => {
-// if (err) throw err;
-// if (data) {
-//  prefixSchema.findOneAndDelete({ Guild: guild.id }).then(console.log('deleted data.'))
-// }
-// })
-// })
 
 
 client.on('guildCreate', guild => {
@@ -53,7 +30,6 @@ client.on('guildCreate', guild => {
 
   })
 
-
   const welcome = new MessageEmbed()
     .setTitle('Setup')
     .setDescription('Thank you for adding Ticket bot to your server. To setup the ticket system, please run `!setup` in any of your channels. The bot is on shard #0. Any issues with setting up the bot, please head to our support page: https://ticketbots.tk/discord or https://docs.ticketbots.tk')
@@ -61,8 +37,9 @@ client.on('guildCreate', guild => {
     .setColor('#f6f7f8')
 
 
-  defaultChannel.send(welcome)
+  defaultChannel.send({ embeds: [welcome] })
 })
+
 
 client.on('guildDelete', guild => {
   MainDatabase.findOneAndDelete({ ServerID: guild.id }, async (err01, data01) => {
@@ -73,5 +50,6 @@ client.on('guildDelete', guild => {
     }
   })
 })
+
 
 

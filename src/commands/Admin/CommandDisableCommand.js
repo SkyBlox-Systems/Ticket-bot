@@ -24,11 +24,11 @@ module.exports = class CommandDisableCommand extends BaseCommand {
             .setColor('#f6f7f8')
 
 
-        if (!message.member.hasPermission('ADMINISTRATOR')) return message.channel.send(AdminPerms)
+        if (!message.member.permissions.has('ADMINISTRATOR')) return message.channel.send({ embeds: [AdminPerms]})
         const cmd = args[0];
-        if (!cmd) return message.channel.send(specifyCommand)
-        if (!!client.commands.get(cmd) === false) return message.channel.send(NotExist);
-        CommandsSchema.findOne({ Guild: message.guild.id }, async (err, data) => {
+        if (!cmd) return message.channel.send({ embeds: [specifyCommand]})
+        if (!!client.commands.get(cmd) === false) return message.channel.send({ embeds: [NotExist]});
+        CommandsSchema.findOne({ Guild: message.guildId }, async (err, data) => {
             if (err) throw err;
             if (data) {
                 const AlreadyDisabled = new MessageEmbed()
@@ -36,7 +36,7 @@ module.exports = class CommandDisableCommand extends BaseCommand {
                     .setDescription(`The command **${client.prefix}${cmd}** has already been disabled`)
                     .setColor('#f6f7f8')
 
-                if (data.Cmds.includes(cmd)) return message.channel.send(AlreadyDisabled);
+                if (data.Cmds.includes(cmd)) return message.channel.send({ embeds: [AlreadyDisabled]});
                 data.Cmds.push(cmd)
             } else {
                 data = new CommandsSchema({
@@ -50,7 +50,7 @@ module.exports = class CommandDisableCommand extends BaseCommand {
                 .setDescription(`Command ${cmd} has been disabled`)
                 .setColor('#f6f7f8')
 
-            message.channel.send(Disabled)
+            message.channel.send({ embeds: [Disabled]});
         })
     }
 }

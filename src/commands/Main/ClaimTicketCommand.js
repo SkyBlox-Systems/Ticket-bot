@@ -13,7 +13,7 @@ module.exports = class ClaimTicketCommand extends BaseCommand {
 
   async run(client, message, args) {
 
-    MainDatabase.findOne({ ServerID: message.guild.id }, async (err01, data01) => {
+    MainDatabase.findOne({ ServerID: message.guildId }, async (err01, data01) => {
       if (err01) throw err01;
       if (data01) {
         if (!message.member.roles.cache.some(r => r.name === "ticket support")) {
@@ -21,7 +21,7 @@ module.exports = class ClaimTicketCommand extends BaseCommand {
             .setTitle('Error')
             .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
     
-          return message.channel.send(NoPerms)
+          return message.channel.send({ embeds: [NoPerms]})
         }
         const reasons = args.slice(0).join(" ")
     
@@ -42,15 +42,15 @@ module.exports = class ClaimTicketCommand extends BaseCommand {
                   .addField('Server ID', `${data2.ServerID}`, true)
                   .addField('Channel ID', `${data2.ChannelID}`, true)
                   .addField('Reason', `${data2.Reason}`, true)
-                message.channel.send(MainEmbed)
+                message.channel.send({ embeds: [MainEmbed]})
                   .then(m => {
                     m.react('✅');
                     m.react('❌');
     
                     const filter25 = (reaction, user) => reaction.emoji.name === '✅' && user.id === message.author.id;
                     const filter26 = (reaction, user) => reaction.emoji.name === '❌' && user.id === message.author.id;
-                    const collector25 = m.createReactionCollector(filter25, { max: 1, time: 30000 }); // 5 min
-                    const collector26 = m.createReactionCollector(filter26, { max: 1, time: 30000 }); // 5 min
+                    const collector25 = m.createReactionCollector({ filter: filter25,  max: 1, time: 30000 }); // 5 min
+                    const collector26 = m.createReactionCollector({ filter: filter26,  max: 1, time: 30000 }); // 5 min
     
                     collector25.on('collect', () => {
                       m.delete()
@@ -70,13 +70,13 @@ module.exports = class ClaimTicketCommand extends BaseCommand {
                     //    return message.channel.send(AlreadyClaimed)
                     //  }
         
-                    message.channel.send(TicketClaimed)
+                    message.channel.send({ embeds: [TicketClaimed]})
                     message.guild.channels.cache.get(data2.ChannelID).send(`<@${data2.id}>`)
-                    message.guild.channels.cache.get(data2.ChannelID).send(TicketClaimedDM)
+                    message.guild.channels.cache.get(data2.ChannelID).send({ embeds: [TicketClaimedDM]})
         
                     const MainChan = message.guild.channels.cache.get(data2.ChannelID)
         
-                    MainChan.updateOverwrite(message.author.id, {
+                    MainChan.permissionOverwrites.create(message.author.id, {
                       SEND_MESSAGES: true,
                       VIEW_CHANNEL: true,
                       ATTACH_FILES: true,
@@ -111,7 +111,7 @@ module.exports = class ClaimTicketCommand extends BaseCommand {
           .setTitle('Not updated')
           .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
 
-        message.channel.send(NoData)
+        message.channel.send({ embeds: [NoData]})
       }
     })
   }

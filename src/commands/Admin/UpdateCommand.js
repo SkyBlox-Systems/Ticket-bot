@@ -13,41 +13,41 @@ module.exports = class UpdateCommand extends BaseCommand {
       .setTitle('Error')
       .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
 
-    if (message.author.id != message.guild.owner.id)
-      return message.channel.send(ServerOwner);
+    if (message.author.id != message.guild.ownerId)
+      return message.channel.send({ embeds: [ServerOwner] });
 
     const MainMessage = new MessageEmbed()
       .setTitle('Update')
       .setDescription('What would you like to update babe? \nUpdate database? 1️⃣ \nUpdate from v2.0+ to the latest version? 2️⃣ \nFix Transcript and Data? 3️⃣ \n Update from v2.2 to v2.3? 4️⃣')
 
-    message.channel.send(MainMessage)
+    message.channel.send({ embeds: [MainMessage] })
       .then(m => {
         m.react('1️⃣')
         m.react('2️⃣')
         m.react('3️⃣')
         m.react('4️⃣')
         const Filter1 = (reaction, user) => reaction.emoji.name === '1️⃣' && user.id === message.author.id;
-        const Collector1 = m.createReactionCollector(Filter1, { max: 1, time: 2 * 60 * 1000 });
+        const Collector1 = m.createReactionCollector({ filter: Filter1,  max: 1, time: 2 * 60 * 1000 });
         const Filter2 = (reaction, user) => reaction.emoji.name === '2️⃣' && user.id === message.author.id;
-        const Collector2 = m.createReactionCollector(Filter2, { max: 1, time: 2 * 60 * 1000 });
+        const Collector2 = m.createReactionCollector({ filter: Filter2,  max: 1, time: 2 * 60 * 1000 });
         const Filter3 = (reaction, user) => reaction.emoji.name === '3️⃣' && user.id === message.author.id;
-        const Collector3 = m.createReactionCollector(Filter3, { max: 1, time: 2 * 60 * 1000 });
+        const Collector3 = m.createReactionCollector({filter: Filter3,  max: 1, time: 2 * 60 * 1000 });
         const Filter6 = (reaction, user) => reaction.emoji.name === '4️⃣' && user.id === message.author.id;
-        const Collector6 = m.createReactionCollector(Filter6, { max: 1, time: 2 * 60 * 1000 });
+        const Collector6 = m.createReactionCollector({ filter: Filter6,  max: 1, time: 2 * 60 * 1000 });
 
         Collector2.on('collect', () => {
           const Filter2Sure = new MessageEmbed()
             .setTitle('Update')
             .setDescription('Are you sure that you want to update to v2.3? **there might be an error while updating**')
-          message.channel.send(Filter2Sure)
+          message.channel.send({ embeds: [Filter2Sure] })
             .then(m1 => {
               m1.react('✅')
               m1.react('❌')
 
               const Filter4 = (reaction, user) => reaction.emoji.name === '✅' && user.id === message.author.id;
-              const Collector4 = m1.createReactionCollector(Filter4, { max: 1, time: 2 * 60 * 1000 });
+              const Collector4 = m1.createReactionCollector({ filter: Filter4,  max: 1, time: 2 * 60 * 1000 });
               const Filter5 = (reaction, user) => reaction.emoji.name === '❌' && user.id === message.author.id;
-              const Collector5 = m1.createReactionCollector(Filter5, { max: 1, time: 2 * 60 * 1000 });
+              const Collector5 = m1.createReactionCollector({ filter: Filter5,  max: 1, time: 2 * 60 * 1000 });
 
               Collector4.on('collect', () => {
                 message.channel.send('Updating starting!')
@@ -61,7 +61,7 @@ module.exports = class UpdateCommand extends BaseCommand {
 
                     const Supportcat = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "category")
 
-                    message.guild.channels.create('Tickets: 0', { type: 'voice', parent: Supportcat }).then(async (chan) => {
+                    message.guild.channels.create('Tickets: 0', { type: 'GUILD_VOICE', parent: Supportcat }).then(async (chan) => {
                       chan.updateOverwrite(message.guild.roles.everyone, {
                         VIEW_CHANNEL: true
                       })
@@ -71,7 +71,7 @@ module.exports = class UpdateCommand extends BaseCommand {
                     })
 
                     setTimeout(() => {
-                      const TicketChannelMainID = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket" && ch.type == "text")
+                      const TicketChannelMainID = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket" && ch.type == "GUILD_TEXT")
                       const TicketSupportID = message.guild.roles.cache.find(roles => roles.name === 'ticket support')
                       const TicketManagerID =  message.guild.roles.cache.find(roles => roles.name === 'ticket manager')
                       data = new MainDatabase({
@@ -100,7 +100,8 @@ module.exports = class UpdateCommand extends BaseCommand {
                 })
               })
             })
-        })
+          })
+        
 
         Collector6.on('collect', () => {
          const UpdateToNewVersion = new MessageEmbed()
@@ -108,15 +109,15 @@ module.exports = class UpdateCommand extends BaseCommand {
           .setDescription('You are about to update your bot current version from 2.2 to 2.3. List below is the changes. React with a ✅ to apply the new changes or react with a ❌ to not apply changes.')
           .addField('Changes for v2.3', `https://docs.ticketbots.tk/change-log \n **NO DATA WILL BE LOST DURRING UPGRADE!**`)
 
-          message.channel.send(UpdateToNewVersion)
+          message.channel.send({ embeds: [UpdateToNewVersion] })
           .then(m2 => {
             m2.react('✅')
             m2.react('❌')
 
             const Filter7 = (reaction, user) => reaction.emoji.name === '✅' && user.id === message.author.id;
-            const Collector7 = m2.createReactionCollector(Filter7, { max: 1, time: 2 * 60 * 1000 });
+            const Collector7 = m2.createReactionCollector({ filter: Filter7,  max: 1, time: 2 * 60 * 1000 });
             const Filter8 = (reaction, user) => reaction.emoji.name === '❌' && user.id === message.author.id;
-            const Collector8 = m2.createReactionCollector(Filter8, { max: 1, time: 2 * 60 * 1000 });
+            const Collector8 = m2.createReactionCollector({ filter: Filter8,  max: 1, time: 2 * 60 * 1000 });
 
             Collector7.on('collect', async () => {
               message.channel.send('Updating starting!')

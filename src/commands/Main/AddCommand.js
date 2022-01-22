@@ -9,7 +9,7 @@ module.exports = class AddCommand extends BaseCommand {
 
   async run(client, message, args) {
 
-    MainDatabase.findOne({ ServerID: message.guild.id }, async (err01, data01) => {
+    MainDatabase.findOne({ ServerID: message.guildId }, async (err01, data01) => {
       if (err01) throw err01;
       if (data01) {
         const perms = new MessageEmbed()
@@ -38,12 +38,12 @@ module.exports = class AddCommand extends BaseCommand {
 
     if (!message.channel.name.startsWith("ticket-")) return message.channel.send("This is not a valid ticket")
     if (!message.member.permissions.has("MANAGE_MESSAGES"))
-      return message.channel.send(perms);
+      return message.channel.send({ embeds: [perms]});
     let user =
       message.mentions.members.first() ||
       message.guild.members.cache.get(args[0]);
     if (!user)
-      return message.channel.send(invaild);
+      return message.channel.send({ embeds: [invaild]});
     user.user
       .send(Added)
     message.channel.updateOverwrite(user, {
@@ -52,7 +52,7 @@ module.exports = class AddCommand extends BaseCommand {
       ATTATCH_FILES: true,
       MANAGE_CHANNELS: false,
     })
-    const Logs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
+    const Logs = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
     .then(() => Logs.send(`Added ${user.user.tag} to the following ticket <@${message.channel.id}>`))
       .then(() => message.channel.send(`Added ${user.user.tag} to this ticket!`));
       } else {
@@ -60,7 +60,7 @@ module.exports = class AddCommand extends BaseCommand {
           .setTitle('Not updated')
           .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
 
-        message.channel.send(NoData)
+        message.channel.send({ embeds: [NoData]})
       }
     })
     

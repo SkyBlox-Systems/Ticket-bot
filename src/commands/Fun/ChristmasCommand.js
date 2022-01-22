@@ -1,5 +1,4 @@
 const BaseCommand = require('../../utils/structures/BaseCommand');
-const Commando = require('discord.js-commando');
 const axios = require('axios');
 const { MessageEmbed } = require('discord.js');
 
@@ -18,7 +17,7 @@ module.exports = class ChristmasCommand extends BaseCommand {
       .setColor('#f5f5f5')
       .setTimestamp()
       .setDescription(`${res.data["Days to Christmas"]}  ${res.data["Days"]} ${res.data["Until"]} 🎅🏾`)
-    message.channel.send(ChristamsCountdown)
+    message.channel.send({ embeds: [ChristamsCountdown]})
     })
     .catch((err) => {
       console.error('ERR:', err)

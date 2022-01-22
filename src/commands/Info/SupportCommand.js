@@ -12,6 +12,6 @@ module.exports = class SupportCommand extends BaseCommand {
    .setDescription('If you need help, please join our discord server: https://www.ticketbots.tk/discord or check our docs: https://docs.ticketbots.tk')
    .setColor('BLUE')
 
-    message.channel.send(main);
+    message.channel.send({ embeds: [main]});
   }
 }

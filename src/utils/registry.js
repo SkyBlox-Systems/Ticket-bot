@@ -3,6 +3,10 @@ const path = require('path');
 const fs = require('fs').promises;
 const BaseCommand = require('./structures/BaseCommand');
 const BaseEvent = require('./structures/BaseEvent');
+const { glob } = require("glob");
+const { promisify } = require("util");
+const globPromise = promisify(glob);
+
 
 async function registerCommands(client, dir = '') {
   const filePath = path.join(__dirname, dir);
@@ -40,7 +44,10 @@ async function registerEvents(client, dir = '') {
   }
 }
 
-module.exports = { 
-  registerCommands, 
+
+
+
+module.exports = {
+  registerCommands,
   registerEvents,
 };

@@ -13,14 +13,14 @@ module.exports = class RestartCommand extends BaseCommand {
         .setTimestamp()
         .setTitle('Help')
         .setDescription('You cannot use the following the command: `!restart`. The command is only available for the owner.')
-      return message.channel.send(NotOwner)
+      return message.channel.send({ embeds: [NotOwner]})
     }
     const send = new MessageEmbed()
       .setColor('RANDOM')
       .setTitle('Restart')
       .setDescription('We are restarting the bot. Please wait while we get everything working.')
       .setTimestamp()
-    await message.channel.send(send)
+    await message.channel.send({ embeds: [send]})
     process.exit();
   }
 }

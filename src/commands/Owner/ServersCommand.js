@@ -17,7 +17,7 @@ module.exports = class ServersCommand extends BaseCommand {
   }
   client.guilds.cache.forEach(guild => {
 
-    message.channel.send(`${guild.name} | ${guild.id}`)
+    message.channel.send(`${guild.name} | ${guildId}`)
   })
   }
 }

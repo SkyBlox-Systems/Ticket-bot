@@ -1,5 +1,4 @@
 const BaseCommand = require('../../utils/structures/BaseCommand');
-const Commando = require('discord.js-commando');
 const axios = require('axios');
 const { MessageEmbed, Channel } = require('discord.js');
 
@@ -18,7 +17,7 @@ module.exports = class StatusCommand extends BaseCommand {
           .addField(`Virtual Machine`, `Name: ${res.data.UptimeMonitorName} \nReboot: ${res.data.RebootRequired} \nUptime: ${res.data.SystemUptime}`)
           .addField(`Current time`, `CPU: ${res.data.Stats[0].CPU}% \nCPU IOWait: ${res.data.Stats[0].IOWait}%  \nRam: ${res.data.Stats[0].RAM}% used \nRam Swap: ${res.data.Stats[0].Swap}% \nNetwork In: ${res.data.Stats[0].NetIn} kbps \nNetwork Out: ${res.data.Stats[0].NetOut} kbps  \nDisk: ${res.data.Stats[0].Disk}% \nMinute: ${res.data.Stats[0].Minute}`)
 
-        message.channel.send(API)
+        message.channel.send({ embeds: [API]})
 
       })
       .catch((err) => {

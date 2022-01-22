@@ -10,7 +10,7 @@ module.exports = class RemoveCommand extends BaseCommand {
 
   async run(client, message, args) {
 
-    MainDatabase.findOne({ ServerID: message.guild.id }, async (err01, data01) => {
+    MainDatabase.findOne({ ServerID: message.guildId }, async (err01, data01) => {
       if (err01) throw err01;
       if (data01) {
         const perms = new MessageEmbed()
@@ -45,14 +45,14 @@ module.exports = class RemoveCommand extends BaseCommand {
 
         if (!message.channel.name.startsWith("ticket-" || "staff-")) return message.channel.send("This is not a valid ticket")
         if (!message.member.permissions.has("MANAGE_MESSAGES"))
-          return message.channel.send(perms);
+          return message.channel.send({ embeds: [perms]});
         let user =
           message.mentions.members.first() ||
           message.guild.members.cache.get(args[0]);
         if (!user)
           return message.channel.send(invaild);
         user.user
-        if (user.permissions.has("MANAGE_MESSAGES")) return message.channel.send(AdminPerms)
+        if (user.permissions.has("MANAGE_MESSAGES")) return message.channel.send({ embeds: [AdminPerms]})
           .send(Added)
         message.channel.updateOverwrite(user, {
           SEND_MESSAGES: false,
@@ -67,7 +67,7 @@ module.exports = class RemoveCommand extends BaseCommand {
           .setTitle('Not updated')
           .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
 
-        message.channel.send(NoData)
+        message.channel.send({ embeds: [NoData]})
       }
     })
   }

@@ -1,11 +1,8 @@
 const BaseCommand = require('../../utils/structures/BaseCommand');
 const { MessageEmbed, Guild, MessageCollector, Collector } = require('discord.js');
-const { MessageButton } = require('discord-buttons');
 const ClaimTicket = require('../../schemas/ticketclaim')
 const MainDatabase = require('../../schemas/TicketData')
 const discord = require('discord.js'); //Define the discord.js module
-const client = new discord.Client(); //Creating discord.js client (constructor)
-require('discord-buttons')(client)
 const moment = require('moment');
 require('moment-duration-format')
 const axios = require('axios');
@@ -25,17 +22,25 @@ module.exports = class TestCommand extends BaseCommand {
   }
 
   async run(client, message, args) {
-    const Xmas95 = new Date('December 25, 2021 00:00:00');
 
-     if (Xmas95.getDate() == dd) {
-      message.channel.send('christmas')
+    while (true) {
+      var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 
-    } else {
-      message.channel.send('Na')
-    }
-    
+      console.log(currentDateAndTime)
+  }
 
-   
+
+    // const Xmas95 = new Date('December 25, 2021 00:00:00');
+
+    //  if (Xmas95.getDate() == dd) {
+    //   message.channel.send('christmas')
+
+    // } else {
+    //   message.channel.send('Na')
+    // }
+
+
+
     // const MSG = args.slice(0).join(" ");
 
     // const InvaildCode2 = new MessageEmbed()
