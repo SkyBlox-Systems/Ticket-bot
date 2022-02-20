@@ -149,13 +149,13 @@ module.exports = class TicketCommand extends BaseCommand {
                                 .catch(err => console.log(err))
                               const TicketClainCommandSend = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
                               const TicketSupportID = message.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
-                              TicketClainCommandSend.send(`${TicketSupportID} \n<@${message.author.id}> ${data01.ClaimTicketMessage} Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket!`)
+                              TicketClainCommandSend.send(`${TicketSupportID} \n<@${message.author.id}> ${data01.ClaimTicketMessage} Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket! \n With slash commands, please run /claim ${generator}`)
                             } else {
                               const DatabaseTicketMessage = new MessageEmbed()
                     .setTitle('Ticket error')
                     .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
-                    .addField('Ticket ID', `${data02.TicketIDs}`, true)
-                    .addField('reason', `${data02.Reason}.`, true);
+                    .addField('Ticket ID', `${data01.TicketIDs}`, true)
+                    .addField('reason', `${data01.Reason}.`, true);
 
                   message.channel.send({ embeds: [DatabaseTicketMessage]}).then(m2 => {
                     m2.react('✅')
@@ -165,7 +165,7 @@ module.exports = class TicketCommand extends BaseCommand {
 
                     collector25.on('collect', () => {
                       m2.delete()
-                      ClaimTicket.findOneAndDelete({ id: data.id }, { ServerID: data02.ServerID }, async (err3, data3) => {
+                      ClaimTicket.findOneAndDelete({ id: data.id }, { ServerID: data01.ServerID }, async (err3, data3) => {
                         if (err3) throw err;
                         console.log(data3)
                         const deletedd = new MessageEmbed()

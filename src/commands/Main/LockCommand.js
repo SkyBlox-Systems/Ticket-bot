@@ -11,8 +11,7 @@ const CloseSchema = require('../../schemas/TicketLogs-schema');
 const mongo = require('../../mongo');
 const ClaimTicket = require('../../schemas/ticketclaim')
 const MainDatabase = require('../../schemas/TicketData');
-const { mainModule } = require('process');
-const { channel } = require('diagnostics_channel');
+
 
 module.exports = class LockCommand extends BaseCommand {
   constructor() {
