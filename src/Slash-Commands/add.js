@@ -41,8 +41,8 @@ module.exports.data = new SlashCommandBuilder()
             .setTitle('Added')
             .setDescription(`<@${interaction.author.id}> have added you to the following ticket <#${interaction.channel.id}>`)
       
-          if (!message.channel.name.startsWith("ticket-")) return interaction.reply("This is not a valid ticket")
-          if (!message.member.permissions.has("MANAGE_MESSAGES"))
+          if (!interaction.channel.name.startsWith("ticket-")) return interaction.reply("This is not a valid ticket")
+          if (!interaction.member.permissions.has("MANAGE_MESSAGES"))
             return interaction.reply({ embeds: [perms]});
           let user =
             interaction.mentions.members.first() ||
