@@ -18,6 +18,12 @@ module.exports.data = new SlashCommandBuilder()
 
 
     module.exports.run = (client, interaction) => {
+      if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {
+        const NoPerms = new MessageEmbed()
+            .setTitle('Error')
+            .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
+            return interaction.reply({ embeds: [NoPerms] })
+      }
 
         MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
             if (err01) throw err01;

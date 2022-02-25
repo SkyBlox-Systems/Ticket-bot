@@ -10,6 +10,12 @@ module.exports.data = new SlashCommandBuilder()
             .setRequired(true));
 
 module.exports.run = (client, interaction) => {
+    if (!interaction.member.permissions.has("ADMINISTRATOR")) {
+        const NoPerms = new MessageEmbed()
+            .setTitle('Error')
+            .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
+            return interaction.reply({ embeds: [NoPerms] })
+      }
     const amount = interaction.options.getString('amount')
 
 
