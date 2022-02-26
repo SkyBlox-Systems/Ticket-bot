@@ -19,7 +19,7 @@ module.exports = class BlacklistCommand extends BaseCommand {
               .setTimestamp()
               .setTitle('Help')
               .setDescription('You cannot use the following the command: `!blacklist`. The command is only available for the owner.')
-            return message.channel.send(NotOwner)
+            return message.channel.send({ embeds: [NotOwner]})
           }
 
         const MSG = args.slice(1).join(" ")
@@ -40,7 +40,7 @@ module.exports = class BlacklistCommand extends BaseCommand {
                 .setColor('#f6f7f8')
 
 
-                message.channel.send(Already)
+                message.channel.send({ embeds: [Already]})
             } else {
                 data = new blacklist({ 
                     UserID: User.user.id,
@@ -59,7 +59,7 @@ module.exports = class BlacklistCommand extends BaseCommand {
                 .addField('Admin', `${message.author.tag}`)
                 .setColor('#f6f7f8')
 
-            message.channel.send(Added)
+            message.channel.send({ embeds: [Added]})
             }
            
         })

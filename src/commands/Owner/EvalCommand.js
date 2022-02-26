@@ -39,7 +39,7 @@ module.exports = class EvalCommand extends BaseCommand {
             .setTitle('An Error has occured')
         	.setDescription(e.toString());
         console.error(e)
-        return await msg.edit(embed);
+        return await msg.edit({ embeds: [embed]});
 
     }
   }

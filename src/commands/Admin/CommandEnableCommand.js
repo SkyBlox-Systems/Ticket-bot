@@ -23,11 +23,11 @@ module.exports = class CommandEnableCommand extends BaseCommand {
       .setColor('#f6f7f8')
 
 
-    if (!message.member.hasPermission('ADMINISTRATOR')) return message.channel.send(AdminPerms)
+    if (!message.member.permissions.has('ADMINISTRATOR')) return message.channel.send({ embeds: [AdminPerms]})
     const cmd = args[0];
-    if (!cmd) return message.channel.send(specifyCommand)
-    if (!!client.commands.get(cmd) === false) return message.channel.send(NotExist);
-    CommandsSchema.findOne({ Guild: message.guild.id }, async (err, data) => {
+    if (!cmd) return message.channel.send({ embeds: [specifyCommand]})
+    if (!!client.commands.get(cmd) === false) return message.channel.send({ embeds: [NotExist]});
+    CommandsSchema.findOne({ Guild: message.guildId }, async (err, data) => {
       if (err) throw err;
       if (data) {
         if (data.Cmds.includes(cmd)) {
@@ -48,8 +48,8 @@ module.exports = class CommandEnableCommand extends BaseCommand {
           .setDescription(`The command **${client.prefix}${cmd}** isnt turned off`)
           .setColor('#f6f7f8')
 
-          message.channel.send(EnabledCMD)
-        } else return message.channel.send(IsnTurnOff)
+          message.channel.send({ embeds: [EnabledCMD]})
+        } else return message.channel.send({ embeds: [IsnTurnOff]})
       }
     })
   }

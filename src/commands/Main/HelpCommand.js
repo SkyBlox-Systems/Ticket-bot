@@ -1,5 +1,5 @@
 const BaseCommand = require('../../utils/structures/BaseCommand');
-const pagination = require('discord.js-pagination');
+const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
 
 module.exports = class HelpCommand extends BaseCommand {
@@ -78,6 +78,16 @@ module.exports = class HelpCommand extends BaseCommand {
       .setColor('#58b9ff')
       .setTimestamp()
 
+      const button1 = new Discord.MessageButton()
+      .setCustomId("previousbtn")
+      .setLabel("Previous")
+      .setStyle("DANGER");
+
+const button2 = new Discord.MessageButton()
+      .setCustomId("nextbtn")
+      .setLabel("Next")
+      .setStyle("SUCCESS");
+
     const pages = [
       Info,
       support,
@@ -87,11 +97,13 @@ module.exports = class HelpCommand extends BaseCommand {
       Owner
     ]
 
-    const emojiList = ["⏪", "⏩"];
+    const buttonList = [button1, button2];
+
+
 
     const timeout = '120000';
 
-    pagination(message, pages, emojiList, timeout)
+    pagination(message, pages, buttonList, timeout)
 
   }
 }

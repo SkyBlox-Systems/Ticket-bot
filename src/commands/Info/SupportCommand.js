@@ -9,9 +9,9 @@ module.exports = class SupportCommand extends BaseCommand {
  async run(client, message, args) {
    const main = new MessageEmbed()
    .setTitle('Support')
-   .setDescription('If you need help, please join our discord server: https://www.ticketbots.tk/discord or check our docs: https://docs.ticketbots.tk')
+   .setDescription('If you need help, please join our discord server: https://www.ticketbot.tk/discord or check our docs: https://docs.ticketbot.tk')
    .setColor('BLUE')
 
-    message.channel.send(main);
+    message.channel.send({ embeds: [main]});
   }
 }

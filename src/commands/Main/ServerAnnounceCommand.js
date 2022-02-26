@@ -12,7 +12,7 @@ module.exports = class ServerAnnounceCommand extends BaseCommand {
 
   async run(client, message, args) {
 
-    MainDatabase.findOne({ ServerID: message.guild.id }, async (err01, data01) => {
+    MainDatabase.findOne({ ServerID: message.guildId }, async (err01, data01) => {
       if (err01) throw err01;
       if (data01) {
 
@@ -22,8 +22,8 @@ module.exports = class ServerAnnounceCommand extends BaseCommand {
       .setColor('#f9f9fa')
 
 
-    if (message.author.id != message.guild.owner.id)
-      return message.channel.send(ServerOwner);
+    if (message.author.id != message.guild.ownerId)
+      return message.channel.send({ embeds: [ServerOwner]});
 
 
     let MSG = message.content
@@ -62,22 +62,22 @@ module.exports = class ServerAnnounceCommand extends BaseCommand {
       .setTimestamp()
       .setTitle('Cancelled')
 
-    message.channel.send(Ready)
+    message.channel.send({ embeds: [Ready]})
       .then(m => {
         m.react('✅')
         m.react('❌')
         const filter24 = (reaction, user) => reaction.emoji.name === '✅' && user.id === message.author.id;
-        const collector24 = m.createReactionCollector(filter24, { max: 1, time: 2 * 60 * 1000 });
+        const collector24 = m.createReactionCollector({ filter: filter24,  max: 1, time: 2 * 60 * 1000 });
         collector24.on('collect', () => {
-          m.edit(sent)
+          m.edit({ embeds: [sent]})
           message.guild.members.cache.forEach(member => {
-            member.send(Dms).catch(e => console.error(`Couldn't DM member ${member.user.tag}`));
+            member.send({ embeds: [Dms]}).catch(e => console.error(`Couldn't DM member ${member.user.tag}`));
           });
         })
         const filter25 = (reaction, user) => reaction.emoji.name === '❌' && user.id === message.author.id;
-        const collector25 = m.createReactionCollector(filter25, { max: 1, time: 2 * 60 * 1000 });
+        const collector25 = m.createReactionCollector({ filter: filter25,  max: 1, time: 2 * 60 * 1000 });
         collector25.on('collect', () => {
-          m.edit(cancelled)
+          m.edit({ embeds: [cancelled]})
           setTimeout(() => {
             m.delete()
           }, 5000);
@@ -89,7 +89,7 @@ module.exports = class ServerAnnounceCommand extends BaseCommand {
         .setTitle('Not updated')
         .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
 
-        message.channel.send(NoData)
+        message.channel.send({ embeds: [NoData]})
       }
     })
   
