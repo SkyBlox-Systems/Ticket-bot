@@ -18,14 +18,11 @@ module.exports = class UpdateCommand extends BaseCommand {
 
     const MainMessage = new MessageEmbed()
       .setTitle('Update')
-      .setDescription('What would you like to update babe? \nUpdate database? 1️⃣ \nUpdate from v2.0+ to the latest version? 2️⃣ \nFix Transcript and Data? 3️⃣ \n Update from v2.2 to v2.3? 4️⃣')
+      .setDescription('What would you like to update babe? \nUpdate database? 1️⃣')
 
     message.channel.send({ embeds: [MainMessage] })
       .then(m => {
         m.react('1️⃣')
-        m.react('2️⃣')
-        m.react('3️⃣')
-        m.react('4️⃣')
         const Filter1 = (reaction, user) => reaction.emoji.name === '1️⃣' && user.id === message.author.id;
         const Collector1 = m.createReactionCollector({ filter: Filter1,  max: 1, time: 2 * 60 * 1000 });
         const Filter2 = (reaction, user) => reaction.emoji.name === '2️⃣' && user.id === message.author.id;
@@ -35,72 +32,7 @@ module.exports = class UpdateCommand extends BaseCommand {
         const Filter6 = (reaction, user) => reaction.emoji.name === '4️⃣' && user.id === message.author.id;
         const Collector6 = m.createReactionCollector({ filter: Filter6,  max: 1, time: 2 * 60 * 1000 });
 
-        Collector2.on('collect', () => {
-          const Filter2Sure = new MessageEmbed()
-            .setTitle('Update')
-            .setDescription('Are you sure that you want to update to v2.3? **there might be an error while updating**')
-          message.channel.send({ embeds: [Filter2Sure] })
-            .then(m1 => {
-              m1.react('✅')
-              m1.react('❌')
 
-              const Filter4 = (reaction, user) => reaction.emoji.name === '✅' && user.id === message.author.id;
-              const Collector4 = m1.createReactionCollector({ filter: Filter4,  max: 1, time: 2 * 60 * 1000 });
-              const Filter5 = (reaction, user) => reaction.emoji.name === '❌' && user.id === message.author.id;
-              const Collector5 = m1.createReactionCollector({ filter: Filter5,  max: 1, time: 2 * 60 * 1000 });
-
-              Collector4.on('collect', () => {
-                message.channel.send('Updating starting!')
-                MainDatabase.findOne({ ServerID: message.author.id }, async (err, data) => {
-                  if (err) throw err;
-                  if (data) {
-                    if (data.BotVersion !== "2.3") {
-                      message.channel.send('Bot is already on v2.3')
-                    }
-                  } else {
-
-                    const Supportcat = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "category")
-
-                    message.guild.channels.create('Tickets: 0', { type: 'GUILD_VOICE', parent: Supportcat }).then(async (chan) => {
-                      chan.updateOverwrite(message.guild.roles.everyone, {
-                        VIEW_CHANNEL: true
-                      })
-                      chan.updateOverwrite(message.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-                        VIEW_CHANNEL: true
-                      })
-                    })
-
-                    setTimeout(() => {
-                      const TicketChannelMainID = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket" && ch.type == "GUILD_TEXT")
-                      const TicketSupportID = message.guild.roles.cache.find(roles => roles.name === 'ticket support')
-                      const TicketManagerID =  message.guild.roles.cache.find(roles => roles.name === 'ticket manager')
-                      data = new MainDatabase({
-                        ServerID: message.guild.id,
-                        TicketChannelID: TicketChannelMainID.id,
-                        TicketNumber: "0",
-                        TicketTrackerChannelID: "N/A",
-                        BotPrefix: client.prefix,
-                        SupportRoleID: TicketSupportID.id,
-                        ManagerRoleID: TicketManagerID.id,
-                        AdminRoleID: "N/A",
-                        BetaKey: "N/A",
-                        PaidGuild: "No",
-                        Transcript: "Yes",
-                        UseTicketReactions: "Yes",
-                        UseDashboard: "Yes",
-                        APIKey: "N/A",
-                        TicketMessage: "Thank you for contacting Support! Please wait for a customer support to claim your ticket.",
-                        BotVersion: "2.2"
-                      })
-                      data.save()
-                      message.channel.send('Updated completed!')
-                    }, 5000);
-
-                  }
-                })
-              })
-            })
-          })
         
 
         Collector6.on('collect', () => {

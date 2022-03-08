@@ -7,6 +7,7 @@ const DataBaseMongo = require('./mongo');
 require('./slash-register')();
 let commands = require('./slash-register').commands;
 console.log(commands);
+const { MessageEmbed } = require('discord.js');
 
 
 
@@ -55,11 +56,11 @@ client.on('guildCreate', guild => {
 
 
 client.on('guildDelete', guild => {
-  MainDatabase.findOneAndDelete({ ServerID: guild.id }, async (err01, data01) => {
+  MainDatabase.findOneAndDelete({ ServerID: guildId }, async (err01, data01) => {
     if (err01) throw err01;
     if (data01) {
       data01.save()
-      console.log(`Removed ${guild.id} from the database.`)
+      console.log(`Removed ${guildId} from the database.`)
     }
   })
 })

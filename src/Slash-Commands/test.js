@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 
 module.exports.data = new SlashCommandBuilder()
     .setName('test')
@@ -11,7 +12,9 @@ module.exports.data = new SlashCommandBuilder()
             .setRequired(true));
 
     module.exports.run = (client, interaction) => {
-        const test = interaction.options.getString('reason')
-        interaction.reply({content: `${test}`})
+        const test = new MessageEmbed()
+        .setTitle('test')
 
+       const message = interaction.channel.send({ embeds: [test], fetchReply: true})
+       message.react('✅');
     }

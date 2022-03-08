@@ -223,17 +223,13 @@ module.exports = class SetupCommand extends BaseCommand {
             message.channel.send({ embeds: [Error]})
           } else {
             message.guild.roles.create({
-              data: {
                 name: 'ticket manager',
                 color: 'BLUE',
-              },
             })
 
             message.guild.roles.create({
-              data: {
                 name: 'ticket support',
                 color: 'GREEN',
-              },
             })
 
 
@@ -363,10 +359,9 @@ module.exports = class SetupCommand extends BaseCommand {
                   const TicketChannelIdChannel = await message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
                   const TicketTrackerIdChannel = await message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'GUILD_VOICE');
                   data2 = new TicketDataMain({
-                    ServerID: message.guild.id,
-                    OwnerID: message.guild.owner.id,
+                    ServerID: message.guildId,
+                    OwnerID: message.guild.ownerId,
                     TicketChannelID: 'N/A',
-                    GuildID: message.guild.id,
                     TicketNumber: "0",
                     TicketTrackerChannelID: "N/A",
                     BotPrefix: client.prefix,
@@ -385,7 +380,7 @@ module.exports = class SetupCommand extends BaseCommand {
                     DisabledCommands: "N/A",
                     TranscriptMessage: "Transcript for",
                     EnableTicket: 'Enabled',
-                    BotVersion: "2.3"
+                    BotVersion: "3.0"
                   })
                   data2.save()
 

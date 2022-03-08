@@ -23,8 +23,8 @@ module.exports.data = new SlashCommandBuilder()
         database.findOne({ ServerID: interaction.guildId}, async (err, data) => {
             if (err) throw err;
             if (data) {
-                if(data.BotVersion === '2.3') {
-                    database.findOneAndUpdate({ ServerID: interaction.guildId}, { BotVersion: '3.0' }, async (err2, data2) => {
+                if(data.BotVersion !== '3.1') {
+                    database.findOneAndUpdate({ ServerID: interaction.guildId}, { BotVersion: '3.1' }, async (err2, data2) => {
                         if (err2) throw err;
                         if (data2) {
                             data2.save()
@@ -35,7 +35,7 @@ module.exports.data = new SlashCommandBuilder()
                         }
                     })
                 } else {
-                    if(data.BotVersion === '3.0') {
+                    if(data.BotVersion === '3.1') {
                         const alreadyupdated = new MessageEmbed()
                         .setTitle('Bot in this guild is already on the updated version. ')
 

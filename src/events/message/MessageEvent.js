@@ -41,10 +41,10 @@ module.exports = class MessageEvent extends BaseEvent {
             if (command.name === 'setup') {
               command.run(client, message, cmdArgs)
             } else {
-              if (versionCheck.BotVersion === '2.2') {
+              if (versionCheck.BotVersion !== '3.1') {
                 const UpdateBot = new MessageEmbed()
                 .setTitle('Update bot')
-                .setDescription(`You are currently running v2.2 of the bot. Please update it to v2.3. Run the command ${client.prefix}update to update the bot.`)
+                .setDescription(`You are currently running v${versionCheck.BotVersion} of the bot. Please update it to v3.1. Run the command /upgrade to update the bot.`)
                 await message.channel.send({ embeds: [UpdateBot]})
       
       
