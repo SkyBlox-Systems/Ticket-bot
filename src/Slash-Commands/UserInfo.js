@@ -6,7 +6,7 @@ module.exports.data = new SlashCommandBuilder()
     .setDescription('User Info Command')
 
     module.exports.run = (client, interaction) => {
-        let user = interaction.mentions.members.first() || interaction.guild.members.cache.get(args[0]) || interaction.member;
+        let user =  interaction.member
 
     let status;
     switch (user.presence.status) {

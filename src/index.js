@@ -21,6 +21,7 @@ const { MessageEmbed } = require('discord.js');
   await registerEvents(client, '../events');
   await client.login(config.token);
   DataBaseMongo.init();
+  require('./dashboard/server')
 })();
 
 
