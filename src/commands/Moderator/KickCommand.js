@@ -31,12 +31,11 @@ module.exports = class KickCommand extends BaseCommand {
     const kickembed = new Discord.MessageEmbed()
       .setTitle('Member Kicked')
       .setThumbnail(member.user.displayAvatarURL())
-      .addField('User Kicked', member)
-      .addField('Kicked by', message.author)
-      .addField('Reason', reason)
-      .setFooter('Time kicked', client.user.displayAvatarURL())
+      .addField('User Kicked', `${member}`)
+      .addField('Kicked by', `${message.author}`)
+      .addField('Reason', `${reason}`)
       .setTimestamp()
 
-    message.channel.send(kickembed);
+    message.channel.send({ embeds: [kickembed]});
   }
 }
