@@ -8,6 +8,8 @@ require('./slash-register')();
 let commands = require('./slash-register').commands;
 console.log(commands);
 const { MessageEmbed } = require('discord.js');
+const { Permissions } = require('discord.js');
+
 
 
 
@@ -34,16 +36,8 @@ client.on('ready', () => {
 
 
 client.on('guildCreate', guild => {
-  let defaultChannel = "";
-  guild.channels.cache.forEach((channel) => {
-    if (channel.type == "text" && defaultChannel == "") {
-      if (channel.permissionsFor(guild.me).has("SEND_MESSAGES")) {
-        defaultChannel = channel;
+  const defaultChannel = guild.channels.cache.find(channel => channel.type === 'GUILD_TEXT' && channel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES))
 
-      }
-    }
-
-  })
 
   const welcome = new MessageEmbed()
     .setTitle('Setup')
@@ -53,15 +47,17 @@ client.on('guildCreate', guild => {
 
 
   defaultChannel.send({ embeds: [welcome] })
+  
 })
+
+const MainDatabase = require('./schemas/TicketData')
 
 
 client.on('guildDelete', guild => {
-  MainDatabase.findOneAndDelete({ ServerID: guildId }, async (err01, data01) => {
+  MainDatabase.findOneAndDelete({ ServerID: guild.id }, async (err01, data01) => {
     if (err01) throw err01;
     if (data01) {
-      data01.save()
-      console.log(`Removed ${guildId} from the database.`)
+      console.log(`Removed ${guild.id} from the database.`)
     }
   })
 })

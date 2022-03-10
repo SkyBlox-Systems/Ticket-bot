@@ -4,6 +4,7 @@ const { MessageEmbed } = require('discord.js');
 const mongo = require('../mongo2');
 const mongoose = require('mongoose');
 const TicketDataMain = require('../schemas/TicketData')
+const { BotVersions } = require('../../slappey.json')
 
 module.exports.data = new SlashCommandBuilder()
     .setName('setup')
@@ -166,7 +167,7 @@ module.exports.data = new SlashCommandBuilder()
               const TicketChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
               const TicketChannelMessage = new MessageEmbed()
                 .setTitle('Ticket')
-                .setDescription('In this channel, You can only open a ticket. If you try and run the command in any other channel, it will not work. To make a ticket, please use the command `!ticket`.')
+                .setDescription('In this channel, You can only open a ticket. If you try and run the command in any other channel, it will not work. To make a ticket, please use the command `!ticket`, or `/ticket`.')
                 .setColor('#f6f7f8')
 
               const StaffroomChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == 'GUILD_TEXT');
@@ -196,12 +197,11 @@ module.exports.data = new SlashCommandBuilder()
             
                 } else {
 
-                  console.log('test')
-                  const TicketChannelIdChannel = await message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
-                  const TicketTrackerIdChannel = await message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'GUILD_VOICE');
+                  const TicketChannelIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
+                  const TicketTrackerIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'GUILD_VOICE');
                   data2 = new TicketDataMain({
-                    ServerID: message.guildId,
-                    OwnerID: message.guild.ownerId,
+                    ServerID: interaction.guildId,
+                    OwnerID: interaction.guild.ownerId,
                     TicketChannelID: 'N/A',
                     TicketNumber: "0",
                     TicketTrackerChannelID: "N/A",
@@ -221,7 +221,7 @@ module.exports.data = new SlashCommandBuilder()
                     DisabledCommands: "N/A",
                     TranscriptMessage: "Transcript for",
                     EnableTicket: 'Enabled',
-                    BotVersion: "3.0"
+                    BotVersion: BotVersions
                   })
                   data2.save()
 

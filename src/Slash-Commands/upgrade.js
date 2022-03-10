@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js')
 const Discord = require('discord.js');
 const database = require('../schemas/TicketData')
+const { BotVersions } = require('../../slappey.json')
 
 module.exports.data = new SlashCommandBuilder()
     .setName('upgrade')
@@ -24,7 +25,7 @@ module.exports.data = new SlashCommandBuilder()
             if (err) throw err;
             if (data) {
                 if(data.BotVersion !== '3.1') {
-                    database.findOneAndUpdate({ ServerID: interaction.guildId}, { BotVersion: '3.1' }, async (err2, data2) => {
+                    database.findOneAndUpdate({ ServerID: interaction.guildId}, { BotVersion: BotVersions }, async (err2, data2) => {
                         if (err2) throw err;
                         if (data2) {
                             data2.save()
@@ -35,7 +36,7 @@ module.exports.data = new SlashCommandBuilder()
                         }
                     })
                 } else {
-                    if(data.BotVersion === '3.1') {
+                    if(data.BotVersion === BotVersions) {
                         const alreadyupdated = new MessageEmbed()
                         .setTitle('Bot in this guild is already on the updated version. ')
 
