@@ -23,6 +23,15 @@ module.exports.data = new SlashCommandBuilder()
     );
 
 module.exports.run = (client, interaction) => {
+    const ServerOwner = new MessageEmbed()
+        .setTitle('Error')
+        .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
+        .setColor('#f9f9fa')
+
+
+    if (interaction.user.id != interaction.guild.ownerId)
+        return interaction.reply({ embeds: [ServerOwner] });
+
     const categorystring = interaction.options.getString('category');
     const optionalstring = interaction.options.getString('amount');
 
@@ -34,10 +43,10 @@ module.exports.run = (client, interaction) => {
                     if (err2) throw err;
                     if (data2) {
                         const updated = new MessageEmbed()
-                        .setTitle('Updated')
-                        .setDescription(`We have changed ticket count from **${data.TicketNumber}** to **${optionalstring}**.`)
+                            .setTitle('Updated')
+                            .setDescription(`We have changed ticket count from **${data.TicketNumber}** to **${optionalstring}**.`)
 
-                        interaction.reply({ embeds: [updated]})
+                        interaction.reply({ embeds: [updated] })
                     }
                 })
             }
