@@ -10,6 +10,10 @@ console.log(commands);
 const { MessageEmbed } = require('discord.js');
 const { Permissions } = require('discord.js');
 
+const db = require('./schemas/commands')
+const MainDatabase = require('./schemas/TicketData')
+const blacklist = require('./schemas/Blacklist-schema');
+
 
 
 
@@ -50,7 +54,6 @@ client.on('guildCreate', guild => {
   
 })
 
-const MainDatabase = require('./schemas/TicketData')
 
 
 client.on('guildDelete', guild => {
@@ -68,6 +71,49 @@ client.on('interactionCreate', interaction => {
   let options = interaction.options;
 
   let commandMethod = commands.get(name);
+  if (commandMethod) {
+
+    blacklist.findOne({ UserID: interaction.user.id }, async (err, data) => {
+      const check =  await db.findOne({ Guild: interaction.guildId })
+      const versionCheck =  await MainDatabase.findOne({ ServerID: interaction.guildId})
+      if (err) throw err;
+      if (!data) {
+        if (commandMethod.name === 'setup') {
+          commandMethod(client, interaction)
+        } else {
+          if (commandMethod.name === 'upgrade') {
+            commandMethod(client, interaction)
+          } else {
+            if (versionCheck.BotVersion !== config.BotVersions) {
+              const UpdateBot = new MessageEmbed()
+                .setTitle('Update bot')
+                .setDescription(`You are currently running v${versionCheck.BotVersion} of the bot. Please update it to v${config.BotVersions}. Run the command /upgrade to update the bot.`)
+                await interaction.reply({ embeds: [UpdateBot]})
+            } else {
+              if (check) {
+                const DisabledCommand = new MessageEmbed()
+                    .setTitle('Disabled')
+                    .setDescription(`The following command **/${commandMethod.name}** has been disabled in the server by an administrator`)
+                    .setColor('#f6f7f8')
+                  if (check.Cmds.includes(interaction.name)) return interaction.reply({ embeds: [DisabledCommand]})
+                  commandMethod(client, interaction)
+              } else {
+                commandMethod(client, interaction)
+              }
+            }
+          }
+        }
+      } else {
+        const BlacklistedFromBot = new MessageEmbed()
+          .setTitle('Blacklisted!')
+          .setDescription('You have been blacklisted from using Ticket Bot!')
+          .addField('Reason', `${data.Reason}`)
+          .addField('Time', `${data.Time} UTC`)
+          .addField('Admin', `${data.Admin}`)
+          interaction.reply({ embeds: [BlacklistedFromBot]})
+      }
+    })
+  }
+
   if(!commandMethod) return;
-  commandMethod(client, interaction)
 })
