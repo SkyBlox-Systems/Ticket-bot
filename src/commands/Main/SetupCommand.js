@@ -4,6 +4,7 @@ const { MessageEmbed } = require('discord.js');
 const mongo = require('../../mongo2');
 const mongoose = require('mongoose');
 const TicketDataMain = require('../../schemas/TicketData')
+const { BotVersions } = require('../../../slappey.json')
 
 
 module.exports = class SetupCommand extends BaseCommand {
@@ -186,7 +187,7 @@ module.exports = class SetupCommand extends BaseCommand {
               const TicketChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
               const TicketChannelMessage = new MessageEmbed()
                 .setTitle('Ticket')
-                .setDescription('In this channel, You can only open a ticket. If you try and run the command in any other channel, it will not work. To make a ticket, please use the command `!ticket`.')
+                .setDescription('In this channel, You can only open a ticket. If you try and run the command in any other channel, it will not work. To make a ticket, please use the command `!ticket` or `/ticket`.')
                 .setColor('#f6f7f8')
 
               const StaffroomChannel = message.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == 'GUILD_TEXT');
@@ -380,7 +381,7 @@ module.exports = class SetupCommand extends BaseCommand {
                     DisabledCommands: "N/A",
                     TranscriptMessage: "Transcript for",
                     EnableTicket: 'Enabled',
-                    BotVersion: "3.0"
+                    BotVersion: BotVersions
                   })
                   data2.save()
 

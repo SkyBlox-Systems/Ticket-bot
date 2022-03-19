@@ -1,7 +1,8 @@
 {
-  "name": "Ticket",
+  "name": "ticket-bot13",
   "language": "javascript",
   "manager": "npm",
-  "token": "Nzk5MjMxMjIyMzAzMjkzNDYx.YAAkFA.m38pGZ8m5d2rPLQwaUmDJ8B2dbc",
-  "prefix": "!"
+  "token": "ODA0NjYzMDE2MTI0OTczMDc2.YBPm1A.QC6siK2m9Wf__mMCUU_6xOHIBi8",
+  "prefix": "!",
+  "BotVersions": "3.1"
 }

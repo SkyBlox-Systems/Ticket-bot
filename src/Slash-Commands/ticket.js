@@ -58,7 +58,7 @@ module.exports.run = (client, interaction) => {
             const user = interaction.user.id;
             const name = "ticket-" + generator2;
             if (interaction.guild.channels.cache.find(ch => ch.name == name)) {
-              ClaimTicket.findOne({ id: interaction.user.id }, async (err45, data45) => {
+              ClaimTicket.findOne({ id: user }, async (err45, data45) => {
                 if (err45) throw err;
                 if (data45) {
                   const embed = new MessageEmbed()
@@ -67,7 +67,7 @@ module.exports.run = (client, interaction) => {
                     .addField('Channel', `<#${data45.ChannelID}>`, true)
                     .addField('Reason', `${data45.Reason}.`, true)
                     .addField('Ticket ID', `${data45.TicketIDs}`, true)
-                  await interaction.reply({ embeds: [embed] })
+                    await interaction.reply({ embeds: [embed] })
                 }
               })
             } else {

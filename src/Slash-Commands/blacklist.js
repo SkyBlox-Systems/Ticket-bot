@@ -1,5 +1,9 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
+const blacklist = require('../schemas/Blacklist-schema')
+const { Message } = require('discord.js');
+const {MessageEmbed} = require('discord.js');
+const currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 
 module.exports.data = new SlashCommandBuilder()
     .setName('blacklist')
@@ -18,24 +22,24 @@ module.exports.run = (client, interaction) => {
     const reasonsend = interaction.options.getString('reason')
     const idsend = interaction.options.getString('id')
 
-    if (message.author.id !== '406164395643633665') {
+    if (interaction.user.id !== '406164395643633665') {
         const NotOwner = new MessageEmbed()
             .setColor('RANDOM')
             .setTimestamp()
-            .setTitle('Help')
-            .setDescription('You cannot use the following the command: `!blacklist`. The command is only available for the owner.')
+            .setTitle('Owner')
+            .setDescription('You cannot use the following the command: `/blacklist`. The command is only available for the owner.')
         return interaction.reply({ embeds: [NotOwner] })
     }
 
 
 
-    blacklist.findOne({ UserID: User.user.id }, async (err, data) => {
+    blacklist.findOne({ UserID: idsend }, async (err, data) => {
         if (err) throw err;
         if (data) {
 
             const Already = new MessageEmbed()
                 .setTitle('Blacklist')
-                .setDescription(`**${User.displayName}** has already been blacklisted! Reason is provided below`)
+                .setDescription(`**${idsend}** has already been blacklisted! Reason is provided below`)
                 .addField('Reason', `${data.Reason}`)
                 .addField('Time', `${data.Time} UTC`)
                 .addField('Admin', `${interaction.user.tag}`)
@@ -45,8 +49,8 @@ module.exports.run = (client, interaction) => {
             interaction.reply({ embeds: [Already] })
         } else {
             data = new blacklist({
-                UserID: User.user.id,
-                Reason: MSG,
+                UserID: idsend,
+                Reason: reasonsend,
                 Time: currentDateAndTime,
                 Admin: interaction.user.tag,
             })
@@ -55,10 +59,10 @@ module.exports.run = (client, interaction) => {
 
             const Added = new MessageEmbed()
                 .setTitle('Blacklist')
-                .setDescription(`${User.user.tag} has been added to blacklist.`)
-                .addField('Reason', `${MSG}`)
+                .setDescription(`${idsend} has been added to blacklist.`)
+                .addField('Reason', `${reasonsend}`)
                 .addField('Time', `${currentDateAndTime} UTC`)
-                .addField('Admin', `${message.author.tag}`)
+                .addField('Admin', `${interaction.user.tag}`)
                 .setColor('#f6f7f8')
 
             interaction.reply({ embeds: [Added] })

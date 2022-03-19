@@ -1,5 +1,6 @@
 const { Shard } = require('discord.js');
 const BaseEvent = require('../../utils/structures/BaseEvent');
+const { BotVersions } = require('../../../slappey.json')
 
 module.exports = class ReadyEvent extends BaseEvent {
   constructor() {
@@ -10,7 +11,7 @@ module.exports = class ReadyEvent extends BaseEvent {
       `${client.guilds.cache.size} servers!`,
 		`Shard #0`,
 		`${client.guilds.cache.reduce((a, b) => a + b.memberCount, 0)} users!`,
-		`Version 3.1`
+		`Version ${BotVersions}`
 		];
 
 		let i = 0;

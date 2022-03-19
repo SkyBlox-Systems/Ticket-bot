@@ -9,6 +9,13 @@ const axios = require('axios');
 const d = new Date()
 var today = new Date();
 var dd = String(today.getDate());
+const fs = require('fs').promises;
+const jsdom = require('jsdom');
+const { JSDOM } = jsdom;
+const dom = new JSDOM();
+
+const document = dom.window.document;
+
 
 
 
@@ -33,6 +40,8 @@ const attachment = await discordTranscripts.createTranscript(channel, {
   returnBuffer: false, // Return a buffer instead of a MessageAttachment 
   fileName: 'transcript.html' // Only valid with returnBuffer false. Name of attachment. 
 });
+let parentContainer = document.createElement("div");
+fs.writeFile(`./src/dashboard/Tickets/${message.author.id}/testfile.html`, parentContainer.outerHTML).catch(err => console.log(err));
 
 
 channel.send({

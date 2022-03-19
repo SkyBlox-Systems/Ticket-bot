@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
 const { MessageEmbed } = require('discord.js');
+const ticketclaim = require('../schemas/ticketclaim')
 
 module.exports.data = new SlashCommandBuilder()
     .setName('test')
@@ -12,9 +13,17 @@ module.exports.data = new SlashCommandBuilder()
             .setRequired(true));
 
     module.exports.run = (client, interaction) => {
-        const test = new MessageEmbed()
-        .setTitle('test')
+       ticketclaim.findOne({ id: interaction.user.id }, async (err, data) => {
+           if (err) throw err;
+           if (data) {
+               interaction.reply('Data found')
+           } else {
+               interaction.reply('No data found')
+           }
+       })
+    //     const test = new MessageEmbed()
+    //     .setTitle('test')
 
-       const message = interaction.channel.send({ embeds: [test], fetchReply: true})
-       message.react('✅');
+    //    const message = interaction.channel.send({ embeds: [test], fetchReply: true})
+    //    message.react('✅');
     }

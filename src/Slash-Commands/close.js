@@ -454,10 +454,10 @@ module.exports.data = new SlashCommandBuilder()
       
                                   }, 5000);
                                 }).catch(() => {
-                                  m.edit({ embeds: [notclosed2] })
+                                  interaction.channel.send({ embeds: [notclosed2] })
                                 })
                               }).catch(() => {
-                                m.edit({ embeds: [notclosed2] })
+                                interaction.channel.send({ embeds: [notclosed2] })
                               })
                             }
       

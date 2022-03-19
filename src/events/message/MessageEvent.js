@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const db = require('../../schemas/commands')
 const MainDatabase = require('../../schemas/TicketData')
 const getprefix = require('../../utils/getprefix');
+const { BotVersions } = require('../../../slappey.json')
 
 
 module.exports = class MessageEvent extends BaseEvent {
@@ -41,10 +42,10 @@ module.exports = class MessageEvent extends BaseEvent {
             if (command.name === 'setup') {
               command.run(client, message, cmdArgs)
             } else {
-              if (versionCheck.BotVersion !== '3.1') {
+              if (versionCheck.BotVersion !== BotVersions) {
                 const UpdateBot = new MessageEmbed()
                 .setTitle('Update bot')
-                .setDescription(`You are currently running v${versionCheck.BotVersion} of the bot. Please update it to v3.1. Run the command /upgrade to update the bot.`)
+                .setDescription(`You are currently running v${versionCheck.BotVersion} of the bot. Please update it to v${BotVersions}. Run the command /upgrade to update the bot.`)
                 await message.channel.send({ embeds: [UpdateBot]})
       
       
