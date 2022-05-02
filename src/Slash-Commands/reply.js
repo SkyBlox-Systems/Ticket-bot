@@ -23,7 +23,6 @@ module.exports.data = new SlashCommandBuilder()
                     ticketclaim.findOne({ ServerID: interaction.guildId, TicketChannelID: interaction.channel.id }, async (err, data) => {
                         if (err) throw err;
                         if (data) {
-                            const user = data.id
             
                             interaction.reply(`The message has been sent to ${data.id}`)
             
@@ -33,8 +32,10 @@ module.exports.data = new SlashCommandBuilder()
                             .addField('Ticket Reply:', `${messageforuser}`, true)
                             .setTimestamp()
                             .setFooter({ text: `user id: ${interaction.member.user.id}`});
+
+                            const ticketsend = client.users.cache.get(data.id)
             
-                            interaction.user.send({ embeds: [sendtouser] })
+                            ticketsend.send({ embeds: [sendtouser] })
             
                         } else {
                             interaction.reply('No Ticket Found with this channel ID or you are not inside a ticket.')
