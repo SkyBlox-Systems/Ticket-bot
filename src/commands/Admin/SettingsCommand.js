@@ -57,6 +57,7 @@ module.exports = class SettingsCommand extends BaseCommand {
                 .addField(`Paid Guild`, `${data1.PaidGuild}`, true)
                 .addField(`Create Transcripts`, `${data1.Transcript}`, true)
                 .addField('API Key', `${data1.APIKey}`, true)
+                .addField('ModMail', `${data1.ModMail}`, true)
                 .addField(`Bot Version`, `${data1.BotVersion}`, true)
 
 
@@ -98,6 +99,7 @@ module.exports = class SettingsCommand extends BaseCommand {
                 .addField(`API Key 8️⃣`, `${data2.APIKey}`, true)
                 .addField('Change Messages 9️⃣', `List Message`, true)
                 .addField('Creation of Tickets 🔟', `${data2.EnableTicket}`, true)
+                .addField('ModMail 🔢', `${data2.ModMail}`, true)
                 .addField(`Bot Version`, `${data2.BotVersion}`, true)
 
               message.channel.send({ embeds: [ ListSettings2 ]})
@@ -112,6 +114,7 @@ module.exports = class SettingsCommand extends BaseCommand {
                   m1.react('8️⃣')
                   m1.react('9️⃣')
                   m1.react('🔟')
+                  m1.react('🔢')
 
                   const Filter3 = (reaction, user) => reaction.emoji.name === '1️⃣' && user.id === message.author.id;
                   const Collector3 = m1.createReactionCollector({ filter: Filter3,  max: 1, time: 2 * 60 * 1000 });
@@ -142,6 +145,9 @@ module.exports = class SettingsCommand extends BaseCommand {
 
                   const Filter52 = (reaction, user) => reaction.emoji.name === '🔟' && user.id === message.author.id;
                   const Collector52 =  m1.createReactionCollector({ filter: Filter52,  max: 1, time: 2 * 60 * 1000 });
+
+                  const Filter53 = (reaction, user) => reaction.emoji.name === '🔢' && user.id === message.author.id;
+                  const Collector53 = m1.createReactionCollector({ filter: Filter53, max: 1, time: 2 * 60 * 1000 }); 
 
 
 
@@ -719,6 +725,33 @@ module.exports = class SettingsCommand extends BaseCommand {
 
                       message.channel.send(({ embeds: [ DisabledUntilChristmas ]}))
                     }
+                  })
+
+                  Collector53.on('collect', () => {
+                    MainDatabase.findOne({ ServerID: message.guildId }, async (err17, data17) => {
+                      if (err17) throw err;
+                      if (data17) {
+                        if (data17.ModMail === 'Enabled') {
+                          MainDatabase.findOneAndUpdate({ ServerID: message.guildId }, { ModMail: 'Disabled' }, async (err18, data18) => {
+                            if (err18) throw err;
+                            if (data18) {
+                              data18.save()
+                              message.channel.send('ModMail has been disabled in this server.')
+                            }
+                          })
+                        } else {
+                          if (data17.ModMail === 'Disabled') {
+                            MainDatabase.findOneAndUpdate({ ServerID: message.guildId}, { ModMail: 'Enabled' }, async (err19, data19) => {
+                              if (err19) throw err;
+                              if (data19) {
+                                data19.save()
+                                message.channel.send('ModMail has been enabled on this server.')
+                              }
+                            })
+                          }
+                        }
+                      }
+                    })
                   })
 
 
