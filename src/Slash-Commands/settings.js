@@ -22,6 +22,7 @@ module.exports.data = new SlashCommandBuilder()
       .addChoice('Manager Role', 'manager')
       .addChoice('Transcript', 'transcript')
       .addChoice('Tickets', 'tickets')
+      .addChoice('Mod Mail', 'ModMail')
       .addChoice('View', 'view'))
   .addStringOption(NotNeeded =>
     NotNeeded.setName('optional')
@@ -61,6 +62,7 @@ module.exports.run = (client, interaction) => {
           .addField(`Paid Guild`, `${data.PaidGuild}`, true)
           .addField(`Create Transcripts`, `${data.Transcript}`, true)
           .addField('API Key', `${data.APIKey}`, true)
+          .addField('ModMail', `${data.ModMail}`, true)
           .addField(`Bot Version`, `${data.BotVersion}`, true)
 
           interaction.reply({ embeds: [ListSettings]})
@@ -212,6 +214,37 @@ module.exports.run = (client, interaction) => {
       }
     })
 
+  }
+
+  if (teststring === 'ModMail') {
+    if (interaction.user.id != interaction.guild.ownerId)
+      return interaction.send({ embeds: [ServerOwner] });
+    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+      if (err) throw err;
+      if (data) {
+        if (data.ModMail === 'Enabled') {
+          MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId}, { ModMail: 'Disabled'}, async (err1, data1) => {
+            if (err1) throw err;
+            if (data1) {
+              data1.save()
+              interaction.reply(`ModMail has been disabled in this server.`)
+            }
+          })
+        } else {
+          if (data.ModMail === 'Disabled') {
+            MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId}, { ModMail: 'Enabled'}, async (err2, data2) => {
+             
+              if (err2) throw err;
+              if (data2) {
+                data2.save()
+                interaction.reply(`ModMail has been enabled on this server.`)
+              }
+            })
+          }
+        }
+       } else {
+       }
+    })
   }
 
   if (teststring === 'transcript') {

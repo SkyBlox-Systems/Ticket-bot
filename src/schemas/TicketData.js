@@ -23,6 +23,7 @@ const TicketData = mongoose.Schema({
   DisabledCommands: String,
   TranscriptMessage: String,
   EnableTicket: String,
+  ModMail: String,
   BotVersion: String
 })
 

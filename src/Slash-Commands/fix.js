@@ -11,7 +11,8 @@ module.exports.data = new SlashCommandBuilder()
         option.setName('category')
             .setDescription('The main category')
             .setRequired(true)
-            .addChoice('Ticket Tracker ', 'tracker'))
+            .addChoice('Ticket Tracker ', 'tracker')
+            .addChoice('Open Tickets', 'tickets'))
     .addStringOption(NotNeeded =>
         NotNeeded.setName('amount')
             .setDescription('Set the right number to fix it in the database. (Tracker only)')
@@ -34,6 +35,7 @@ module.exports.run = (client, interaction) => {
 
     const categorystring = interaction.options.getString('category');
     const optionalstring = interaction.options.getString('amount');
+    const idstring = interaction.options.getString('id');
 
     if (categorystring === 'tracker') {
         MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
@@ -47,11 +49,29 @@ module.exports.run = (client, interaction) => {
                             .setDescription(`We have changed ticket count from **${data.TicketNumber}** to **${optionalstring}**.`)
 
                         interaction.reply({ embeds: [updated] })
+                        data2.save()
                     }
                 })
             }
         })
 
+    }
+
+    if (categorystring === 'tickets') {
+        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            if (err) throw err;
+            if (data) {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: idstring }, async (err1, data1) => {
+                    if (err1) throw err;
+                    if (data1) {
+                        const updated = new MessageEmbed() 
+                        .setTitle('Updated')
+                        .setDescription(`We have changed the tickets amount in your server to ${idstring}.`)
+                        interaction.reply({ embeds: [ updated ]})
+                    }
+                })
+            }
+        })
     }
 
 }

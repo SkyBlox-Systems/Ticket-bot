@@ -51,6 +51,7 @@ module.exports.run = (client, interaction) => {
                                 DisabledCommands: data3.DisabledCommands || 'NA',
                                 TranscriptMessage: data3.TranscriptMessage || 'Transcript for',
                                 EnableTicket: data3.EnableTicket || 'Enabled',
+                                ModMail: data3.ModMail || 'Disabled',
                                 BotVersion: BotVersions
                             })
                             data3.save()
