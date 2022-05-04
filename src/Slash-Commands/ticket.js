@@ -111,7 +111,7 @@ module.exports.run = (client, interaction) => {
                         .setTimestamp()
                         .setFooter(`Ticket ID: <#${chan.id}>`)
                         .setTitle('Ticket')
-                        .setDescription('To reply to this user ticket, please use the following command `/ticketreply <message>` ')
+                        .setDescription('To reply to this user ticket, please use the following command `/ticketreply message:` ')
                         .addField('Information', `${data01.TicketMessage}`, true)
                         .addField('Issue', `${MSG}.`, true)
                         .addField('User', `<@${interaction.user.id}>`, true)
@@ -189,7 +189,7 @@ module.exports.run = (client, interaction) => {
                             .catch(err => console.log(err))
                           const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
                           const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
-                          TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket! \n With slash commands, please run /claim ${generator}`)
+                          TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket! \n With slash commands, please run /claim ticketid:${generator}`)
                           MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
                             if (err20) throw err20;
                             if (data20) {
@@ -326,7 +326,7 @@ module.exports.run = (client, interaction) => {
                               .catch(err => console.log(err))
                             const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
                             const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
-                            TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket! \n With slash commands, please run /claim ${generator}`)
+                            TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket! \n With slash commands, please run /claim ticketid:${generator}`)
                             MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
                               if (err20) throw err20;
                               if (data20) {
