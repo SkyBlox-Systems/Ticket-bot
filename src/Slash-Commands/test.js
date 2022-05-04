@@ -14,6 +14,7 @@ module.exports.data = new SlashCommandBuilder()
             .setRequired(true));
 
     module.exports.run = (client, interaction) => {
+        interaction.reply(interaction.channel.id)
 
         // console.log(interaction.guild.name)
         // const user = interaction.user.id

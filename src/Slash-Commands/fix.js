@@ -3,6 +3,7 @@ const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
 const { MessageEmbed } = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
+const { BotVersions } = require('../../slappey.json')
 
 module.exports.data = new SlashCommandBuilder()
     .setName('fix')
@@ -12,7 +13,8 @@ module.exports.data = new SlashCommandBuilder()
             .setDescription('The main category')
             .setRequired(true)
             .addChoice('Ticket Tracker ', 'tracker')
-            .addChoice('Open Tickets', 'tickets'))
+            .addChoice('Open Tickets', 'tickets')
+            .addChoice('Mod Mail issue (v3.2 update issue)', 'ModMail'))
     .addStringOption(NotNeeded =>
         NotNeeded.setName('amount')
             .setDescription('Set the right number to fix it in the database. (Tracker only)')
@@ -64,12 +66,58 @@ module.exports.run = (client, interaction) => {
                 MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: idstring }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
-                        const updated = new MessageEmbed() 
-                        .setTitle('Updated')
-                        .setDescription(`We have changed the tickets amount in your server to ${idstring}.`)
-                        interaction.reply({ embeds: [ updated ]})
+                        const updated = new MessageEmbed()
+                            .setTitle('Updated')
+                            .setDescription(`We have changed the tickets amount in your server to ${idstring}.`)
+                        interaction.reply({ embeds: [updated] })
                     }
                 })
+            }
+        })
+    }
+
+    if (categorystring === 'ModMail') {
+        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            if (err) throw err;
+            if (data) {
+                if (data.ModMail === undefined) {
+                    data = new MainDatabase({
+                        ServerID: data.ServerID,
+                        OwnerID: data.OwnerID,
+                        TicketChannelID: data.TicketTrackerChannelID,
+                        TicketNumber: data.TicketNumber,
+                        TicketTrackerChannelID: data.TicketChannelID,
+                        BotPrefix: data.BotPrefix,
+                        SupportRoleID: data.SupportRoleID,
+                        ManagerRoleID: data.ManagerRoleID,
+                        AdminRoleID: data.AdminRoleID,
+                        BetaKey: data.BetaKey,
+                        PaidGuild: data.PaidGuild,
+                        Transcript: data.Transcript,
+                        UseTicketReactions: data.UseTicketReactions,
+                        UseDashboard: data.UseDashboard,
+                        APIKey: data.APIKey,
+                        TicketMessage: data.TicketMessage,
+                        CloseMessage: data.CloseMessage,
+                        ClaimTicketMessage: data.ClaimTicketMessage,
+                        DisabledCommands: data.DisabledCommands,
+                        TranscriptMessage: data.TranscriptMessage,
+                        EnableTicket: data.EnableTicket,
+                        ModMail: 'Disabled',
+                        BotVersion: BotVersions
+                    })
+                    data.save()
+                    const fixed = new MessageEmbed()
+                    .setTitle('Fixed')
+                    .setDescription('We have fixed your database for your guild. ModMail is disabled as default. Anymore issues? please contact us.')
+                    interaction.reply(fixed)
+                    MainDatabase.findOneAndRemove({ ServerID: interaction.guildId }, async (err1, data1) => {
+                        if (err1) throw err;
+                        if (data1) {
+                            
+                        }
+                    })
+                }
             }
         })
     }

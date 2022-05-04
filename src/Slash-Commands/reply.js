@@ -20,9 +20,10 @@ module.exports.data = new SlashCommandBuilder()
             if (data01) {
                 if (data01.ModMail === 'Enabled') {
                     const messageforuser =  interaction.options.getString('message');
-                    ticketclaim.findOne({ ServerID: interaction.guildId, TicketChannelID: interaction.channel.id }, async (err, data) => {
+                    ticketclaim.findOne({ ServerID: interaction.guildId, ChannelID: interaction.channel.id }, async (err, data) => {
                         if (err) throw err;
                         if (data) {
+                           
             
                             interaction.reply(`The message has been sent to ${data.id}`)
             
