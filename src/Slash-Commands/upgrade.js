@@ -41,6 +41,7 @@ module.exports.run = (client, interaction) => {
                                 AdminRoleID: data3.AdminRoleID || 'N/A',
                                 BetaKey: data3.BetaKey || 'N/A',
                                 PaidGuild: data3.PaidGuild || 'No',
+                                Tier: data3.Tier || 'Free',
                                 Transcript: data3.Transcript || 'Yes',
                                 UseTicketReactions: data3.UseTicketReactions || 'Yes',
                                 UseDashboard: data3.UseDashboard || 'Yes',
@@ -52,6 +53,8 @@ module.exports.run = (client, interaction) => {
                                 TranscriptMessage: data3.TranscriptMessage || 'Transcript for',
                                 EnableTicket: data3.EnableTicket || 'Enabled',
                                 ModMail: data3.ModMail || 'Disabled',
+                                VoiceTicket: data3.VoiceTicket || 'Disabled',
+                                CustomBots: data3.CustomBots || '0',
                                 BotVersion: BotVersions
                             })
                             data3.save()

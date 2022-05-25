@@ -771,7 +771,7 @@ module.exports = class SettingsCommand extends BaseCommand {
         })
 
         Collector32.on('collect', () => {
-          if (message.author.id != message.guild.ownerId            )
+          if (message.author.id != message.guild.ownerId)
             return message.channel.send(ServerOwner);
           MainDatabase.findOne({ ServerID: message.guildId }, async (err08, data08) => {
             if (err08) throw err08;

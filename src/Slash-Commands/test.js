@@ -3,7 +3,7 @@ const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
 const { MessageEmbed } = require('discord.js');
 const ticketclaim = require('../schemas/ticketclaim')
-const stripe = require('stripe')('sk_test_51K0uV5Fgu1qoPGq3dxIV3JMbVWe73egjbcIxuNhKY8QnexOvLVedJbSfC5GIR6RPHlN1001wrB6JDH02KlSUoDSI00pRYIx7CG');
+const MainFile = require('../../slappey.json')
 
 module.exports.data = new SlashCommandBuilder()
     .setName('test')
@@ -50,4 +50,8 @@ module.exports.data = new SlashCommandBuilder()
 
     //    const message = interaction.channel.send({ embeds: [test], fetchReply: true})
     //    message.react('✅');
+
+    const channeltest = interaction.guild.channels.cache.find(c => c.name.toLowerCase() === 'ticket')
+
+    console.log(channeltest.type)
     }

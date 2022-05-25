@@ -12,10 +12,20 @@ module.exports.data = new SlashCommandBuilder()
     .addStringOption(option =>
         option.setName('ticketid')
             .setDescription('Ticket ID for ticket')
-            .setRequired(true));
+            .setRequired(true))
+    .addStringOption(option =>
+        option.setName('date')
+            .setDescription('DD/MM/YY (premium only)')
+            .setRequired(false))
+    .addStringOption(option =>
+        option.setName('time')
+            .setDescription('Time for the ticket + include timezone (premium only)')
+            .setRequired(false));
 
 module.exports.run = (client, interaction) => {
     const claimit = interaction.options.getString('ticketid')
+    const PremDate = interaction.options.getString('data')
+    const PremTime = interaction.options.getString('time')
 
 
     MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
@@ -93,7 +103,7 @@ module.exports.run = (client, interaction) => {
             } else {
                 if (data01.ModMail === 'Disabled') {
 
-                    
+
 
                     ClaimTicket.findOne({ TicketIDs: claimit }, async (err03, data03) => {
                         if (err03) throw err;
@@ -104,7 +114,7 @@ module.exports.run = (client, interaction) => {
                                 if (data2) {
                                     data2.save()
 
-                                     
+
 
                                     const TicketClaimed = new MessageEmbed()
                                         .setTitle('Ticket Claimed!')
@@ -122,25 +132,45 @@ module.exports.run = (client, interaction) => {
                                     //    return message.channel.send(AlreadyClaimed)
                                     //  }
 
-                                    interaction.reply({ embeds: [TicketClaimed] })
-                                    interaction.guild.channels.cache.get(data2.ChannelID).send(`<@${data2.id}>`)
-                                    const sendtouser = client.users.cache.get(`${user1}`)
-                                    interaction.guild.channels.cache.get(data2.ChannelID).send({ embeds: [TicketClaimedDM] })
+                                    const VCTicketClaim = interaction.guild.channels.cache.get(data2.ChannelID)
 
-                                    const MainChan = interaction.guild.channels.cache.get(data2.ChannelID)
+                                    if (VCTicketClaim.type === 'GUILD_TEXT') {
+                                        const dmUserID = data2.id;
+                                        interaction.reply({ embeds: [TicketClaimed] })
+                                        interaction.guild.channels.cache.get(data2.ChannelID).send(`<@${data2.id}>`)
+                                        const sendtouser = client.users.cache.get(`${user1}`)
+                                        interaction.dmUserID.send({ embeds: [TicketClaimedDM] })
 
-                                    MainChan.permissionOverwrites.create(interaction.user.id, {
-                                        SEND_MESSAGES: true,
-                                        VIEW_CHANNEL: true,
-                                        ATTACH_FILES: true,
-                                        MANAGE_CHANNELS: true,
-                                    })
+                                        const MainChan = interaction.guild.channels.cache.get(data2.ChannelID)
 
+                                        MainChan.permissionOverwrites.create(interaction.user.id, {
+                                            SEND_MESSAGES: true,
+                                            VIEW_CHANNEL: true,
+                                            ATTACH_FILES: true,
+                                            MANAGE_CHANNELS: true,
+                                        })
+                                    }
 
+                                    if (VCTicketClaim.type === 'GUILD_VOICE') {
+                                        const dmUserID = data03.id;
+                                        
+                                        const TicketVCClaimedDM = new MessageEmbed()
+                                        .setTitle('Ticket Claimed!')
+                                        .setDescription(`Your ticket <#${data2.ChannelID}> has been claimed by <@${interaction.user.id}>! You are required to join the voice call on this date **${PremDate}** and time **${PremTime}**`)
 
+                                        interaction.reply({ embeds: [TicketClaimed] })
+                                        const sendtouser = client.users.cache.get(`${user1}`)
+                                        const MainChan = interaction.guild.channels.cache.get(data2.ChannelID)
+                                        dmUserID.send({ embeds: [TicketVCClaimedDM] })
 
+                                        MainChan.permissionOverwrites.create(interaction.user.id, {
+                                            CONNECT: true,
+                                            VIEW_CHANNEL: true,
+                                            SPEAK: true,
+                                            MANAGE_CHANNELS: true,
+                                        })
 
-
+                                    }
                                 }
 
                             })

@@ -200,8 +200,8 @@ module.exports.run = (client, interaction) => {
           const TicketChannelIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
           const TicketTrackerIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'GUILD_VOICE');
           data2 = new TicketDataMain({
-            ServerID: data3.ServerID || interaction.guildId,
-            OwnerID: data3.OwnerID || interaction.guild.ownerId,
+            ServerID: interaction.guildId,
+            OwnerID: interaction.guild.ownerId,
             TicketChannelID: 'NA',
             TicketNumber: '0',
             TicketTrackerChannelID: 'NA',
@@ -211,6 +211,7 @@ module.exports.run = (client, interaction) => {
             AdminRoleID: 'N/A',
             BetaKey: 'N/A',
             PaidGuild: 'No',
+            Tier: 'Free',
             Transcript: 'Yes',
             UseTicketReactions: 'Yes',
             UseDashboard: 'Yes',
@@ -218,10 +219,12 @@ module.exports.run = (client, interaction) => {
             TicketMessage: 'Thank you for contacting Support! Please wait for a customer support to claim your ticket.',
             CloseMessage: 'has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you.',
             ClaimTicketMessage: 'has open a ticket and needs support.',
-            DisabledCommands: 'NA',
+            DisabledCommands: 'N/A',
             TranscriptMessage: 'Transcript for',
             EnableTicket: 'Enabled',
             ModMail: 'Disabled',
+            VoiceTicket: 'Disabled',
+            CustomBots: '0',
             BotVersion: BotVersions
           })
           data2.save()

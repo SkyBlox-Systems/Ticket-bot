@@ -133,6 +133,7 @@ module.exports.run = (client, interaction) => {
                               Locked: "No",
                               Time: currentDateAndTime,
                               AddedUser: Array,
+                              Type: 'Channel',
                               ClaimUserID: ""
                             })
                             data.save()
@@ -183,6 +184,7 @@ module.exports.run = (client, interaction) => {
                             Locked: "No",
                             Time: currentDateAndTime,
                             AddedUser: Array,
+                            Type: 'Channel',
                             ClaimUserID: ""
                           })
                           data.save()
@@ -271,6 +273,7 @@ module.exports.run = (client, interaction) => {
                                 Locked: "No",
                                 Time: currentDateAndTime,
                                 AddedUser: Array,
+                                Type: 'Channel',
                                 ClaimUserID: ""
                               })
                               data.save()
@@ -320,6 +323,7 @@ module.exports.run = (client, interaction) => {
                               Reason: MSG,
                               Locked: "No",
                               Time: currentDateAndTime,
+                              Type: 'Channel',
                               ClaimUserID: ""
                             })
                             data.save()
