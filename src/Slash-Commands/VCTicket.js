@@ -38,7 +38,7 @@ module.exports.run = (client, interaction) => {
             .setDescription(`The Ticket Tracker is not set up in settings. Please edit it by using the command ${client.prefix}settings`)
           interaction.reply({ embeds: [ErrorDataBase] })
         } else {
-          if (data01.EnableTicket === 'Enabled') {
+          if (data01.VoiceTicket === 'Enabled') {
 
 
 

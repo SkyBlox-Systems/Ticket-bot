@@ -212,6 +212,7 @@ module.exports.run = (client, interaction) => {
             BetaKey: 'N/A',
             PaidGuild: 'No',
             Tier: 'Free',
+            PremiumCode: 'N/A',
             Transcript: 'Yes',
             UseTicketReactions: 'Yes',
             UseDashboard: 'Yes',

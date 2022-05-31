@@ -36,7 +36,8 @@ module.exports.run = (client, interaction) => {
 
   const Prem = new Discord.MessageEmbed()
   .setTitle('🎫 Premium')
-  .addField('None at the moment because', 'I am stupid')
+  .addField('/vcticket', 'Make a voice call ticket')
+  .addField('/custom', 'Custom bot for your server')
   .setColor('#58b9ff')
   .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
   .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})

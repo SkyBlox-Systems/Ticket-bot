@@ -14,6 +14,7 @@ const TicketData = mongoose.Schema({
   BetaKey: String,
   PaidGuild: String,
   Tier: String,
+  PremiumCode: String,
   Transcript: String,
   UseTicketReactions: String,
   UseDashboard: String,

@@ -104,9 +104,9 @@ client.on('interactionCreate', interaction => {
                 if (check) {
                   const DisabledCommand = new MessageEmbed()
                     .setTitle('Disabled')
-                    .setDescription(`The following command **/${commandMethod.name}** has been disabled in the server by an administrator`)
+                    .setDescription(`The following command **/${interaction.commandName}** has been disabled in the server by an administrator`)
                     .setColor('#f6f7f8')
-                  if (check.Cmds.includes(interaction.name)) return interaction.reply({ embeds: [DisabledCommand] })
+                  if (check.Cmds.includes(interaction.commandName)) return interaction.reply({ embeds: [DisabledCommand] })
                   commandMethod(client, interaction)
                 } else {
                   commandMethod(client, interaction)

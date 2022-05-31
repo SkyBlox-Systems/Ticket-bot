@@ -42,6 +42,7 @@ module.exports.run = (client, interaction) => {
                                 BetaKey: data3.BetaKey || 'N/A',
                                 PaidGuild: data3.PaidGuild || 'No',
                                 Tier: data3.Tier || 'Free',
+                                PremiumCode: data3.PremiumCode || 'N/A',
                                 Transcript: data3.Transcript || 'Yes',
                                 UseTicketReactions: data3.UseTicketReactions || 'Yes',
                                 UseDashboard: data3.UseDashboard || 'Yes',
