@@ -149,6 +149,24 @@ module.exports.run = (client, interaction) => {
       })
     })
 
+    interaction.guild.channels.create('feedback', { parent: Supportcat }).then(async (chan) => {
+      chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
+        SEND_MESSAGES: false,
+        VIEW_CHANNEL: false,
+      })
+      chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
+        SEND_MESSAGES: true,
+        VIEW_CHANNEL: true,
+        MANAGE_CHANNELS: false,
+        ATTACH_FILES: true,
+      })
+      chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
+        SEND_MESSAGES: true,
+        VIEW_CHANNEL: true,
+        MANAGE_CHANNELS: true,
+        ATTACH_FILES: true,
+      })
+    })
     setTimeout(() => {
 
       const guildId = interaction.guildId
@@ -202,9 +220,10 @@ module.exports.run = (client, interaction) => {
           data2 = new TicketDataMain({
             ServerID: interaction.guildId,
             OwnerID: interaction.guild.ownerId,
-            TicketChannelID: 'NA',
+            TicketChannelID: 'N/A',
             TicketNumber: '0',
-            TicketTrackerChannelID: 'NA',
+            TicketTrackerChannelID: 'N/A',
+            FeedbackChannelID: 'N/A',
             BotPrefix: '!',
             SupportRoleID: 'N/A',
             ManagerRoleID: 'N/A',

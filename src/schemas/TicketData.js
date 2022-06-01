@@ -7,6 +7,7 @@ const TicketData = mongoose.Schema({
   TicketChannelID: String,
   TicketNumber: Number,
   TicketTrackerChannelID: String,
+  FeedbackChannelID: String,
   BotPrefix: String,
   SupportRoleID: String,
   ManagerRoleID: String,

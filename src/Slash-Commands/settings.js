@@ -16,6 +16,7 @@ module.exports.data = new SlashCommandBuilder()
       .setRequired(false)
       .addChoice('Ticket Tracker Channel ID', 'tracker')
       .addChoice('Ticket Channel ID', 'ticketchan')
+      .addChoice('Feedback Channel ID', 'feedbackchann')
       .addChoice('Prefix', 'prefix')
       .addChoice('Support Role', 'support')
       .addChoice('Admin Role', 'admin')
@@ -61,6 +62,7 @@ module.exports.run = (client, interaction) => {
             .addField(`TicketChannelID`, `${data.TicketChannelID}`, true)
             .addField(`TicketNumber`, `${data.TicketNumber}`, true)
             .addField(`TicketTrackerChannelID`, `${data.TicketTrackerChannelID}`, true)
+            .addField('FeedbackChannelID', `${data.FeedbackChannelID}`, true)
             .addField(`Prefix`, `${data.BotPrefix}`, true)
             .addField(`Support Role`, `${data.SupportRoleID}`, true)
             .addField('Manager Role', `${data.ManagerRoleID}`, true)
@@ -114,6 +116,7 @@ module.exports.run = (client, interaction) => {
             .addField(`TicketChannelID`, `${data.TicketChannelID}`, true)
             .addField(`TicketNumber`, `${data.TicketNumber}`, true)
             .addField(`TicketTrackerChannelID`, `${data.TicketTrackerChannelID}`, true)
+            .addField('FeedbackChannelID', `${data.FeedbackChannelID}`, true)
             .addField(`Prefix`, `${data.BotPrefix}`, true)
             .addField(`Support Role`, `${data.SupportRoleID}`, true)
             .addField('Manager Role', `${data.ManagerRoleID}`, true)
@@ -162,6 +165,25 @@ module.exports.run = (client, interaction) => {
             data1.save()
             const updatedTicket = new MessageEmbed()
               .setTitle(`You have changed your ticket channel ID to ${optionalstring}.`)
+            interaction.reply({ embeds: [updatedTicket] })
+          }
+        })
+      }
+    })
+  }
+
+  if (teststring === 'feedbackchann') {
+    if (interaction.user.id != interaction.guild.ownerId)
+      return message.channel.send({ embeds: [ServerOwner] });
+    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+      if (err) throw err;
+      if (data) {
+        MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { FeedbackChannelID: optionalstring }, async (err1, data1) => {
+          if (err1) throw err;
+          if (data1) {
+            data1.save()
+            const updatedTicket = new MessageEmbed()
+              .setTitle(`You have changed your feedback channel ID to ${optionalstring}.`)
             interaction.reply({ embeds: [updatedTicket] })
           }
         })
@@ -349,6 +371,7 @@ module.exports.run = (client, interaction) => {
       if (err) throw err;
       if (data) {
         const TicketChannelMain2 = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket" && ch.type == "GUILD_TEXT")
+        const FeedbackChannelID2 = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == "GUILD_TEXT")
         const TicketTrackerMain2 = interaction.guild.channels.cache.find(ch2 => ch2.name.toLowerCase() == `tickets: ${data.TicketNumber}` && ch2.type == "GUILD_VOICE")
         const SupportRoleMain2 = interaction.guild.roles.cache.find((r) => r.name === 'ticket support');
         const ManagerRoleMain2 = interaction.guild.roles.cache.find((r2) => r2.name === 'ticket manager');
@@ -361,6 +384,7 @@ module.exports.run = (client, interaction) => {
           .setDescription('This is only suggested to be used if this is your first time using the bot on the server The following thing will be added to settings. React with ✅ to do the setup or react with ❌ to cancel')
           .addField('TicketChannelID', `${TicketChannelMain2.id}`)
           .addField('TicketTrackerChannelID', `${TicketTrackerMain2.id}`)
+          .addField('FeedbackChannelID', `${FeedbackChannelID2.id}`)
           .addField('Support Role', `${SupportRoleMain2}`)
           .addField('Manager Role', `${ManagerRoleMain2}`)
 
@@ -374,7 +398,7 @@ module.exports.run = (client, interaction) => {
         const Collector34 = AutoSetupEmoji.createReactionCollector({ filter: Filter34, max: 1, time: 2 * 60 * 1000 });
 
         Collector33.on('collect', () => {
-          MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketChannelID: TicketChannelMain2.id, TicketTrackerChannelID: TicketTrackerMain2.id, SupportRoleID: SupportRoleMain2.id, ManagerRoleID: ManagerRoleMain2.id }, async (err9, data9) => {
+          MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketChannelID: TicketChannelMain2.id, TicketTrackerChannelID: TicketTrackerMain2.id, FeedbackChannelID: FeedbackChannelID2.id, SupportRoleID: SupportRoleMain2.id, ManagerRoleID: ManagerRoleMain2.id }, async (err9, data9) => {
             if (err9) throw err9;
             if (data9) {
               data9.save()
