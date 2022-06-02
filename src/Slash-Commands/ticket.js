@@ -90,7 +90,7 @@ module.exports.run = (client, interaction) => {
                         .setTimestamp()
                         .setFooter(`Ticket ID: <#${chan.id}>`)
                         .setTitle(`Ticket`)
-                        .addField('Information', `<@${interaction.user.id}> I have open a ticket for you!`, true)
+                        .addField('Information', `<@${interaction.user.id}> ${data01.OpenTicket}`, true)
                         .addField('Channel', `Your ticket is <#${chan.id}>`, true)
                       await interaction.reply({ embeds: [open] });
       

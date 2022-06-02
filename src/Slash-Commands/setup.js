@@ -239,6 +239,7 @@ module.exports.run = (client, interaction) => {
             TicketMessage: 'Thank you for contacting Support! Please wait for a customer support to claim your ticket.',
             CloseMessage: 'has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you.',
             ClaimTicketMessage: 'has open a ticket and needs support.',
+            OpenTicket: 'I have open a ticket for you!',
             DisabledCommands: 'N/A',
             TranscriptMessage: 'Transcript for',
             EnableTicket: 'Enabled',

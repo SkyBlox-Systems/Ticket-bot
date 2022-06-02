@@ -22,8 +22,7 @@ module.exports.data = new SlashCommandBuilder()
     .addStringOption(NotNeeded2 =>
         NotNeeded2.setName('id')
             .setDescription('Set the right id to fix it in the database.')
-            .setRequired(false)
-    );
+            .setRequired(false));
 
 module.exports.run = (client, interaction) => {
     const ServerOwner = new MessageEmbed()

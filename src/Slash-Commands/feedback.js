@@ -19,8 +19,7 @@ module.exports.data = new SlashCommandBuilder()
             .setRequired(false))
     .addStringOption(option =>
         option.setName('message')
-            .setDescription('What is the reason of the feedback?')
-            .setRequired(true))
+            .setDescription('What is the reason of the feedback?'));
 
 module.exports.run = async (client, interaction) => {
 

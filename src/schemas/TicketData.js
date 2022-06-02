@@ -23,6 +23,7 @@ const TicketData = mongoose.Schema({
   TicketMessage: String,
   CloseMessage: String,
   ClaimTicketMessage: String,
+  OpenTicket: String,
   DisabledCommands: String,
   TranscriptMessage: String,
   EnableTicket: String,

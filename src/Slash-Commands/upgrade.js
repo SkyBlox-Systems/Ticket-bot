@@ -51,6 +51,7 @@ module.exports.run = (client, interaction) => {
                             TicketMessage: data3.TicketMessage || 'Thank you for contacting Support! Please wait for a customer support to claim your ticket.',
                             CloseMessage: data3.CloseMessage || 'has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you.',
                             ClaimTicketMessage: data3.ClaimTicketMessage || 'has open a ticket and needs support.',
+                            OpenTicket: data3.OpenTicket || 'I have open a ticket for you!',
                             DisabledCommands: data3.DisabledCommands || 'NA',
                             TranscriptMessage: data3.TranscriptMessage || 'Transcript for',
                             EnableTicket: data3.EnableTicket || 'Enabled',

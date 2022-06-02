@@ -193,10 +193,10 @@ module.exports.run = (client, interaction) => {
 
 
           } else {
-            if (data01.EnableTicket === 'Disabled') {
+            if (data01.VoiceTicket === 'Disabled') {
               const disabledTicket = new MessageEmbed()
                 .setTitle('Disabled!')
-                .setDescription('Server owner has disabled the creation of tickets in this server.')
+                .setDescription('Server owner has disabled the creation of voice tickets in this server or, this server do not own premium.')
 
               interaction.reply({ embeds: [disabledTicket] })
 

@@ -69,7 +69,7 @@ module.exports.run = async (client, interaction) => {
 
                         })
                         if (MSG === null) {
-                            interaction.reply('No code is provided!')
+                            interaction.reply('No code is provided! If you are trying to buy premium, please buy it here https://ticketbot.sellix.io/')
                         } else {
                             if (data.PaidGuild === 'Yes') {
                                 interaction.reply('This guild already has premium.')
