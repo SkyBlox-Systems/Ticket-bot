@@ -15,6 +15,6 @@ module.exports = class ReadyEvent extends BaseEvent {
 		];
 
 		let i = 0;
-		setInterval(() => client.user.setActivity(`!setup | ${activities[i++ % activities.length]}`, { type: 'WATCHING' }), 15000);
+		setInterval(() => client.user.setActivity(`/setup | ${activities[i++ % activities.length]}`, { type: 'WATCHING' }), 15000);
 	}
 }

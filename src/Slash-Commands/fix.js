@@ -22,8 +22,7 @@ module.exports.data = new SlashCommandBuilder()
     .addStringOption(NotNeeded2 =>
         NotNeeded2.setName('id')
             .setDescription('Set the right id to fix it in the database.')
-            .setRequired(false)
-    );
+            .setRequired(false));
 
 module.exports.run = (client, interaction) => {
     const ServerOwner = new MessageEmbed()
@@ -110,7 +109,7 @@ module.exports.run = (client, interaction) => {
                     const fixed = new MessageEmbed()
                     .setTitle('Fixed')
                     .setDescription('We have fixed your database for your guild. ModMail is disabled as default. Anymore issues? please contact us.')
-                    interaction.reply(fixed)
+                    interaction.reply({ embeds: [fixed]})
                     MainDatabase.findOneAndRemove({ ServerID: interaction.guildId }, async (err1, data1) => {
                         if (err1) throw err;
                         if (data1) {

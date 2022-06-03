@@ -149,6 +149,24 @@ module.exports.run = (client, interaction) => {
       })
     })
 
+    interaction.guild.channels.create('feedback', { parent: Supportcat }).then(async (chan) => {
+      chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
+        SEND_MESSAGES: false,
+        VIEW_CHANNEL: false,
+      })
+      chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
+        SEND_MESSAGES: true,
+        VIEW_CHANNEL: true,
+        MANAGE_CHANNELS: false,
+        ATTACH_FILES: true,
+      })
+      chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
+        SEND_MESSAGES: true,
+        VIEW_CHANNEL: true,
+        MANAGE_CHANNELS: true,
+        ATTACH_FILES: true,
+      })
+    })
     setTimeout(() => {
 
       const guildId = interaction.guildId
@@ -200,17 +218,20 @@ module.exports.run = (client, interaction) => {
           const TicketChannelIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
           const TicketTrackerIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'GUILD_VOICE');
           data2 = new TicketDataMain({
-            ServerID: data3.ServerID || interaction.guildId,
-            OwnerID: data3.OwnerID || interaction.guild.ownerId,
-            TicketChannelID: 'NA',
+            ServerID: interaction.guildId,
+            OwnerID: interaction.guild.ownerId,
+            TicketChannelID: 'N/A',
             TicketNumber: '0',
-            TicketTrackerChannelID: 'NA',
+            TicketTrackerChannelID: 'N/A',
+            FeedbackChannelID: 'N/A',
             BotPrefix: '!',
             SupportRoleID: 'N/A',
             ManagerRoleID: 'N/A',
             AdminRoleID: 'N/A',
             BetaKey: 'N/A',
             PaidGuild: 'No',
+            Tier: 'Free',
+            PremiumCode: 'N/A',
             Transcript: 'Yes',
             UseTicketReactions: 'Yes',
             UseDashboard: 'Yes',
@@ -218,10 +239,13 @@ module.exports.run = (client, interaction) => {
             TicketMessage: 'Thank you for contacting Support! Please wait for a customer support to claim your ticket.',
             CloseMessage: 'has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you.',
             ClaimTicketMessage: 'has open a ticket and needs support.',
-            DisabledCommands: 'NA',
+            OpenTicket: 'I have open a ticket for you!',
+            DisabledCommands: 'N/A',
             TranscriptMessage: 'Transcript for',
             EnableTicket: 'Enabled',
             ModMail: 'Disabled',
+            VoiceTicket: 'Disabled',
+            CustomBots: '0',
             BotVersion: BotVersions
           })
           data2.save()

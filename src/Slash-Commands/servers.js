@@ -18,8 +18,9 @@ module.exports.run = (client, interaction) => {
         return interaction.reply(NotOwner)
     }
     client.guilds.cache.forEach(guild => {
-
-        interaction.reply(`${guild.name} | ${guild.id}`)
+        
+        interaction.reply('Server')
+        interaction.channel.send(`${guild.name} | ${guild.id}`)
     })
 
 }

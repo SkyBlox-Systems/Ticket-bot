@@ -87,22 +87,32 @@ client.on('interactionCreate', interaction => {
           if (name === 'upgrade') {
             commandMethod(client, interaction)
           } else {
-            if (versionCheck.BotVersion !== config.BotVersions) {
-              const UpdateBot = new MessageEmbed()
-                .setTitle('Update bot')
-                .setDescription(`You are currently running v${versionCheck.BotVersion} of the bot. Please update it to v${config.BotVersions}. Run the command /upgrade to update the bot.`)
-              await interaction.reply({ embeds: [UpdateBot] })
+            if (versionCheck === null) {
+              const notdata = new MessageEmbed()
+              .setTitle('No data')
+              .setDescription('It seems like there is no server settings stored within the database. Please run `/setup`.')
+
+              interaction.reply({ embeds: [notdata]})
+
             } else {
-              if (check) {
-                const DisabledCommand = new MessageEmbed()
-                  .setTitle('Disabled')
-                  .setDescription(`The following command **/${commandMethod.name}** has been disabled in the server by an administrator`)
-                  .setColor('#f6f7f8')
-                if (check.Cmds.includes(interaction.name)) return interaction.reply({ embeds: [DisabledCommand] })
-                commandMethod(client, interaction)
+              if (versionCheck.BotVersion !== config.BotVersions) {
+                const UpdateBot = new MessageEmbed()
+                  .setTitle('Update bot')
+                  .setDescription(`You are currently running v${versionCheck.BotVersion} of the bot. Please update it to v${config.BotVersions}. Run the command /upgrade to update the bot.`)
+                await interaction.reply({ embeds: [UpdateBot] })
               } else {
-                commandMethod(client, interaction)
+                if (check) {
+                  const DisabledCommand = new MessageEmbed()
+                    .setTitle('Disabled')
+                    .setDescription(`The following command **/${interaction.commandName}** has been disabled in the server by an administrator`)
+                    .setColor('#f6f7f8')
+                  if (check.Cmds.includes(interaction.commandName)) return interaction.reply({ embeds: [DisabledCommand] })
+                  commandMethod(client, interaction)
+                } else {
+                  commandMethod(client, interaction)
+                }
               }
+
             }
           }
         }
