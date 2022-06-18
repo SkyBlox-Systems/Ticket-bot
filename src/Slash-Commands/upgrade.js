@@ -58,6 +58,7 @@ module.exports.run = (client, interaction) => {
                             ModMail: data3.ModMail || 'Disabled',
                             VoiceTicket: data3.VoiceTicket || 'Disabled',
                             CustomBots: data3.CustomBots || '0',
+                            TicketIDLength: data3.TicketIDLength || '5',
                             BotVersion: BotVersions
                         })
                         data3.save()

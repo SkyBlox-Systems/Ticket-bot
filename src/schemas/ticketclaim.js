@@ -11,7 +11,8 @@ const TicketClaimMain = mongoose.Schema({
   Time: String,
   AddedUser: Array,
   Type: String,
-  ClaimUserID: String
+  ClaimUserID: String,
+  Priority: String
 })
 
 module.exports = mongoose.model('TicketClaim',  TicketClaimMain)

@@ -30,6 +30,7 @@ const TicketData = mongoose.Schema({
   ModMail: String,
   VoiceTicket: String,
   CustomBots: String,
+  TicketIDLength: String,
   BotVersion: String
 })
 

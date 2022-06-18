@@ -246,6 +246,7 @@ module.exports.run = (client, interaction) => {
             ModMail: 'Disabled',
             VoiceTicket: 'Disabled',
             CustomBots: '0',
+            TicketIDLength: '5',
             BotVersion: BotVersions
           })
           data2.save()

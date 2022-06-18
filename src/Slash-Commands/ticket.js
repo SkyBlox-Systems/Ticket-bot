@@ -16,10 +16,20 @@ module.exports.data = new SlashCommandBuilder()
   .addStringOption(option =>
     option.setName('reason')
       .setDescription('Add a reason to ticket')
-      .setRequired(true));
+      .setRequired(true))
+  .addStringOption(option => 
+    option.setName('priority')
+    .setDescription('Set what priority it should be')
+    .addChoice('critical', 'critical')
+    .addChoice('major', 'major')
+    .addChoice('medium', 'medium')
+    .addChoice('low', 'low')
+    .setRequired(true));
 
 module.exports.run = (client, interaction) => {
   const MSG = interaction.options.getString('reason')
+  const PriorityList = interaction.options.getString('priority')
+
   const Xmas95 = new Date('December 31, 2021 00:00:00');
   if (Xmas95.getDate() == dd) {
     const DisabledInAllServers = new MessageEmbed()
@@ -39,10 +49,6 @@ module.exports.run = (client, interaction) => {
           interaction.reply({ embeds: [ErrorDataBase] })
         } else {
           if (data01.EnableTicket === 'Enabled') {
-
-
-
-
             function makeURL(length) {
               var result = '';
               var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -52,8 +58,10 @@ module.exports.run = (client, interaction) => {
               }
               return result;
             }
+
+            const TicketIDMainLength = data01.TicketIDLength
             const generator = makeURL(20)
-            const generator2 = makeURL(5)
+            const generator2 = makeURL(TicketIDMainLength)
 
             const user = interaction.user.id;
             const name = "ticket-" + generator2;
@@ -66,6 +74,7 @@ module.exports.run = (client, interaction) => {
                     .addField('Channel', `<#${data45.ChannelID}>`, true)
                     .addField('Reason', `${data45.Reason}.`, true)
                     .addField('Ticket ID', `${data45.TicketIDs}`, true)
+                    .addField('Priority', `${PriorityList}` || `N/A`, true)
                     await interaction.reply({ embeds: [embed] })
                 } else {
                   const Ticketcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY")
@@ -92,6 +101,7 @@ module.exports.run = (client, interaction) => {
                         .setTitle(`Ticket`)
                         .addField('Information', `<@${interaction.user.id}> ${data01.OpenTicket}`, true)
                         .addField('Channel', `Your ticket is <#${chan.id}>`, true)
+                        .addField('Priority', `${PriorityList}` || `N/A`, true)
                       await interaction.reply({ embeds: [open] });
       
                       const DmPerson = new MessageEmbed()
@@ -101,6 +111,7 @@ module.exports.run = (client, interaction) => {
                         .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can send a message to your ticket by replying to our DMs with your ticketID: ${generator}`)
                         .addField('TicketID', `${generator}`, true)
                         .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
+                        .addField('Priority', `${PriorityList}` || `N/A`, true)
                       await interaction.user.send({ embeds: [DmPerson] });
       
                       const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
@@ -117,6 +128,7 @@ module.exports.run = (client, interaction) => {
                         .addField('User', `<@${interaction.user.id}>`, true)
                         .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
                         .addField('Ticket Id', `${generator}`, true)
+                        .addField('Priority', `${PriorityList}` || `N/A`, true)
                       await chan.send({ embeds: [thankyou] }).then((m) => {
                         m.pin()
                       })
@@ -134,7 +146,8 @@ module.exports.run = (client, interaction) => {
                               Time: currentDateAndTime,
                               AddedUser: Array,
                               Type: 'Channel',
-                              ClaimUserID: ""
+                              ClaimUserID: "",
+                              Priority: PriorityList
                             })
                             data.save()
                               .catch(err => console.log(err))
@@ -185,7 +198,8 @@ module.exports.run = (client, interaction) => {
                             Time: currentDateAndTime,
                             AddedUser: Array,
                             Type: 'Channel',
-                            ClaimUserID: ""
+                            ClaimUserID: "",
+                            Priority: PriorityList
                           })
                           data.save()
                             .catch(err => console.log(err))
@@ -233,6 +247,8 @@ module.exports.run = (client, interaction) => {
                           .setTitle(`Ticket`)
                           .addField('Information', `<@${interaction.user.id}> I have open a ticket for you!`, true)
                           .addField('Channel', `Your ticket is <#${chan.id}>`, true)
+                          .addField('Priority', `${PriorityList}` || `N/A`, true)
+
                         await interaction.reply({ embeds: [open] });
         
                         const DmPerson = new MessageEmbed()
@@ -242,6 +258,7 @@ module.exports.run = (client, interaction) => {
                           .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can found your ticket here: <#${chan.id}>`)
                           .addField('TicketID', `${generator}`, true)
                           .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
+                          .addField('Priority', `${PriorityList}` || `N/A`, true)
                         await interaction.user.send({ embeds: [DmPerson] });
         
                         const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
@@ -257,6 +274,7 @@ module.exports.run = (client, interaction) => {
                           .addField('User', `<@${interaction.user.id}>`, true)
                           .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
                           .addField('Ticket Id', `${generator}`, true)
+                          .addField('Priority', `${PriorityList}` || `N/A`, true)
                         await chan.send({ embeds: [thankyou] }).then((m) => {
                           m.pin()
                         })
@@ -274,7 +292,8 @@ module.exports.run = (client, interaction) => {
                                 Time: currentDateAndTime,
                                 AddedUser: Array,
                                 Type: 'Channel',
-                                ClaimUserID: ""
+                                ClaimUserID: "",
+                                Priority: PriorityList
                               })
                               data.save()
                                 .catch(err => console.log(err))
@@ -324,7 +343,8 @@ module.exports.run = (client, interaction) => {
                               Locked: "No",
                               Time: currentDateAndTime,
                               Type: 'Channel',
-                              ClaimUserID: ""
+                              ClaimUserID: "",
+                              Priority: PriorityList
                             })
                             data.save()
                               .catch(err => console.log(err))
