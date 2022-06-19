@@ -20,12 +20,18 @@ module.exports.data = new SlashCommandBuilder()
   .addStringOption(option =>
     option.setName('normal')
       .setDescription('Used to close normal ticket channels')
-      .addChoice('close', 'close')
+      .addChoices({
+        name: 'close',
+        value: 'close'
+      })
       .setRequired(false))
   .addStringOption(option =>
     option.setName('premium')
       .setDescription('Premium only section')
-      .addChoice('Voice tickets', 'voice')
+      .addChoices({
+        name: 'voice tickets',
+        value: 'voice'
+      })
       .setRequired(false))
   .addStringOption(option =>
     option.setName('id')

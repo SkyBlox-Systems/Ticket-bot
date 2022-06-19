@@ -15,9 +15,18 @@ module.exports.data = new SlashCommandBuilder()
     option.setName('category')
       .setDescription('The main category')
       .setRequired(true)
-      .addChoice('Edit', 'edit')
-      .addChoice('View', 'view')
-      .addChoice('Auto Insert', 'auto'));
+      .addChoices({
+        name: 'Edit',
+        value: 'edit'
+      })
+      .addChoices({
+        name: 'View',
+        value: 'view'
+      })
+      .addChoices({
+        name: 'Auto Insert',
+        value: 'auto'
+      }));
 
 
 module.exports.run = async (client, interaction) => {
@@ -567,75 +576,75 @@ module.exports.run = async (client, interaction) => {
             })
           }
 
-          if (value === 'api')
-            if (interaction.user.id != interaction.guild.ownerId)
-              return collected.reply({ embeds: [ServerOwner] });
-          MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
-            if (data.APIKey === "N/A") {
-              function makeURL(length) {
-                var result = '';
-                var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                var charactersLength = characters.length;
-                for (var i = 0; i < length; i++) {
-                  result += characters.charAt(Math.floor(Math.random() * charactersLength));
-                }
-                return result;
-              }
-              const generator = makeURL(15)
-              MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator }, async (err06, data06) => {
-                if (err06) throw err06;
-                if (data06) {
-                  data06.save()
-                  const MainEmbed = new MessageEmbed()
-                    .setTitle('Done')
-                    .setDescription('We have generated your API key')
-                    .addField(`API Key`, `${generator}`)
-                    .addField('Use it here', `[Click Me](http://api.ticketbots.tk/api/${generator})`)
-                  collected.reply(({ embeds: [MainEmbed], ephemeral: true }))
-                }
-              })
-            } else {
-              const AlreadyFoundAPIKey = new MessageEmbed()
-                .setTitle('Error')
-                .setDescription(`You already have a API key linked to this server. If you want a new one, please react with a ✅. If you want to keep the current one, please react with ❌`)
-                .addField(`API Key`, `${data.APIKey}`)
+          // if (value === 'api')
+          //   if (interaction.user.id != interaction.guild.ownerId)
+          //     return collected.reply({ embeds: [ServerOwner] });
+          // MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+          //   if (data.APIKey === "N/A") {
+          //     function makeURL(length) {
+          //       var result = '';
+          //       var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+          //       var charactersLength = characters.length;
+          //       for (var i = 0; i < length; i++) {
+          //         result += characters.charAt(Math.floor(Math.random() * charactersLength));
+          //       }
+          //       return result;
+          //     }
+          //     const generator = makeURL(15)
+          //     MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator }, async (err06, data06) => {
+          //       if (err06) throw err06;
+          //       if (data06) {
+          //         data06.save()
+          //         const MainEmbed = new MessageEmbed()
+          //           .setTitle('Done')
+          //           .setDescription('We have generated your API key')
+          //           .addField(`API Key`, `${generator}`)
+          //           .addField('Use it here', `[Click Me](http://api.ticketbots.tk/api/${generator})`)
+          //         collected.reply(({ embeds: [MainEmbed], ephemeral: true }))
+          //       }
+          //     })
+          //   } else {
+          //     const AlreadyFoundAPIKey = new MessageEmbed()
+          //       .setTitle('Error')
+          //       .setDescription(`You already have a API key linked to this server. If you want a new one, please react with a ✅. If you want to keep the current one, please react with ❌`)
+          //       .addField(`API Key`, `${data.APIKey}`)
 
-              const reactionerror = await collected.reply(({ embeds: [AlreadyFoundAPIKey], fetchReply: true }))
-              reactionerror.react('✅')
-              reactionerror.react('❌')
+          //     const reactionerror = await collected.reply(({ embeds: [AlreadyFoundAPIKey], fetchReply: true }))
+          //     reactionerror.react('✅')
+          //     reactionerror.react('❌')
 
-              const Filter1 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
-              const Collector1 = reactionerror.createReactionCollector({ filter: Filter1, max: 1, time: 2 * 60 * 1000 });
-              const Filter2 = (reaction, user) => reaction.emoji.name === '❌' && user.id === interaction.user.id;
-              const Collector2 = reactionerror.createReactionCollector({ filter: Filter2, max: 1, time: 2 * 60 * 1000 });
+          //     const Filter1 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
+          //     const Collector1 = reactionerror.createReactionCollector({ filter: Filter1, max: 1, time: 2 * 60 * 1000 });
+          //     const Filter2 = (reaction, user) => reaction.emoji.name === '❌' && user.id === interaction.user.id;
+          //     const Collector2 = reactionerror.createReactionCollector({ filter: Filter2, max: 1, time: 2 * 60 * 1000 });
 
-              Collector1.on('collect', () => {
-                function makeURL2(length) {
-                  var result = '';
-                  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                  var charactersLength = characters.length;
-                  for (var i = 0; i < length; i++) {
-                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-                  }
-                  return result;
-                }
-                const generator2 = makeURL2(15)
+          //     Collector1.on('collect', () => {
+          //       function makeURL2(length) {
+          //         var result = '';
+          //         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+          //         var charactersLength = characters.length;
+          //         for (var i = 0; i < length; i++) {
+          //           result += characters.charAt(Math.floor(Math.random() * charactersLength));
+          //         }
+          //         return result;
+          //       }
+          //       const generator2 = makeURL2(15)
 
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator2 }, async (err07, data07) => {
-                  if (err07) throw err07;
-                  if (data07) {
-                    data07.save()
-                    const MainEmbed2 = new MessageEmbed()
-                      .setTitle('Done')
-                      .setDescription('We have generated your API key')
-                      .addField(`API Key`, `${generator2}`)
-                      .addField('Use it here', `[Click Me](https://api.ticketbot.tk/api/${generator2})`)
-                    interaction.channel.send(({ embeds: [MainEmbed2], ephemeral: true}))
-                  }
-                })
-              })
-            }
-          })
+          //       MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator2 }, async (err07, data07) => {
+          //         if (err07) throw err07;
+          //         if (data07) {
+          //           data07.save()
+          //           const MainEmbed2 = new MessageEmbed()
+          //             .setTitle('Done')
+          //             .setDescription('We have generated your API key')
+          //             .addField(`API Key`, `${generator2}`)
+          //             .addField('Use it here', `[Click Me](https://api.ticketbot.tk/api/${generator2})`)
+          //           interaction.channel.send(({ embeds: [MainEmbed2], ephemeral: true}))
+          //         }
+          //       })
+          //     })
+          //   }
+          // })
         })
 
 

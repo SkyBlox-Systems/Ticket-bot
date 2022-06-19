@@ -12,9 +12,22 @@ module.exports.data = new SlashCommandBuilder()
         option.setName('category')
             .setDescription('The main category')
             .setRequired(true)
-            .addChoice('Ticket Tracker ', 'tracker')
-            .addChoice('Open Tickets', 'tickets')
-            .addChoice('Mod Mail issue (v3.2 update issue)', 'ModMail'))
+            .addChoices({
+                name: 'Ticket Tracker',
+                value: 'tracker'
+            })
+            .addChoices({
+                name: 'Open Tickets',
+                value: 'tickets'
+            })
+            .addChoices({
+                name: 'Mod Mail issue (v3.2 update issue)',
+                value: 'ModMail'
+            })
+            .addChoices({
+                name: 'support',
+                value: 'support'
+            }))
     .addStringOption(NotNeeded =>
         NotNeeded.setName('amount')
             .setDescription('Set the right number to fix it in the database. (Tracker only)')

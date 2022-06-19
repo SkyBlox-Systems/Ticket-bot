@@ -20,10 +20,22 @@ module.exports.data = new SlashCommandBuilder()
   .addStringOption(option => 
     option.setName('priority')
     .setDescription('Set what priority it should be')
-    .addChoice('critical', 'critical')
-    .addChoice('major', 'major')
-    .addChoice('medium', 'medium')
-    .addChoice('low', 'low')
+    .addChoices({
+      name: 'critical',
+      value: 'critical'
+    })
+    .addChoices({
+      name: 'major',
+      value: 'major'
+    })
+    .addChoices({
+      name: 'medium',
+      value: 'medium'
+    })
+    .addChoices({
+      name: 'low',
+      value: 'low'
+    })
     .setRequired(true));
 
 module.exports.run = (client, interaction) => {

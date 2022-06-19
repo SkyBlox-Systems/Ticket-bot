@@ -13,8 +13,14 @@ module.exports.data = new SlashCommandBuilder()
         option.setName('category')
             .setDescription('Click which one you want to transfer')
             .setRequired(true)
-            .addChoice('licence', 'licence')
-            .addChoice('everything', 'everything'))
+            .addChoices({
+                name: 'licence',
+                value: 'licence'
+              })
+              .addChoices({
+                name: 'everything',
+                value: 'everything'
+              }))
     .addStringOption(option =>
         option.setName('id')
             .setDescription('Server ID you would like to transfer to')

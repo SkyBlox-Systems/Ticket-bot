@@ -89,10 +89,10 @@ client.on('interactionCreate', interaction => {
           } else {
             if (versionCheck === null) {
               const notdata = new MessageEmbed()
-              .setTitle('No data')
-              .setDescription('It seems like there is no server settings stored within the database. Please run `/setup`.')
+                .setTitle('No data')
+                .setDescription('It seems like there is no server settings stored within the database. Please run `/setup`.')
 
-              interaction.reply({ embeds: [notdata]})
+              interaction.reply({ embeds: [notdata] })
 
             } else {
               if (versionCheck.BotVersion !== config.BotVersions) {
@@ -112,7 +112,6 @@ client.on('interactionCreate', interaction => {
                   commandMethod(client, interaction)
                 }
               }
-
             }
           }
         }
@@ -130,6 +129,24 @@ client.on('interactionCreate', interaction => {
 
   if (!commandMethod) return;
 })
+
+client.on('interactionCreate', interaction => {
+  const TicketChannelIdChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'feedback' && ch.type == 'GUILD_TEXT');
+
+  if (!interaction.isModalSubmit()) return;
+    const usertitle = interaction.fields.getTextInputValue("userFeedbackID")
+    const userfeedback = interaction.fields.getTextInputValue("userMessage")
+
+    const userEmbed = new MessageEmbed()
+        .setTitle('New feedback!')
+        .setDescription(`${interaction.user.id} has sent a user feedback message. Below is the message`)
+        .addField('User', `${usertitle}`)
+        .addField('Message', `${userfeedback}`)
+
+    TicketChannelIdChannel.send({ embeds: [userEmbed] })
+    interaction.reply('Feedback sent!')
+});
+
 
 client.on("messageCreate", msg => {
   if (msg.partial) {
@@ -167,7 +184,7 @@ client.on("messageCreate", msg => {
                   .setDescription('Please use the command `/ticketreply` to reply to this message.')
                   .addField('Ticket reply:', `${m33.first().content}`, true)
                   .setTimestamp()
-                  .setFooter({ text: `user id: ${msg.author.id}`});
+                  .setFooter({ text: `user id: ${msg.author.id}` });
 
                 client.channels.cache.get(data.ChannelID).send({ embeds: [senddmmessage] })
               })
