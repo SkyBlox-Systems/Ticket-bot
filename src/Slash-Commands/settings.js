@@ -50,7 +50,6 @@ module.exports.run = async (client, interaction) => {
             .addField(`TicketNumber`, `${data.TicketNumber}`, true)
             .addField(`TicketTrackerChannelID`, `${data.TicketTrackerChannelID}`, true)
             .addField('FeedbackChannelID', `${data.FeedbackChannelID}`, true)
-            .addField(`Prefix`, `${data.BotPrefix}`, true)
             .addField(`Support Role`, `${data.SupportRoleID}`, true)
             .addField('Manager Role', `${data.ManagerRoleID}`, true)
             .addField(`Admin Role`, `${data.AdminRoleID}`, true)
@@ -65,10 +64,11 @@ module.exports.run = async (client, interaction) => {
           const ListSettingsPaid2 = new MessageEmbed()
             .setTitle(`${interaction.guild.name} bot settings`)
             .setDescription('List of the bot settings for the server (premium only).')
-            .addField(`Voice Call Tickets`, `${data.VoiceTicket}`)
-            .addField(`Amount of custom bots`, `${data.CustomBots}`)
-            .addField(`Premium code`, `${data.PremiumCode}`)
-            .addField(`Custom features`, `Soon`)
+            .addField(`Voice Call Tickets`, `${data.VoiceTicket}`, true)
+            .addField(`Amount of custom bots`, `${data.CustomBots}`, true)
+            .addField(`Premium code`, `${data.PremiumCode}`, true)
+            .addField(`Ticket ID Length`, `${data.TicketIDLength}`, true)
+            .addField(`Custom features`, `Soon`, true)
 
           const button1 = new Discord.MessageButton()
             .setCustomId("previousbtn")
@@ -191,6 +191,11 @@ module.exports.run = async (client, interaction) => {
                   label: 'API',
                   description: `Change, or view the current api code. Current key is ${data01.APIKey}`,
                   value: 'api',
+                },
+                {
+                  label: 'Change Ticket ID Length',
+                  description: `Change, or view the current length of the Ticket ID Creation. Current length size ${data01.TicketIDLength}`,
+                  value: 'ticketid',
                 },
               ]),
           );
@@ -571,7 +576,7 @@ module.exports.run = async (client, interaction) => {
                   }
                 }
               } else if (data.PaidGuild === 'No') {
-                interaction.reply('This command can only be used by premium servers. Please upgrade here:')
+                interaction.reply('This command can only be used by premium servers. Please upgrade here: https://ticketbot.sellix.io/')
               }
             })
           }
@@ -645,6 +650,60 @@ module.exports.run = async (client, interaction) => {
           //     })
           //   }
           // })
+
+          if (value === 'ticketid') {
+            if (interaction.user.id != interaction.guild.ownerId)
+              return collected.reply({ embeds: [ServerOwner] });
+            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+              if (err) throw err;
+              if (data) {
+                if (data.PaidGuild === 'Yes') {
+                  const EditMessage = new MessageEmbed()
+                    .setTitle('Edit')
+                    .setDescription('Please type out the id you want to set?')
+                  collected.reply({ embeds: [EditMessage], ephemeral: true })
+                  const Filter = (m) => m.author.id === interaction.user.id;
+                  const Collector = new MessageCollector(interaction.channel, { filter: Filter, max: 1 });
+
+                  Collector.on('collect', m1 => {
+                  })
+                  Collector.on('end', async (m2) => {
+                    const YouSureToUpdate = new MessageEmbed()
+                      .setTitle('You sure?')
+                      .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
+
+                    const YouSureUpdateEmbed = await interaction.channel.send({ embeds: [YouSureToUpdate], fetchReply: true, ephemeral: true })
+                    YouSureUpdateEmbed.react('✅')
+                    YouSureUpdateEmbed.react('❌')
+
+                    const Filter1 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
+                    const Collector1 = YouSureUpdateEmbed.createReactionCollector({ filter: Filter1, max: 1, time: 2 * 60 * 1000 });
+                    const Filter2 = (reaction, user) => reaction.emoji.name === '❌' && user.id === interaction.user.id;
+                    const Collector2 = YouSureUpdateEmbed.createReactionCollector({ filter: Filter2, max: 1, time: 2 * 60 * 1000 });
+
+                    Collector1.on('collect', () => {
+                      interaction.channel.send({ content: 'Updated', ephemeral: true })
+                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketIDLength: m2.first().content }, async (err1, data1) => {
+                        if (err1) throw err;
+                        if (data1) {
+                          data1.save()
+                        }
+                      })
+                    })
+                    Collector2.on('collect', () => {
+                      interaction.channel.send({ content: 'Cancelled', ephemeral: true })
+                    })
+                  })
+                } else {
+                  if (data.PaidGuild === 'No') {
+                    interaction.reply('This command can only be used by premium servers. Please upgrade here: https://ticketbot.sellix.io/')
+                  }
+                }
+              } else {
+                interaction.reply('There is a issue getting this guild data.. Retrying...')
+              }
+            })
+          }
         })
 
 
