@@ -31,6 +31,17 @@ const TicketData = mongoose.Schema({
   VoiceTicket: String,
   CustomBots: String,
   TicketIDLength: String,
+<<<<<<< Updated upstream
+=======
+  SecondServer: String,
+  SecondServerID: String,
+  SecondServerSupportRoleID: String,
+  SecondServerAdminRoleID: String,
+  SecondServerManagerRoleID: String,
+  SecondServerClaimChannel: String,
+  SecondServerLogsChannel: String,
+  SecondServerTranscriptChannel: String,
+>>>>>>> Stashed changes
   BotVersion: String
 })
 

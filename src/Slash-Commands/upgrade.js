@@ -59,6 +59,17 @@ module.exports.run = (client, interaction) => {
                             VoiceTicket: data3.VoiceTicket || 'Disabled',
                             CustomBots: data3.CustomBots || '0',
                             TicketIDLength: data3.TicketIDLength || '5',
+<<<<<<< Updated upstream
+=======
+                            SecondServer: data3.SecondServer || 'Disabled',
+                            SecondServerID: data3.SecondServerID || 'N/A',
+                            SecondServerSupportRoleID: data3.SecondServerSupportRoleID || 'N/A',
+                            SecondServerAdminRoleID: data3.SecondServerAdminRoleID || 'N/A',
+                            SecondServerManagerRoleID: data3.SecondServerManagerRoleID || 'N/A',
+                            SecondServerClaimChannel: data3.SecondServerClaimChannel || 'N/A',
+                            SecondServerLogsChannel: data3.SecondServerLogsChannel || 'N/A',
+                            SecondServerTranscriptChannel: data3.SecondServerTranscriptChannel || 'N/A',
+>>>>>>> Stashed changes
                             BotVersion: BotVersions
                         })
                         data3.save()

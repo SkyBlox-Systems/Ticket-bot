@@ -247,6 +247,17 @@ module.exports.run = (client, interaction) => {
             VoiceTicket: 'Disabled',
             CustomBots: '0',
             TicketIDLength: '5',
+<<<<<<< Updated upstream
+=======
+            SecondServer: 'Disabled',
+            SecondServerID: 'N/A',
+            SecondServerSupportRoleID: 'N/A',
+            SecondServerAdminRoleID: 'N/A',
+            SecondServerManagerRoleID: 'N/A',
+            SecondServerClaimChannel: 'N/A',
+            SecondServerLogsChannel: 'N/A',
+            SecondServerTranscriptChannel: 'N/A',
+>>>>>>> Stashed changes
             BotVersion: BotVersions
           })
           data2.save()
