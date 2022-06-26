@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 
 const TicketData = mongoose.Schema({
   ServerID: String,
+  TypeOfServer: String,
   OwnerID: String,
   TicketChannelID: String,
   TicketNumber: Number,
@@ -31,8 +32,6 @@ const TicketData = mongoose.Schema({
   VoiceTicket: String,
   CustomBots: String,
   TicketIDLength: String,
-<<<<<<< Updated upstream
-=======
   SecondServer: String,
   SecondServerID: String,
   SecondServerSupportRoleID: String,
@@ -41,7 +40,6 @@ const TicketData = mongoose.Schema({
   SecondServerClaimChannel: String,
   SecondServerLogsChannel: String,
   SecondServerTranscriptChannel: String,
->>>>>>> Stashed changes
   BotVersion: String
 })
 
