@@ -47,15 +47,18 @@ module.exports.run = (client, interaction) => {
       new MessageButton()
         .setCustomId('close')
         .setLabel('Close')
-        .setStyle('SUCCESS'),
+        .setStyle('SUCCESS')
+        .setEmoji('📫'),
       new MessageButton()
         .setCustomId("lock")
         .setLabel("Lock")
-        .setStyle("DANGER"),
+        .setStyle("DANGER")
+        .setEmoji("🔒"),
       new MessageButton()
         .setCustomId("unlock")
         .setLabel("Unlock")
-        .setStyle("PRIMARY"),
+        .setStyle("PRIMARY")
+        .setEmoji("🔓"),
     );
 
 
@@ -225,7 +228,7 @@ module.exports.run = (client, interaction) => {
                           .addField('Information', `<@${interaction.user.id}> ${data01.OpenTicket}`, true)
                           .addField('Channel', `Your ticket is <#${chan.id}>`, true)
                           .addField('Priority', `${PriorityList}` || `N/A`, true)
-                        await interaction.reply({ embeds: [open] });
+                        await interaction.reply({ embeds: [open], ephemeral: true });
 
                         const DmPerson = new MessageEmbed()
                           .setColor('#f6f7f8')
@@ -372,7 +375,7 @@ module.exports.run = (client, interaction) => {
                             .addField('Channel', `Your ticket is <#${chan.id}>`, true)
                             .addField('Priority', `${PriorityList}` || `N/A`, true)
 
-                          await interaction.reply({ embeds: [open] });
+                          await interaction.reply({ embeds: [open], ephemeral: true });
 
                           const DmPerson = new MessageEmbed()
                             .setColor('#f6f7f8')
