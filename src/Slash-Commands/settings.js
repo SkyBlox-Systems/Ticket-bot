@@ -54,6 +54,7 @@ module.exports.run = async (client, interaction) => {
             .addField(`TicketNumber`, `${data.TicketNumber}`, true)
             .addField(`TicketTrackerChannelID`, `${data.TicketTrackerChannelID}`, true)
             .addField('FeedbackChannelID', `${data.FeedbackChannelID}`, true)
+            .addField(`Use Ticket Reactions`, `${data.UseTicketReactions}`, true)
             .addField(`Support Role`, `${data.SupportRoleID}`, true)
             .addField('Manager Role', `${data.ManagerRoleID}`, true)
             .addField(`Admin Role`, `${data.AdminRoleID}`, true)
@@ -102,6 +103,8 @@ module.exports.run = async (client, interaction) => {
           interaction.reply({ content: 'Settings Premium' })
 
         } else {
+          if (data.SecondServer === 'Enabled')
+            return interaction.reply('Can not view the settings as this is a second guild')
           const ListSettings = new MessageEmbed()
             .setTitle(`${interaction.guild.name} bot settings`)
             .setDescription('List of the bot settings for the server.')
@@ -110,7 +113,7 @@ module.exports.run = async (client, interaction) => {
             .addField(`TicketNumber`, `${data.TicketNumber}`, true)
             .addField(`TicketTrackerChannelID`, `${data.TicketTrackerChannelID}`, true)
             .addField('FeedbackChannelID', `${data.FeedbackChannelID}`, true)
-            .addField(`Prefix`, `${data.BotPrefix}`, true)
+            .addField(`Use Ticket Reactions`, `${data.UseTicketReactions}`, true)
             .addField(`Support Role`, `${data.SupportRoleID}`, true)
             .addField('Manager Role', `${data.ManagerRoleID}`, true)
             .addField(`Admin Role`, `${data.AdminRoleID}`, true)
@@ -206,7 +209,12 @@ module.exports.run = async (client, interaction) => {
                   label: 'Second Server',
                   description: 'Enable or disable second server',
                   value: 'secondserver',
-                }
+                },
+                {
+                  label: 'Ticket Reactions',
+                  description: 'Enable or disable ticket reactions',
+                  value: 'reaction'
+                },
               ]),
           );
         await interaction.reply({ content: 'Edit settings', components: [editdropdown], ephemeral: true });
@@ -611,75 +619,78 @@ module.exports.run = async (client, interaction) => {
             })
           }
 
-          // if (value === 'api')
-          //   if (interaction.user.id != interaction.guild.ownerId)
-          //     return collected.reply({ embeds: [ServerOwner] });
-          // MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
-          //   if (data.APIKey === "N/A") {
-          //     function makeURL(length) {
-          //       var result = '';
-          //       var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-          //       var charactersLength = characters.length;
-          //       for (var i = 0; i < length; i++) {
-          //         result += characters.charAt(Math.floor(Math.random() * charactersLength));
-          //       }
-          //       return result;
-          //     }
-          //     const generator = makeURL(15)
-          //     MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator }, async (err06, data06) => {
-          //       if (err06) throw err06;
-          //       if (data06) {
-          //         data06.save()
-          //         const MainEmbed = new MessageEmbed()
-          //           .setTitle('Done')
-          //           .setDescription('We have generated your API key')
-          //           .addField(`API Key`, `${generator}`)
-          //           .addField('Use it here', `[Click Me](http://api.ticketbots.tk/api/${generator})`)
-          //         collected.reply(({ embeds: [MainEmbed], ephemeral: true }))
-          //       }
-          //     })
-          //   } else {
-          //     const AlreadyFoundAPIKey = new MessageEmbed()
-          //       .setTitle('Error')
-          //       .setDescription(`You already have a API key linked to this server. If you want a new one, please react with a ✅. If you want to keep the current one, please react with ❌`)
-          //       .addField(`API Key`, `${data.APIKey}`)
+          if (value === 'api') {
+            editdropdown.components[0].setDisabled(true)
+            interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
+            if (interaction.user.id != interaction.guild.ownerId)
+              return collected.reply({ embeds: [ServerOwner] });
+            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+              if (data.APIKey === "N/A") {
+                function makeURL(length) {
+                  var result = '';
+                  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                  var charactersLength = characters.length;
+                  for (var i = 0; i < length; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                  }
+                  return result;
+                }
+                const generator = makeURL(15)
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator }, async (err06, data06) => {
+                  if (err06) throw err06;
+                  if (data06) {
+                    data06.save()
+                    const MainEmbed = new MessageEmbed()
+                      .setTitle('Done')
+                      .setDescription('We have generated your API key')
+                      .addField(`API Key`, `${generator}`)
+                      .addField('Use it here', `[Click Me](http://api.ticketbots.tk/api/${generator})`)
+                    collected.reply(({ embeds: [MainEmbed], ephemeral: true }))
+                  }
+                })
+              } else {
+                const AlreadyFoundAPIKey = new MessageEmbed()
+                  .setTitle('Error')
+                  .setDescription(`You already have a API key linked to this server. If you want a new one, please react with a ✅. If you want to keep the current one, please react with ❌`)
+                  .addField(`API Key`, `${data.APIKey}`)
 
-          //     const reactionerror = await collected.reply(({ embeds: [AlreadyFoundAPIKey], fetchReply: true }))
-          //     reactionerror.react('✅')
-          //     reactionerror.react('❌')
+                const reactionerror = await collected.reply(({ embeds: [AlreadyFoundAPIKey], fetchReply: true }))
+                reactionerror.react('✅')
+                reactionerror.react('❌')
 
-          //     const Filter1 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
-          //     const Collector1 = reactionerror.createReactionCollector({ filter: Filter1, max: 1, time: 2 * 60 * 1000 });
-          //     const Filter2 = (reaction, user) => reaction.emoji.name === '❌' && user.id === interaction.user.id;
-          //     const Collector2 = reactionerror.createReactionCollector({ filter: Filter2, max: 1, time: 2 * 60 * 1000 });
+                const Filter1 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
+                const Collector1 = reactionerror.createReactionCollector({ filter: Filter1, max: 1, time: 2 * 60 * 1000 });
+                const Filter2 = (reaction, user) => reaction.emoji.name === '❌' && user.id === interaction.user.id;
+                const Collector2 = reactionerror.createReactionCollector({ filter: Filter2, max: 1, time: 2 * 60 * 1000 });
 
-          //     Collector1.on('collect', () => {
-          //       function makeURL2(length) {
-          //         var result = '';
-          //         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-          //         var charactersLength = characters.length;
-          //         for (var i = 0; i < length; i++) {
-          //           result += characters.charAt(Math.floor(Math.random() * charactersLength));
-          //         }
-          //         return result;
-          //       }
-          //       const generator2 = makeURL2(15)
+                Collector1.on('collect', () => {
+                  function makeURL2(length) {
+                    var result = '';
+                    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                    var charactersLength = characters.length;
+                    for (var i = 0; i < length; i++) {
+                      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                    }
+                    return result;
+                  }
+                  const generator2 = makeURL2(15)
 
-          //       MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator2 }, async (err07, data07) => {
-          //         if (err07) throw err07;
-          //         if (data07) {
-          //           data07.save()
-          //           const MainEmbed2 = new MessageEmbed()
-          //             .setTitle('Done')
-          //             .setDescription('We have generated your API key')
-          //             .addField(`API Key`, `${generator2}`)
-          //             .addField('Use it here', `[Click Me](https://api.ticketbot.tk/api/${generator2})`)
-          //           interaction.channel.send(({ embeds: [MainEmbed2], ephemeral: true }))
-          //         }
-          //       })
-          //     })
-          //   }
-          // })
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator2 }, async (err07, data07) => {
+                    if (err07) throw err07;
+                    if (data07) {
+                      data07.save()
+                      const MainEmbed2 = new MessageEmbed()
+                        .setTitle('Done')
+                        .setDescription('We have generated your API key')
+                        .addField(`API Key`, `${generator2}`)
+                        .addField('Use it here', `[Click Me](https://api.ticketbot.tk/api/${generator2})`)
+                      interaction.channel.send(({ embeds: [MainEmbed2], ephemeral: true }))
+                    }
+                  })
+                })
+              }
+            })
+          }
 
           if (value === 'ticketid') {
             editdropdown.components[0].setDisabled(true)
@@ -760,6 +771,36 @@ module.exports.run = async (client, interaction) => {
                       if (data1) {
                         data1.save()
                         collected.reply('Second server has been disabled on this guild')
+                      }
+                    })
+                  }
+                }
+              }
+            })
+          }
+          if (value === 'reaction') {
+            editdropdown.components[0].setDisabled(true)
+            interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
+            if (interaction.user.id != interaction.guild.ownerId)
+              return collected.reply({ embeds: [ServerOwner] });
+            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+              if (err) throw err;
+              if (data) {
+                if (data.UseTicketReactions === 'Yes') {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { UseTicketReactions: 'No' }, async (err1, data1) => {
+                    if (err1) throw err;
+                    if (data1) {
+                      data1.save()
+                      collected.reply('Tickets reactions has been disabled in this guild.')
+                    }
+                  })
+                } else {
+                  if (data.UseTicketReactions === 'No') {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { UseTicketReactions: 'Yes' }, async (err1, data1) => {
+                      if (err1) throw err;
+                      if (data1) {
+                        data1.save()
+                        collected.reply('Ticket reactions has been enabled in this guild.')
                       }
                     })
                   }
@@ -895,34 +936,34 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (data.TypeOfServer == 'First') {
               const MainEmbed = new MessageEmbed()
-              .setTitle('View second guild')
-              .setDescription('List of the bot settings for the guild')
-              .addField('Second guild', `${data.SecondServer}`, true)
-              .addField('Guild ID', `${data.SecondServerID}`, true)
-              .addField('Support Role ID', `${data.SecondServerSupportRoleID}`, true)
-              .addField('Admin Role ID', `${data.SecondServerAdminRoleID}`, true)
-              .addField('Manager Role ID', `${data.SecondServerManagerRoleID}`, true)
-              .addField('Claim ticket channel ID', `${data.SecondServerClaimChannel}`, true)
-              .addField('Logs channel ID', `${data.SecondServerLogsChannel}`, true)
-              .addField('Transcript channel ID', `${data.SecondServerTranscriptChannel}`, true)
+                .setTitle('View second guild')
+                .setDescription('List of the bot settings for the guild')
+                .addField('Second guild', `${data.SecondServer}`, true)
+                .addField('Guild ID', `${data.SecondServerID}`, true)
+                .addField('Support Role ID', `${data.SecondServerSupportRoleID}`, true)
+                .addField('Admin Role ID', `${data.SecondServerAdminRoleID}`, true)
+                .addField('Manager Role ID', `${data.SecondServerManagerRoleID}`, true)
+                .addField('Claim ticket channel ID', `${data.SecondServerClaimChannel}`, true)
+                .addField('Logs channel ID', `${data.SecondServerLogsChannel}`, true)
+                .addField('Transcript channel ID', `${data.SecondServerTranscriptChannel}`, true)
 
-            await collected.reply({ embeds: [MainEmbed], ephemeral: true })
+              await collected.reply({ embeds: [MainEmbed], ephemeral: true })
 
             } else {
               if (data.TypeOfServer === 'Second') {
                 const MainEmbed = new MessageEmbed()
-              .setTitle('View first guild')
-              .setDescription('List of the bot settings for the guild')
-              .addField('first guild', `${data.SecondServer}`, true)
-              .addField('Guild ID', `${data.SecondServerID}`, true)
-              .addField('Support Role ID', `${data.SecondServerSupportRoleID}`, true)
-              .addField('Admin Role ID', `${data.SecondServerAdminRoleID}`, true)
-              .addField('Manager Role ID', `${data.SecondServerManagerRoleID}`, true)
-              .addField('Claim ticket channel ID', `${data.SecondServerClaimChannel}`, true)
-              .addField('Logs channel ID', `${data.SecondServerLogsChannel}`, true)
-              .addField('Transcript channel ID', `${data.SecondServerTranscriptChannel}`, true)
+                  .setTitle('View first guild')
+                  .setDescription('List of the bot settings for the guild')
+                  .addField('first guild', `${data.SecondServer}`, true)
+                  .addField('Guild ID', `${data.SecondServerID}`, true)
+                  .addField('Support Role ID', `${data.SecondServerSupportRoleID}`, true)
+                  .addField('Admin Role ID', `${data.SecondServerAdminRoleID}`, true)
+                  .addField('Manager Role ID', `${data.SecondServerManagerRoleID}`, true)
+                  .addField('Claim ticket channel ID', `${data.SecondServerClaimChannel}`, true)
+                  .addField('Logs channel ID', `${data.SecondServerLogsChannel}`, true)
+                  .addField('Transcript channel ID', `${data.SecondServerTranscriptChannel}`, true)
 
-            await collected.reply({ embeds: [MainEmbed], ephemeral: true })
+                await collected.reply({ embeds: [MainEmbed], ephemeral: true })
 
               }
             }

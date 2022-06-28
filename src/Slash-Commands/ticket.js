@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Discord, Channel } = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const ClaimTicket = require('../schemas/ticketclaim')
 const MainDatabase = require('../schemas/TicketData')
@@ -41,6 +41,23 @@ module.exports.data = new SlashCommandBuilder()
 module.exports.run = (client, interaction) => {
   const MSG = interaction.options.getString('reason')
   const PriorityList = interaction.options.getString('priority')
+
+  const ButtonList = new MessageActionRow()
+    .addComponents(
+      new MessageButton()
+        .setCustomId('close')
+        .setLabel('Close')
+        .setStyle('SUCCESS'),
+      new MessageButton()
+        .setCustomId("lock")
+        .setLabel("Lock")
+        .setStyle("DANGER"),
+      new MessageButton()
+        .setCustomId("unlock")
+        .setLabel("Unlock")
+        .setStyle("PRIMARY"),
+    );
+
 
   const Xmas95 = new Date('December 31, 2021 00:00:00');
   if (Xmas95.getDate() == dd) {
@@ -92,93 +109,94 @@ module.exports.run = (client, interaction) => {
                 const Ticketcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY")
 
                 if (data01.SecondServer === 'Enabled') {
-                  if (data01.SecondServerID === 'N/A')
-                    return interaction.reply('No other guild has been added')
-                  if (data01.SecondServerSupportRoleID === 'N/A')
-                    return interaction.reply('No support role ID has been setup on the other guild')
-                  if (data01.SecondServerManagerRoleID === 'N/A')
-                    return interaction.reply('No support manager role ID has been setup on the other guild')
-                  const newguild = client.guilds.cache.get(data01.SecondServerID)
+                  interaction.reply('Second guild is currently disabled due to issues')
+                  // if (data01.SecondServerID === 'N/A')
+                  //   return interaction.reply('No other guild has been added')
+                  // if (data01.SecondServerSupportRoleID === 'N/A')
+                  //   return interaction.reply('No support role ID has been setup on the other guild')
+                  // if (data01.SecondServerManagerRoleID === 'N/A')
+                  //   return interaction.reply('No support manager role ID has been setup on the other guild')
+                  // const newguild = client.guilds.cache.get(data01.SecondServerID)
 
-                  newguild.channels.create(name).then(async (chan) => {
-                    chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been opened as from: ${currentDateAndTime} UTC.`)
-                    chan.permissionOverwrites.create(newguild.roles.everyone, {
-                      SEND_MESSAGES: false,
-                      VIEW_CHANNEL: false,
-                    })
-                    const open = new MessageEmbed()
-                      .setColor('#f6f7f8')
-                      .setTimestamp()
-                      .setFooter(`Ticket ID: <#${chan.id}>`)
-                      .setTitle(`Ticket`)
-                      .addField('Information', `<@${interaction.user.id}> ${data01.OpenTicket}`, true)
-                      .addField('Channel', `Your ticket is <#${chan.id}>`, true)
-                      .addField('Priority', `${PriorityList}` || `N/A`, true)
-                    await interaction.reply({ embeds: [open] });
+                  // newguild.channels.create(name).then(async (chan) => {
+                  //   chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been opened as from: ${currentDateAndTime} UTC.`)
+                  //   chan.permissionOverwrites.create(newguild.roles.everyone, {
+                  //     SEND_MESSAGES: false,
+                  //     VIEW_CHANNEL: false,
+                  //   })
+                  //   const open = new MessageEmbed()
+                  //     .setColor('#f6f7f8')
+                  //     .setTimestamp()
+                  //     .setFooter(`Ticket ID: <#${chan.id}>`)
+                  //     .setTitle(`Ticket`)
+                  //     .addField('Information', `<@${interaction.user.id}> ${data01.OpenTicket}`, true)
+                  //     .addField('Channel', `Your ticket is <#${chan.id}>`, true)
+                  //     .addField('Priority', `${PriorityList}` || `N/A`, true)
+                  //   await interaction.reply({ embeds: [open] });
 
-                    const DmPerson = new MessageEmbed()
-                      .setColor('#f6f7f8')
-                      .setTimestamp()
-                      .setTitle('Ticket open')
-                      .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can send a message to your ticket by replying to our DMs with your ticketID: ${generator}`)
-                      .addField('TicketID', `${generator}`, true)
-                      .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
-                      .addField('Priority', `${PriorityList}` || `N/A`, true)
-                    await interaction.user.send({ embeds: [DmPerson] });
+                  //   const DmPerson = new MessageEmbed()
+                  //     .setColor('#f6f7f8')
+                  //     .setTimestamp()
+                  //     .setTitle('Ticket open')
+                  //     .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can send a message to your ticket by replying to our DMs with your ticketID: ${generator}`)
+                  //     .addField('TicketID', `${generator}`, true)
+                  //     .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
+                  //     .addField('Priority', `${PriorityList}` || `N/A`, true)
+                  //   await interaction.user.send({ embeds: [DmPerson] });
 
-                    const TicketSupportID = newguild.roles.cache.find(roles => roles.id === data01.SecondServerSupportRoleID)
-                    const TicketManagerID = newguild.roles.cache.find(roles => roles.id === data01.SecondServerManagerRoleID)
-                    newguild.channels.cache.get(`${data01.SecondServerClaimChannel}`).send(`${TicketSupportID}, ${TicketManagerID} \n<@${interaction.user.id}> has open a support ticket! Please run /claim ticketid:${generator} to claim the ticket!`)
+                  //   const TicketSupportID = newguild.roles.cache.find(roles => roles.id === data01.SecondServerSupportRoleID)
+                  //   const TicketManagerID = newguild.roles.cache.find(roles => roles.id === data01.SecondServerManagerRoleID)
+                  //   newguild.channels.cache.get(`${data01.SecondServerClaimChannel}`).send(`${TicketSupportID}, ${TicketManagerID} \n<@${interaction.user.id}> has open a support ticket! Please run /claim ticketid:${generator} to claim the ticket!`)
 
-                    ClaimTicket.findOne({ ServerID: interaction.guildId }, async (err3, data3) => {
-                      if (err3) throw err;
-                      if (data3) {
-                        if (data3.ServerID === interaction.guildId) {
-                          data3 = new ClaimTicket({
-                            id: interaction.user.id,
-                            TicketIDs: generator,
-                            ServerID: interaction.guildId,
-                            ChannelID: chan.id,
-                            Reason: MSG,
-                            Locked: "No",
-                            Time: currentDateAndTime,
-                            AddedUser: Array,
-                            Type: 'Channel',
-                            ClaimUserID: "",
-                            Priority: PriorityList
-                          })
-                          data3.save()
-                          console.log('data saved')
-                        } else {
-                          console.log('Not saved')
-                        }
-                      }
-                    })
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
-                      if (err20) throw err20;
-                      if (data20) {
-                        data20.save()
-                        const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
-                        MainTicketTrackerChannel.setName(`Tickets: ${data01.TicketNumber + 1}`)
-                      }
-                    })
+                  //   ClaimTicket.findOne({ ServerID: interaction.guildId }, async (err3, data3) => {
+                  //     if (err3) throw err;
+                  //     if (data3) {
+                  //       if (data3.ServerID === interaction.guildId) {
+                  //         data3 = new ClaimTicket({
+                  //           id: interaction.user.id,
+                  //           TicketIDs: generator,
+                  //           ServerID: interaction.guildId,
+                  //           ChannelID: chan.id,
+                  //           Reason: MSG,
+                  //           Locked: "No",
+                  //           Time: currentDateAndTime,
+                  //           AddedUser: Array,
+                  //           Type: 'Channel',
+                  //           ClaimUserID: "",
+                  //           Priority: PriorityList
+                  //         })
+                  //         data3.save()
+                  //         console.log('data saved')
+                  //       } else {
+                  //         console.log('Not saved')
+                  //       }
+                  //     }
+                  //   })
+                  //   MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                  //     if (err20) throw err20;
+                  //     if (data20) {
+                  //       data20.save()
+                  //       const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
+                  //       MainTicketTrackerChannel.setName(`Tickets: ${data01.TicketNumber + 1}`)
+                  //     }
+                  //   })
 
-                    const thankyou = new MessageEmbed()
-                      .setColor('#f6f7f8')
-                      .setTimestamp()
-                      .setFooter(`Ticket ID: <#${chan.id}>`)
-                      .setTitle('Ticket')
-                      .setDescription('To reply to this user ticket, please use the following command `/ticketreply message:` ')
-                      .addField('Information', `${data01.TicketMessage}`, true)
-                      .addField('Issue', `${MSG}.`, true)
-                      .addField('User', `<@${interaction.user.id}>`, true)
-                      .addField('Staff', `${TicketSupportID} ${TicketManagerID}`, true)
-                      .addField('Ticket Id', `${generator}`, true)
-                      .addField('Priority', `${PriorityList}` || `N/A`, true)
-                    await chan.send({ embeds: [thankyou] }).then((m) => {
-                      m.pin()
-                    })
-                  })
+                  //   const thankyou = new MessageEmbed()
+                  //     .setColor('#f6f7f8')
+                  //     .setTimestamp()
+                  //     .setFooter(`Ticket ID: <#${chan.id}>`)
+                  //     .setTitle('Ticket')
+                  //     .setDescription('To reply to this user ticket, please use the following command `/ticketreply message:` ')
+                  //     .addField('Information', `${data01.TicketMessage}`, true)
+                  //     .addField('Issue', `${MSG}.`, true)
+                  //     .addField('User', `<@${interaction.user.id}>`, true)
+                  //     .addField('Staff', `${TicketSupportID} ${TicketManagerID}`, true)
+                  //     .addField('Ticket Id', `${generator}`, true)
+                  //     .addField('Priority', `${PriorityList}` || `N/A`, true)
+                  //   await chan.send({ embeds: [thankyou] }).then((m) => {
+                  //     m.pin()
+                  //   })
+                  // })
                 } else {
                   if (data01.SecondServer === 'Disabled') {
                     if (data01.ModMail === 'Enabled') {
@@ -234,7 +252,7 @@ module.exports.run = (client, interaction) => {
                           .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
                           .addField('Ticket Id', `${generator}`, true)
                           .addField('Priority', `${PriorityList}` || `N/A`, true)
-                        await chan.send({ embeds: [thankyou] }).then((m) => {
+                        await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                           m.pin()
                         })
                         ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
@@ -380,7 +398,7 @@ module.exports.run = (client, interaction) => {
                             .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
                             .addField('Ticket Id', `${generator}`, true)
                             .addField('Priority', `${PriorityList}` || `N/A`, true)
-                          await chan.send({ embeds: [thankyou] }).then((m) => {
+                          await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                             m.pin()
                           })
                           ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
