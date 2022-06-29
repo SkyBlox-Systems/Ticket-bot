@@ -448,9 +448,9 @@ module.exports = class ReadyEvent extends BaseEvent {
       if (interaction.customId === 'lock') {
         if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {
           const NoPerms = new MessageEmbed()
-              .setTitle('Error')
-              .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
-              return interaction.reply({ embeds: [NoPerms] })
+            .setTitle('Error')
+            .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
+          return interaction.reply({ embeds: [NoPerms] })
         }
         MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
           if (err) throw err;
@@ -472,13 +472,13 @@ module.exports = class ReadyEvent extends BaseEvent {
                         VIEW_CHANNEL: true,
                         ATTACH_FILES: true,
                         MANAGE_CHANNELS: false,
-                      }) 
+                      })
                       interaction.channel.permissionOverwrites.edit(ClaimUser, {
                         SEND_MESSAGES: true,
                         VIEW_CHANNEL: true,
                         ATTACH_FILES: true,
                         MANAGE_CHANNELS: true,
-                      }) 
+                      })
                       interaction.channel.permissionOverwrites.edit(UserID, {
                         SEND_MESSAGES: false,
                         VIEW_CHANNEL: true,
@@ -488,14 +488,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                       const NoLocked = new MessageEmbed()
                         .setTitle('Locked')
                         .setDescription(`<@${interaction.user.id}> has locked your ticket! This ticket can not be closed unless it has been unlocked once again. Please contact an Ticket Support manager if this was a mistake.`)
-                        interaction.reply({ embeds: [NoLocked]})
+                      interaction.reply({ embeds: [NoLocked] })
 
-                        ClaimTicket.findOneAndUpdate({ ChannelID: interaction.channel.id }, { Locked: 'Yes' }, async (err2, data2) => {
-                          if (err2) throw err2;
-                          if (data2) {
-                            data2.save()
-                          }
-                        })
+                      ClaimTicket.findOneAndUpdate({ ChannelID: interaction.channel.id }, { Locked: 'Yes' }, async (err2, data2) => {
+                        if (err2) throw err2;
+                        if (data2) {
+                          data2.save()
+                        }
+                      })
 
                     }
                   }
@@ -508,9 +508,9 @@ module.exports = class ReadyEvent extends BaseEvent {
       if (interaction.customId === 'unlock') {
         if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {
           const NoPerms = new MessageEmbed()
-              .setTitle('Error')
-              .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
-              return interaction.reply({ embeds: [NoPerms] })
+            .setTitle('Error')
+            .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
+          return interaction.reply({ embeds: [NoPerms] })
         }
         MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
           if (err) throw err;
@@ -532,13 +532,13 @@ module.exports = class ReadyEvent extends BaseEvent {
                         VIEW_CHANNEL: true,
                         ATTACH_FILES: true,
                         MANAGE_CHANNELS: false,
-                      }) 
+                      })
                       interaction.channel.permissionOverwrites.edit(ClaimUser, {
                         SEND_MESSAGES: true,
                         VIEW_CHANNEL: true,
                         ATTACH_FILES: true,
                         MANAGE_CHANNELS: true,
-                      }) 
+                      })
                       interaction.channel.permissionOverwrites.edit(UserID, {
                         SEND_MESSAGES: true,
                         VIEW_CHANNEL: true,
@@ -548,14 +548,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                       const NoLocked = new MessageEmbed()
                         .setTitle('Locked')
                         .setDescription(`<@${interaction.user.id}> has unlocked your ticket! This ticket can not be closed unless it has been unlocked once again. Please contact an Ticket Support manager if this was a mistake.`)
-                        interaction.reply({ embeds: [NoLocked]})
+                      interaction.reply({ embeds: [NoLocked] })
 
-                        ClaimTicket.findOneAndUpdate({ ChannelID: interaction.channel.id }, { Locked: 'No' }, async (err2, data2) => {
-                          if (err2) throw err2;
-                          if (data2) {
-                            data2.save()
-                          }
-                        })
+                      ClaimTicket.findOneAndUpdate({ ChannelID: interaction.channel.id }, { Locked: 'No' }, async (err2, data2) => {
+                        if (err2) throw err2;
+                        if (data2) {
+                          data2.save()
+                        }
+                      })
 
                     }
                   }
@@ -944,6 +944,17 @@ module.exports = class ReadyEvent extends BaseEvent {
             interaction.reply({ embeds: [NoData] })
           }
         })
+      }
+      if (interaction.customId === 'delete') {
+        const ServerOwner = new MessageEmbed()
+          .setTitle('Error')
+          .setDescription('This command is restricted to guild owner only. Please do not try and use this command because you will not get anywhere.')
+        if (interaction.user.id != interaction.guild.ownerId)
+          return interaction.reply({ embeds: [ServerOwner] });
+
+          interaction.message.delete()
+          const DMuser = client.users.cache.get(interaction.user.id)
+          DMuser.send('Message has been deleted')
       }
     });
 

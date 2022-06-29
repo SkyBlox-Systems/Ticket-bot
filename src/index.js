@@ -18,6 +18,7 @@ const db = require('./schemas/commands')
 const MainDatabase = require('./schemas/TicketData')
 const blacklist = require('./schemas/Blacklist-schema');
 const ClaimTicket = require('./schemas/ticketclaim');
+const { truncate } = require('fs/promises');
 
 
 
@@ -50,8 +51,11 @@ client.on('guildCreate', guild => {
 
   const welcome = new MessageEmbed()
     .setTitle('Setup')
-    .setDescription('Thank you for adding Ticket bot to your server. To setup the ticket system, please run `!setup` in any of your channels. The bot is on shard #0. Any issues with setting up the bot, please head to our support page: https://ticketbots.tk/discord or https://docs.ticketbots.tk')
-    .setImage('https://cdn.discordapp.com/attachments/787688783743025152/799263407190310932/Untitled.jpg')
+    .setDescription('Hey! Thank you for adding us to our server! We are exicted to be here. Whenever u are ready, please run `/setup` to start!')
+    .addField('Website', `[Click me](https://www.ticketbot.tk/)`, true)
+    .addField('Invite bot', `[Click me](https://www.ticketbot.tk/invite)`, true)
+    .addField('Status', '[Click me](https://status.skybloxsystems.com)', true)
+    .setImage('https://cdn.discordapp.com/attachments/807566032033284097/991601205677654026/Thank_you.png')
     .setColor('#f6f7f8')
 
 

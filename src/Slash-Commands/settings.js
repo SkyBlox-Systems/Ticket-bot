@@ -37,7 +37,7 @@ module.exports.run = async (client, interaction) => {
 
   const ServerOwner = new MessageEmbed()
     .setTitle('Error')
-    .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
+    .setDescription('This command is restricted to guild owner only. Please do not try and use this command because you will not get anywhere.')
 
   const teststring = interaction.options.getString('category');
 

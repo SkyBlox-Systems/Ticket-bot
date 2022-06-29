@@ -89,16 +89,16 @@ module.exports.run = (client, interaction) => {
       editdropdown.components[0].setDisabled(true)
       interaction.editReply({ embeds: [WelcomeEmbed], components: [editdropdown], ephemeral: true })
       if (interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager')) {
-        return interaction.reply({ embeds: [Error] })
+        return collected.reply({ embeds: [Error] })
 
       }
 
 
-      interaction.reply({ embeds: [ready] })
+      collected.reply({ embeds: [ready] })
 
       if (interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager')) {
         m.delete()
-        interaction.reply({ embeds: [Error] })
+        collected.reply({ embeds: [Error] })
       } else {
         interaction.guild.roles.create({
           name: 'ticket manager',
@@ -307,16 +307,16 @@ module.exports.run = (client, interaction) => {
         editdropdown.components[0].setDisabled(true)
         interaction.editReply({ embeds: [WelcomeEmbed], components: [editdropdown], ephemeral: true })
         if (interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager')) {
-          return interaction.reply({ embeds: [Error] })
+          return collected.reply({ embeds: [Error] })
 
         }
 
 
-        interaction.reply({ embeds: [ready] })
+        collected.reply({ embeds: [ready] })
 
         if (interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager')) {
           m.delete()
-          interaction.reply({ embeds: [Error] })
+          collected.reply({ embeds: [Error] })
         } else {
           interaction.guild.roles.create({
             name: 'ticket manager',
