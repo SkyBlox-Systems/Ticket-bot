@@ -7,15 +7,18 @@ const DataBaseMongo = require('./mongo');
 require('./slash-register')();
 let commands = require('./slash-register').commands;
 console.log(commands);
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const { Permissions } = require('discord.js');
 const { MessageCollector, Collector } = require('discord.js');
+var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
+
 
 
 const db = require('./schemas/commands')
 const MainDatabase = require('./schemas/TicketData')
 const blacklist = require('./schemas/Blacklist-schema');
-const TicketClaimss = require('./schemas/ticketclaim');
+const ClaimTicket = require('./schemas/ticketclaim');
+const { truncate } = require('fs/promises');
 
 
 
@@ -48,8 +51,11 @@ client.on('guildCreate', guild => {
 
   const welcome = new MessageEmbed()
     .setTitle('Setup')
-    .setDescription('Thank you for adding Ticket bot to your server. To setup the ticket system, please run `!setup` in any of your channels. The bot is on shard #0. Any issues with setting up the bot, please head to our support page: https://ticketbots.tk/discord or https://docs.ticketbots.tk')
-    .setImage('https://cdn.discordapp.com/attachments/787688783743025152/799263407190310932/Untitled.jpg')
+    .setDescription('Hey! Thank you for adding us to our server! We are exicted to be here. Whenever u are ready, please run `/setup` to start!')
+    .addField('Website', `[Click me](https://www.ticketbot.tk/)`, true)
+    .addField('Invite bot', `[Click me](https://www.ticketbot.tk/invite)`, true)
+    .addField('Status', '[Click me](https://status.skybloxsystems.com)', true)
+    .setImage('https://cdn.discordapp.com/attachments/807566032033284097/991601205677654026/Thank_you.png')
     .setColor('#f6f7f8')
 
 
@@ -89,10 +95,10 @@ client.on('interactionCreate', interaction => {
           } else {
             if (versionCheck === null) {
               const notdata = new MessageEmbed()
-              .setTitle('No data')
-              .setDescription('It seems like there is no server settings stored within the database. Please run `/setup`.')
+                .setTitle('No data')
+                .setDescription('It seems like there is no server settings stored within the database. Please run `/setup`.')
 
-              interaction.reply({ embeds: [notdata]})
+              interaction.reply({ embeds: [notdata] })
 
             } else {
               if (versionCheck.BotVersion !== config.BotVersions) {
@@ -112,7 +118,6 @@ client.on('interactionCreate', interaction => {
                   commandMethod(client, interaction)
                 }
               }
-
             }
           }
         }
@@ -131,6 +136,24 @@ client.on('interactionCreate', interaction => {
   if (!commandMethod) return;
 })
 
+client.on('interactionCreate', interaction => {
+  const TicketChannelIdChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'feedback' && ch.type == 'GUILD_TEXT');
+
+  if (!interaction.isModalSubmit()) return;
+  const usertitle = interaction.fields.getTextInputValue("userFeedbackID")
+  const userfeedback = interaction.fields.getTextInputValue("userMessage")
+
+  const userEmbed = new MessageEmbed()
+    .setTitle('New feedback!')
+    .setDescription(`${interaction.user.id} has sent a user feedback message. Below is the message`)
+    .addField('User', `${usertitle}`)
+    .addField('Message', `${userfeedback}`)
+
+  TicketChannelIdChannel.send({ embeds: [userEmbed] })
+  interaction.reply('Feedback sent!')
+});
+
+
 client.on("messageCreate", msg => {
   if (msg.partial) {
     // Never triggers
@@ -141,7 +164,7 @@ client.on("messageCreate", msg => {
   // console.log(msg.content);
   // console.log(msg.author.id);
 
-  TicketClaimss.findOne({ TicketIDs: msg.content }, async (err, data) => {
+  ClaimTicket.findOne({ TicketIDs: msg.content }, async (err, data) => {
     if (err) throw err;
     if (data) {
       if (data.id === msg.author.id) {
@@ -167,7 +190,7 @@ client.on("messageCreate", msg => {
                   .setDescription('Please use the command `/ticketreply` to reply to this message.')
                   .addField('Ticket reply:', `${m33.first().content}`, true)
                   .setTimestamp()
-                  .setFooter({ text: `user id: ${msg.author.id}`});
+                  .setFooter({ text: `user id: ${msg.author.id}` });
 
                 client.channels.cache.get(data.ChannelID).send({ embeds: [senddmmessage] })
               })

@@ -16,11 +16,11 @@ module.exports = {
     mongoose.Promise = global.Promise;
 
     mongoose.connection.on('connected', () => {
-      console.log('The bot has connected to the Ticket Database!');
+      console.log('[SkyBlox Systems] - The bot has connected to the Ticket Database!');
     })
 
     mongoose.connection.on('disconnected', () => {
-      console.log('The bot has disconnected from the database: TicketBot');
+      console.log('[SkyBlox Systems] - The bot has disconnected from the database: TicketBot');
     })
   }
 }

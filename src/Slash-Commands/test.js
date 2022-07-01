@@ -5,15 +5,14 @@ const { MessageEmbed } = require('discord.js');
 const ticketclaim = require('../schemas/ticketclaim')
 const MainFile = require('../../slappey.json')
 const ProKeys = require('../schemas/keys')
+const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+
 
 module.exports.data = new SlashCommandBuilder()
     .setName('test')
     .setDescription('test Command')
-    .addStringOption(option =>
-        option.setName('reason')
-            .setDescription('Add a reason to ticket')
-            .setRequired(true));
 
-module.exports.run = (client, interaction) => {
-    interaction.reply('No, sorry')
+module.exports.run = async (client, interaction) => {
+    
+
 }
