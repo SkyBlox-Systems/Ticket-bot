@@ -651,6 +651,13 @@ module.exports = class ReadyEvent extends BaseEvent {
                               MANAGE_CHANNELS: true,
                               ATTACH_FILES: true,
                             })
+                            
+                            chan.permissionOverwrites.create(user, {
+                              SEND_MESSAGES: true,
+                              VIEW_CHANNEL: true,
+                              ATTACH_FILES: true,
+                              MANAGE_CHANNELS: true,
+                            })
 
                             const open = new MessageEmbed()
                               .setColor('#f6f7f8')
