@@ -7,6 +7,11 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const { Permissions } = require('discord.js');
 const { MessageCollector, Collector } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
+const fs = require('fs').promises;
+const jsdom = require('jsdom');
+const { JSDOM } = jsdom;
+const dom = new JSDOM();
+const discordTranscripts = require('discord-html-transcripts');
 
 
 
@@ -17,7 +22,7 @@ module.exports = class ReadyEvent extends BaseEvent {
   async run(client) {
 
     // Ticket Buttons 
-    client.on('interactionCreate', interaction => {
+    client.on('interactionCreate', async interaction => {
       if (!interaction.isButton()) return
       if (interaction.customId === 'close') {
         MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
@@ -565,6 +570,16 @@ module.exports = class ReadyEvent extends BaseEvent {
           }
         })
       }
+      if (interaction.customId === 'transcript') {
+        const channelsss = interaction.channel;
+        const attachment = await discordTranscripts.createTranscript(channelsss, {
+          limit: -1, // Max amount of messages to fetch.
+          returnBuffer: false, // Return a buffer instead of a MessageAttachment 
+          fileName: `${channelsss}.html` // Only valid with returnBuffer false. Name of attachment. 
+        });
+
+        interaction.reply({ content: 'Below, we have given you the transcript. This can only be shown to you', files: [attachment], ephemeral: true })
+      }
     });
 
     // Ticket Reactions
@@ -588,6 +603,11 @@ module.exports = class ReadyEvent extends BaseEvent {
               .setLabel("Unlock")
               .setStyle("PRIMARY")
               .setEmoji("🔓"),
+            new MessageButton()
+              .setCustomId("transcript")
+              .setLabel('Transcript')
+              .setStyle('SECONDARY')
+              .setEmoji('🎫')
           );
 
         MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
@@ -651,7 +671,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                               MANAGE_CHANNELS: true,
                               ATTACH_FILES: true,
                             })
-                            
+
                             chan.permissionOverwrites.create(user, {
                               SEND_MESSAGES: true,
                               VIEW_CHANNEL: true,
@@ -959,9 +979,9 @@ module.exports = class ReadyEvent extends BaseEvent {
         if (interaction.user.id != interaction.guild.ownerId)
           return interaction.reply({ embeds: [ServerOwner] });
 
-          interaction.message.delete()
-          const DMuser = client.users.cache.get(interaction.user.id)
-          DMuser.send('Message has been deleted')
+        interaction.message.delete()
+        const DMuser = client.users.cache.get(interaction.user.id)
+        DMuser.send('Message has been deleted')
       }
     });
 

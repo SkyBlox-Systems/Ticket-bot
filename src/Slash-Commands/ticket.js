@@ -59,6 +59,11 @@ module.exports.run = (client, interaction) => {
         .setLabel("Unlock")
         .setStyle("PRIMARY")
         .setEmoji("🔓"),
+      new MessageButton()
+      .setCustomId("transcript")
+      .setLabel('Transcript')
+      .setStyle('SECONDARY')
+      .setEmoji('🎫')
     );
 
 
@@ -77,7 +82,7 @@ module.exports.run = (client, interaction) => {
         if (data01.TicketTrackerChannelID === 'N/A') {
           const ErrorDataBase = new MessageEmbed()
             .setTitle('Error')
-            .setDescription(`The Ticket Tracker is not set up in settings. Please edit it by using the command ${client.prefix}settings`)
+            .setDescription(`The Ticket Tracker is not set up in settings. Please edit it by using the command /settings`)
           interaction.reply({ embeds: [ErrorDataBase] })
         } else {
           if (data01.EnableTicket === 'Enabled') {

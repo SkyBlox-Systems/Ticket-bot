@@ -6,6 +6,7 @@ const ticketclaim = require('../schemas/ticketclaim')
 const MainFile = require('../../slappey.json')
 const ProKeys = require('../schemas/keys')
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const axios = require('axios');
 
 
 module.exports.data = new SlashCommandBuilder()
@@ -13,6 +14,5 @@ module.exports.data = new SlashCommandBuilder()
     .setDescription('test Command')
 
 module.exports.run = async (client, interaction) => {
-    
 
 }
