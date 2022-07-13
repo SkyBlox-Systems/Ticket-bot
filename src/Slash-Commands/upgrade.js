@@ -4,6 +4,8 @@ const Discord = require('discord.js');
 const database = require('../schemas/TicketData')
 const { BotVersions } = require('../../slappey.json')
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const axios = require('axios');
+
 
 module.exports.data = new SlashCommandBuilder()
     .setName('upgrade')
@@ -12,6 +14,7 @@ module.exports.data = new SlashCommandBuilder()
 
 
 module.exports.run = async (client, interaction) => {
+
 
     // const msg =  interaction.channel.send(`upgrade..`);
 
@@ -27,7 +30,7 @@ module.exports.run = async (client, interaction) => {
     database.findOne({ ServerID: interaction.guildId }, async (err, data) => {
         if (err) throw err;
         if (data) {
-            if (data.SecondServer === 'Disabled') {
+            if (data.SecondServer === 'Disabled' || undefined)  {
                 if (data.BotVersion !== BotVersions) {
                     database.findOne({ ServerID: interaction.guildId }, async (err3, data3) => {
                         if (err3) throw err;
@@ -70,6 +73,8 @@ module.exports.run = async (client, interaction) => {
                                 SecondServerClaimChannel: data3.SecondServerClaimChannel || 'N/A',
                                 SecondServerLogsChannel: data3.SecondServerLogsChannel || 'N/A',
                                 SecondServerTranscriptChannel: data3.SecondServerTranscriptChannel || 'N/A',
+                                ROBLOX: data3.ROBLOX || 'Disabled',
+                                TypeOfServer: data3.TypeOfServer || 'First',
                                 BotVersion: BotVersions
                             })
                             data3.save()
@@ -102,13 +107,15 @@ module.exports.run = async (client, interaction) => {
                                 })
 
                             } else {
-                                // do nothing
+                                interaction.reply('We are having issues updating your guild. Please contact support via our support server. Do that by heading to our website')
                             }
                             database.findOneAndRemove({ ServerID: interaction.guildId }, async (err2, data2) => {
                                 if (err2) throw err;
                                 if (data2) {
                                 }
                             })
+                        } else {
+                            interaction.reply('We are having issues updating your guild. Please contact support via our support server. Do that by heading to our website')
                         }
                     })
                 } else {
@@ -119,6 +126,8 @@ module.exports.run = async (client, interaction) => {
                         interaction.reply({ embeds: [alreadyupdated] })
                     }
                 }
+            } else {
+                interaction.reply('There is currently a issue with upgrading to v4.0. Hang in there. Please check back in 10-20 minutes. We are upgrading all guild database.')
             }
 
         } else {
@@ -139,6 +148,8 @@ module.exports.run = async (client, interaction) => {
                                 SecondServerClaimChannel: data3.SecondServerClaimChannel || 'N/A',
                                 SecondServerLogsChannel: data3.SecondServerLogsChannel || 'N/A',
                                 SecondServerTranscriptChannel: data3.SecondServerTranscriptChannel || 'N/A',
+                                ROBLOX: data3.ROBLOX || 'Disabled',
+                                TypeOfServer: data3.TypeOfServer || 'Second',
                                 BotVersion: BotVersions
                             })
                             data3.save()
@@ -169,9 +180,10 @@ module.exports.run = async (client, interaction) => {
                                         ATTACH_FILES: true,
                                     })
                                 })
-    
+
                             } else {
-                                // do nothing
+                                interaction.reply('We are having issues updating your guild. Please contact support via our support server. Do that by heading to our website')
+
                             }
                             database.findOneAndRemove({ ServerID: interaction.guildId }, async (err2, data2) => {
                                 if (err2) throw err;

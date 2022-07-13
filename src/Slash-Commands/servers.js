@@ -17,10 +17,15 @@ module.exports.run = (client, interaction) => {
             .setDescription('You cannot use the following the command: `!servers`. The command is only available for the owner.')
         return interaction.reply(NotOwner)
     }
-    client.guilds.cache.forEach(guild => {
-        
-        interaction.reply('Server')
-        interaction.channel.send(`${guild.name} | ${guild.id}`)
+    interaction.reply('Server')
+    client.guilds.cache.forEach(async (guild) => {
+
+        const invites = []
+
+        const test = await guild.invites.fetch()
+
+
+        interaction.channel.send(`${guild.name} | ${guild.id} | ${guild.memberCount} members | ${guild.id, test.map((invite) => [invite.code])}`)
     })
 
 }

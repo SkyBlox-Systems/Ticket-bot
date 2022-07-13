@@ -7,6 +7,13 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const { Permissions } = require('discord.js');
 const { MessageCollector, Collector } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
+const fs = require('fs').promises;
+const jsdom = require('jsdom');
+const { JSDOM } = jsdom;
+const dom = new JSDOM();
+const discordTranscripts = require('discord-html-transcripts');
+const timestamp = require('unix-timestamp');
+const MainTime = Math.round(timestamp.now())
 
 
 
@@ -17,9 +24,38 @@ module.exports = class ReadyEvent extends BaseEvent {
   async run(client) {
 
     // Ticket Buttons 
-    client.on('interactionCreate', interaction => {
+    client.on('interactionCreate', async interaction => {
       if (!interaction.isButton()) return
       if (interaction.customId === 'close') {
+        const ButtonList = new MessageActionRow()
+          .addComponents(
+            new MessageButton()
+              .setCustomId("rate1")
+              .setLabel("1")
+              .setStyle("PRIMARY")
+              .setEmoji("⭐"),
+            new MessageButton()
+              .setCustomId("rate2")
+              .setLabel("2")
+              .setStyle("PRIMARY")
+              .setEmoji("⭐"),
+            new MessageButton()
+              .setCustomId("rate3")
+              .setLabel('3')
+              .setStyle('PRIMARY')
+              .setEmoji('⭐'),
+            new MessageButton()
+              .setCustomId("rate4")
+              .setLabel('4')
+              .setStyle('PRIMARY')
+              .setEmoji('⭐'),
+            new MessageButton()
+              .setCustomId("rate5")
+              .setLabel('5')
+              .setStyle('PRIMARY')
+              .setEmoji('⭐')
+          );
+
         MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
           if (err) throw err;
           if (data) {
@@ -167,7 +203,10 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                   .setColor('#f5f5f5')
                                                   .setTimestamp()
                                                   .setTitle(`Ticket`)
-                                                  .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}.`)
+                                                  .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
+                                                  .addField('Reason', `${data.Reason}`, true)
+                                                  .addField('Time open', `${data, Time}`, true)
+                                                  .addField('Priority', `${data.Priority}`, true)
 
                                                 const DMTicketClaimClosed = new MessageEmbed()
                                                   .setColor('#f5f5f5')
@@ -256,7 +295,10 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                     .setColor('#f5f5f5')
                                                     .setTimestamp()
                                                     .setTitle(`Ticket`)
-                                                    .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}.`)
+                                                    .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
+                                                    .addField('Reason', `${data.Reason}`, true)
+                                                    .addField('Time open', `${data, Time}`, true)
+                                                    .addField('Priority', `${data.Priority}`, true)
 
                                                   const DMTicketClaimClosed = new MessageEmbed()
                                                     .setColor('#f5f5f5')
@@ -366,7 +408,10 @@ module.exports = class ReadyEvent extends BaseEvent {
                                               .setColor('#f5f5f5')
                                               .setTimestamp()
                                               .setTitle(`Ticket`)
-                                              .setDescription(`<@${data.ClaimUserID}> has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you.`)
+                                              .setDescription(`<@${data.ClaimUserID}> has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you. Please rate the support below`)
+                                              .addField('Reason', `${data.Reason}`, true)
+                                              .addField('Time open', `${data, Time}`, true)
+                                              .addField('Priority', `${data.Priority}`, true)
 
                                             const DMTicketClaimClosed = new MessageEmbed()
                                               .setColor('#f5f5f5')
@@ -565,6 +610,16 @@ module.exports = class ReadyEvent extends BaseEvent {
           }
         })
       }
+      if (interaction.customId === 'transcript') {
+        const channelsss = interaction.channel;
+        const attachment = await discordTranscripts.createTranscript(channelsss, {
+          limit: -1, // Max amount of messages to fetch.
+          returnBuffer: false, // Return a buffer instead of a MessageAttachment 
+          fileName: `${channelsss}.html` // Only valid with returnBuffer false. Name of attachment. 
+        });
+
+        interaction.reply({ content: 'Below, we have given you the transcript. This can only be shown to you', files: [attachment], ephemeral: true })
+      }
     });
 
     // Ticket Reactions
@@ -588,6 +643,11 @@ module.exports = class ReadyEvent extends BaseEvent {
               .setLabel("Unlock")
               .setStyle("PRIMARY")
               .setEmoji("🔓"),
+            new MessageButton()
+              .setCustomId("transcript")
+              .setLabel('Transcript')
+              .setStyle('SECONDARY')
+              .setEmoji('🎫')
           );
 
         MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
@@ -651,7 +711,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                               MANAGE_CHANNELS: true,
                               ATTACH_FILES: true,
                             })
-                            
+
                             chan.permissionOverwrites.create(user, {
                               SEND_MESSAGES: true,
                               VIEW_CHANNEL: true,
@@ -667,6 +727,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                               .addField('Information', `<@${interaction.user.id}> ${data01.OpenTicket}`, true)
                               .addField('Channel', `Your ticket is <#${chan.id}>`, true)
                               .addField('Priority', `N/A`, true)
+                              .addField('Open Time', `<t:${MainTime}:f>`, true)
                             await interaction.reply({ embeds: [open], ephemeral: true });
 
                             const DmPerson = new MessageEmbed()
@@ -677,6 +738,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                               .addField('TicketID', `${generator}`, true)
                               .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
                               .addField('Priority', `N/A`, true)
+                              .addField('Open Time', `<t:${MainTime}:f>`, true)
                             await interaction.user.send({ embeds: [DmPerson] });
 
                             const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
@@ -694,6 +756,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                               .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
                               .addField('Ticket Id', `${generator}`, true)
                               .addField('Priority', `N/A`, true)
+                              .addField('Open Time', `<t:${MainTime}:f>`, true)
                             await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                               m.pin()
                             })
@@ -760,7 +823,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                   ChannelID: chan.id,
                                   Reason: 'Ticket Reactions',
                                   Locked: "No",
-                                  Time: currentDateAndTime,
+                                  Time: MainTime,
                                   AddedUser: Array,
                                   Type: 'Channel',
                                   ClaimUserID: "",
@@ -813,6 +876,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                 .addField('Information', `<@${interaction.user.id}> I have open a ticket for you!`, true)
                                 .addField('Channel', `Your ticket is <#${chan.id}>`, true)
                                 .addField('Priority', `N/A`, true)
+                                .addField('Open Time', `<t:${MainTime}:f>`, true)
 
                               await interaction.reply({ embeds: [open], ephemeral: true });
 
@@ -824,6 +888,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                 .addField('TicketID', `${generator}`, true)
                                 .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
                                 .addField('Priority', `N/A`, true)
+                                .addField('Open Time', `<t:${MainTime}:f>`, true)
                               await interaction.user.send({ embeds: [DmPerson] });
 
                               const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
@@ -840,6 +905,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                 .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
                                 .addField('Ticket Id', `${generator}`, true)
                                 .addField('Priority', `N/A`, true)
+                                .addField('Open Time', `<t:${MainTime}:f>`, true)
                               await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                                 m.pin()
                               })
@@ -854,7 +920,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                       ChannelID: chan.id,
                                       Reason: 'Ticket Reactions.',
                                       Locked: "No",
-                                      Time: currentDateAndTime,
+                                      Time: MainTime,
                                       AddedUser: Array,
                                       Type: 'Channel',
                                       ClaimUserID: "",
@@ -959,9 +1025,17 @@ module.exports = class ReadyEvent extends BaseEvent {
         if (interaction.user.id != interaction.guild.ownerId)
           return interaction.reply({ embeds: [ServerOwner] });
 
-          interaction.message.delete()
-          const DMuser = client.users.cache.get(interaction.user.id)
-          DMuser.send('Message has been deleted')
+        interaction.message.delete()
+        const DMuser = client.users.cache.get(interaction.user.id)
+        DMuser.send('Message has been deleted')
+      }
+    });
+
+    // Ratings 
+    client.on('interactionCreate', interaction => {
+      if (!interaction.isButton()) return
+      if (interaction.customId === '1') {
+        interaction.reply('Thank you for your submission')
       }
     });
 
