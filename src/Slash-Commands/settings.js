@@ -207,14 +207,19 @@ module.exports.run = async (client, interaction) => {
                 },
                 {
                   label: 'Second Server',
-                  description: 'Enable or disable second server',
+                  description: `Enable or disable second server. Currently ${data01.SecondServer}`,
                   value: 'secondserver',
                 },
                 {
                   label: 'Ticket Reactions',
-                  description: 'Enable or disable ticket reactions',
+                  description: `Enable or disable ticket reactions. Currently ${data01.UseTicketReactions}`,
                   value: 'reaction'
                 },
+                {
+                  label: 'Roblox Tickets',
+                  description: `Allow ROBLOX support tickets. Currently ${data01.ROBLOX}`,
+                  value: 'roblox'
+                }
               ]),
           );
         await interaction.reply({ content: 'Edit settings', components: [editdropdown], ephemeral: true });
@@ -801,6 +806,38 @@ module.exports.run = async (client, interaction) => {
                       if (data1) {
                         data1.save()
                         collected.reply('Ticket reactions has been enabled in this guild.')
+                      }
+                    })
+                  }
+                }
+              }
+            })
+          }
+
+          if (value === 'roblox') {
+            editdropdown.components[0].setDisabled(true)
+            interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
+            if (interaction.user.id != interaction.guild.ownerId)
+              return collected.reply({ embeds: [ServerOwner] });
+            
+            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+              if (err) throw err;
+              if (data) {
+                if (data.ROBLOX === 'Disabled') {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ROBLOX: 'Enabled' }, async (err1, data1) => {
+                    if (err1) throw err;
+                    if (data1) {
+                      data1.save()
+                      collected.reply('Roblox support has now been enabled in this guild')
+                    }
+                  })
+                } else {
+                  if (data.ROBLOX === 'Enabled') {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ROBLOX: 'Disabled'}, async (err1, data1) => {
+                      if (err1) throw err;
+                      if (data1) {
+                        data1.save()
+                        collected.reply('Roblox support has now been disabled in this guild')
                       }
                     })
                   }

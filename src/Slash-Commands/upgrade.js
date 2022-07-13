@@ -70,6 +70,7 @@ module.exports.run = async (client, interaction) => {
                                 SecondServerClaimChannel: data3.SecondServerClaimChannel || 'N/A',
                                 SecondServerLogsChannel: data3.SecondServerLogsChannel || 'N/A',
                                 SecondServerTranscriptChannel: data3.SecondServerTranscriptChannel || 'N/A',
+                                ROBLOX: data3.ROBLOX || 'Disabled',
                                 BotVersion: BotVersions
                             })
                             data3.save()
@@ -143,6 +144,7 @@ module.exports.run = async (client, interaction) => {
                                 SecondServerClaimChannel: data3.SecondServerClaimChannel || 'N/A',
                                 SecondServerLogsChannel: data3.SecondServerLogsChannel || 'N/A',
                                 SecondServerTranscriptChannel: data3.SecondServerTranscriptChannel || 'N/A',
+                                ROBLOX: data3.ROBLOX || 'Disabled',
                                 BotVersion: BotVersions
                             })
                             data3.save()
