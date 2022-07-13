@@ -762,13 +762,14 @@ module.exports.run = async (client, interaction) => {
               if (err) throw err;
               if (data) {
                 if (data.SecondServer === 'Disabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServer: 'Enabled' }, async (err1, data1) => {
-                    if (err1) throw err;
-                    if (data1) {
-                      data1.save()
-                      collected.reply('Second Server has been enabled on this guild')
-                    }
-                  })
+                  // MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServer: 'Enabled' }, async (err1, data1) => {
+                  //   if (err1) throw err;
+                  //   if (data1) {
+                  //     data1.save()
+                  //     collected.reply('Second Server has been enabled on this guild')
+                  //   }
+                  // })
+                  collected.reply('Enabling second server has been disabled in all guilds until phase 3')
                 } else {
                   if (data.SecondServer === 'Enabled') {
                     MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServer: 'Disabled' }, async (err1, data1) => {
@@ -984,7 +985,7 @@ module.exports.run = async (client, interaction) => {
                 .addField('Logs channel ID', `${data.SecondServerLogsChannel}`, true)
                 .addField('Transcript channel ID', `${data.SecondServerTranscriptChannel}`, true)
 
-              await collected.reply({ embeds: [MainEmbed], ephemeral: true })
+               collected.reply({ embeds: [MainEmbed], ephemeral: true })
 
             } else {
               if (data.TypeOfServer === 'Second') {
@@ -1000,9 +1001,9 @@ module.exports.run = async (client, interaction) => {
                   .addField('Logs channel ID', `${data.SecondServerLogsChannel}`, true)
                   .addField('Transcript channel ID', `${data.SecondServerTranscriptChannel}`, true)
 
-                await collected.reply({ embeds: [MainEmbed], ephemeral: true })
+                collected.reply({ embeds: [MainEmbed], ephemeral: true })
 
-              }
+              } 
             }
           }
 

@@ -23,6 +23,15 @@ module.exports.run = (client, interaction) => {
     .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})
     .setColor('#58b9ff')
     .setTimestamp()
+  
+  const fun = new Discord.MessageEmbed()
+  .setTitle('🎉 Fun')
+  .addField('/christmas', 'List how many days until christmas')
+  .addField('/shortner', 'Short a link, using our domain')
+  .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
+  .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})
+  .setColor('#58b9ff')
+  .setTimestamp()
 
   const support = new Discord.MessageEmbed()
     .setTitle('📞 Support')
@@ -105,6 +114,7 @@ module.exports.run = (client, interaction) => {
 
   const pages = [
     Info,
+    fun,
     support,
     Moderator,
     Admin,
@@ -114,6 +124,7 @@ module.exports.run = (client, interaction) => {
 
   const pagesprem = [
     Info,
+    fun,
     support,
     Prem,
     Moderator,

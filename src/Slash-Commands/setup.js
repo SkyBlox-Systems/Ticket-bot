@@ -292,6 +292,7 @@ module.exports.run = (client, interaction) => {
                 SecondServerLogsChannel: 'N/A',
                 SecondServerTranscriptChannel: 'N/A',
                 ROBLOX: 'Disabled',
+                TypeOfServer: 'First',
                 BotVersion: BotVersions
               })
               data2.save()
@@ -484,6 +485,7 @@ module.exports.run = (client, interaction) => {
                   SecondServerLogsChannel: 'N/A',
                   SecondServerTranscriptChannel: 'N/A',
                   ROBLOX: 'Disabled',
+                  TypeOfServer: 'Second',
                   BotVersion: BotVersions
                 })
                 data2.save()

@@ -4,6 +4,8 @@ const Discord = require('discord.js');
 const database = require('../schemas/TicketData')
 const { BotVersions } = require('../../slappey.json')
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const axios = require('axios');
+
 
 module.exports.data = new SlashCommandBuilder()
     .setName('upgrade')
@@ -12,6 +14,7 @@ module.exports.data = new SlashCommandBuilder()
 
 
 module.exports.run = async (client, interaction) => {
+
 
     // const msg =  interaction.channel.send(`upgrade..`);
 
@@ -71,6 +74,7 @@ module.exports.run = async (client, interaction) => {
                                 SecondServerLogsChannel: data3.SecondServerLogsChannel || 'N/A',
                                 SecondServerTranscriptChannel: data3.SecondServerTranscriptChannel || 'N/A',
                                 ROBLOX: data3.ROBLOX || 'Disabled',
+                                TypeOfServer: data3.TypeOfServer || 'First',
                                 BotVersion: BotVersions
                             })
                             data3.save()
@@ -145,6 +149,7 @@ module.exports.run = async (client, interaction) => {
                                 SecondServerLogsChannel: data3.SecondServerLogsChannel || 'N/A',
                                 SecondServerTranscriptChannel: data3.SecondServerTranscriptChannel || 'N/A',
                                 ROBLOX: data3.ROBLOX || 'Disabled',
+                                TypeOfServer: data3.TypeOfServer || 'Second',
                                 BotVersion: BotVersions
                             })
                             data3.save()

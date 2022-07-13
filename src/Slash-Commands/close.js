@@ -40,6 +40,37 @@ module.exports.data = new SlashCommandBuilder()
 
 
 module.exports.run = (client, interaction) => {
+
+  const ButtonList = new MessageActionRow()
+    .addComponents(
+      new MessageButton()
+        .setCustomId("rate1")
+        .setLabel("1")
+        .setStyle("PRIMARY")
+        .setEmoji("⭐"),
+      new MessageButton()
+        .setCustomId("rate2")
+        .setLabel("2")
+        .setStyle("PRIMARY")
+        .setEmoji("⭐"),
+      new MessageButton()
+        .setCustomId("rate3")
+        .setLabel('3')
+        .setStyle('PRIMARY')
+        .setEmoji('⭐'),
+        new MessageButton()
+        .setCustomId("rate4")
+        .setLabel('4')
+        .setStyle('PRIMARY')
+        .setEmoji('⭐'),
+        new MessageButton()
+        .setCustomId("rate5")
+        .setLabel('5')
+        .setStyle('PRIMARY')
+        .setEmoji('⭐')
+    );
+
+
   const premiumstring = interaction.options.getString('premium');
   const idstring = interaction.options.getString('id');
   const normalstring = interaction.options.getString('normal');
@@ -193,7 +224,10 @@ module.exports.run = (client, interaction) => {
                                               .setColor('#f5f5f5')
                                               .setTimestamp()
                                               .setTitle(`Ticket`)
-                                              .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}.`)
+                                              .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
+                                              .addField('Reason', `${data.Reason}`, true)
+                                              .addField('Time open', `${data,Time}`, true)
+                                              .addField('Priority', `${data.Priority}`, true)
 
                                             const DMTicketClaimClosed = new MessageEmbed()
                                               .setColor('#f5f5f5')
@@ -242,7 +276,7 @@ module.exports.run = (client, interaction) => {
                                             .addField('Transcript', `Disabled for ModMail`)
                                             // .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
                                             .addField('Reason', `${data.Reason}`)
-                                            .addField('Time', `${data.Time}`)
+                                            .addField('Ticket Open', `<t:${data.Time}:f>`)
                                             .addField('Claim User', `<@${data.ClaimUserID}>`)
 
                                           TranscriptLogs.send({ embeds: [CloseEmbed] })
@@ -282,7 +316,10 @@ module.exports.run = (client, interaction) => {
                                                 .setColor('#f5f5f5')
                                                 .setTimestamp()
                                                 .setTitle(`Ticket`)
-                                                .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}.`)
+                                                .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
+                                                .addField('Reason', `${data.Reason}`, true)
+                                                .addField('Time open', `${data,Time}`, true)
+                                                .addField('Priority', `${data.Priority}`, true)
 
                                               const DMTicketClaimClosed = new MessageEmbed()
                                                 .setColor('#f5f5f5')
@@ -292,7 +329,7 @@ module.exports.run = (client, interaction) => {
 
 
                                               const ticketttcreator = client.users.cache.get(data.id)
-                                              ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
+                                              ticketttcreator.send({ embeds: [DMTicketCreatorClosed]})
 
                                               const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
                                               ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
@@ -331,7 +368,7 @@ module.exports.run = (client, interaction) => {
                                               .addField('Transcript', `Disabled in v3.0 due to issues`)
                                               // .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
                                               .addField('Reason', `${data.Reason}`)
-                                              .addField('Time', `${data.Time}`)
+                                              .addField('Ticket Open', `<t:${data.Time}:f>`)
                                               .addField('Claim User', `<@${data.ClaimUserID}>`)
 
                                             const discordTranscripts = require('discord-html-transcripts');
@@ -392,7 +429,10 @@ module.exports.run = (client, interaction) => {
                                           .setColor('#f5f5f5')
                                           .setTimestamp()
                                           .setTitle(`Ticket`)
-                                          .setDescription(`<@${data.ClaimUserID}> has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you.`)
+                                          .setDescription(`<@${data.ClaimUserID}> has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you. Please rate the support below`)
+                                          .addField('Reason', `${data.Reason}`, true)
+                                          .addField('Time open', `${data,Time}`, true)
+                                          .addField('Priority', `${data.Priority}`, true)
 
                                         const DMTicketClaimClosed = new MessageEmbed()
                                           .setColor('#f5f5f5')
@@ -556,7 +596,10 @@ module.exports.run = (client, interaction) => {
                                 .setColor('#f5f5f5')
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
-                                .setDescription(`<@${data3.ClaimUserID}> ${data1.CloseMessage}.`)
+                                .setDescription(`<@${data3.ClaimUserID}> ${data1.CloseMessage}. Please rate the support below`)
+                                .addField('Reason', `${data.Reason}`, true)
+                                .addField('Time open', `${data,Time}`, true)
+                                .addField('Priority', `${data.Priority}`, true)
 
                               const DMTicketClaimClosed = new MessageEmbed()
                                 .setColor('#f5f5f5')
@@ -607,7 +650,7 @@ module.exports.run = (client, interaction) => {
                               .addField('Transcript', `Disabled for voice calls`)
                               // .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
                               .addField('Reason', `${data.Reason}`)
-                              .addField('Time', `${data.Time}`)
+                              .addField('Ticket Open', `<t:${data.Time}:f>`)
                               .addField('Claim User', `<@${data.ClaimUserID}>`)
 
                             TranscriptLogs.send({ embeds: [CloseEmbed] })
