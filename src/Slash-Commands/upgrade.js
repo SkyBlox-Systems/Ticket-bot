@@ -75,6 +75,7 @@ module.exports.run = async (client, interaction) => {
                                 SecondServerTranscriptChannel: data3.SecondServerTranscriptChannel || 'N/A',
                                 ROBLOX: data3.ROBLOX || 'Disabled',
                                 TypeOfServer: data3.TypeOfServer || 'First',
+                                Important: data3.Important || 'Enabled',
                                 BotVersion: BotVersions
                             })
                             data3.save()

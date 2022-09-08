@@ -42,6 +42,7 @@ const TicketData = mongoose.Schema({
   SecondServerTranscriptChannel: String,
   ROBLOX: String,
   TypeOfServer: String,
+  Important: String,
   BotVersion: String
 })
 

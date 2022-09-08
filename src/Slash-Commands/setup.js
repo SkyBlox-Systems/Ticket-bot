@@ -293,6 +293,7 @@ module.exports.run = (client, interaction) => {
                 SecondServerTranscriptChannel: 'N/A',
                 ROBLOX: 'Disabled',
                 TypeOfServer: 'First',
+                Important: 'Enabled',
                 BotVersion: BotVersions
               })
               data2.save()

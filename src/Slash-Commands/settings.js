@@ -65,6 +65,7 @@ module.exports.run = async (client, interaction) => {
             .addField('Change messages', 'List messages', true)
             .addField('ModMail', `${data.ModMail}`, true)
             .addField('Second Server', `${data.SecondServer}`, true)
+            .addField('Important Announcement', `${data.ImportantAnnouncement}`, true)
             .addField(`Bot Version`, `${data.BotVersion}`, true)
 
           const ListSettingsPaid2 = new MessageEmbed()
@@ -123,6 +124,7 @@ module.exports.run = async (client, interaction) => {
             .addField('API Key', `${data.APIKey}`, true)
             .addField('Change messages', 'List messages', true)
             .addField('ModMail', `${data.ModMail}`, true)
+            .addField('Important Announcement', `${data.ImportantAnnouncement}`, true)
             .addField(`Bot Version`, `${data.BotVersion}`, true)
 
           interaction.reply({ embeds: [ListSettings] })
@@ -219,6 +221,11 @@ module.exports.run = async (client, interaction) => {
                   label: 'Roblox Tickets',
                   description: `Allow ROBLOX support tickets. Currently ${data01.ROBLOX}`,
                   value: 'roblox'
+                },
+                { 
+                  label: 'Important Announcement',
+                  description: 'Enable or disable important announcement after commands in this guild',
+                  value: 'important'
                 }
               ]),
           );
@@ -842,6 +849,37 @@ module.exports.run = async (client, interaction) => {
                       }
                     })
                   }
+                }
+              }
+            })
+          }
+
+          if (value === 'important') {
+            editdropdown.components[0].setDisabled(true)
+            interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
+            if (interaction.user.id != interaction.guild.ownerId)
+              return collected.reply({ embeds: [ServerOwner] });
+
+            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+              if (err) throw err;
+              if (data) {
+                if (data.Important === 'Disabled') {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { Important: 'Enabled' }, async (err1, data1) => {
+                    if (err1) throw err;
+                    if (data1) {
+                      data1.save()
+                      collected.channel.send('Important announcement has been enabled on this guild')
+                    }
+                  })
+                }
+                if (data.Important === 'Enabled') {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { Important: 'Disabled' }, async (err1, data1) => {
+                    if (err1) throw err;
+                    if (data1) {
+                      data1.save()
+                      collected.channel.send('Important announcement has been disabled on this guild')
+                    }
+                  })
                 }
               }
             })
