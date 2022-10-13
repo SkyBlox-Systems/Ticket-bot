@@ -75,12 +75,14 @@ module.exports.run = async (client, interaction) => {
                                 SecondServerTranscriptChannel: data3.SecondServerTranscriptChannel || 'N/A',
                                 ROBLOX: data3.ROBLOX || 'Disabled',
                                 TypeOfServer: data3.TypeOfServer || 'First',
+                                Important: data3.Important || 'Enabled',
+                                WebsiteCode: data3.WebsiteCode || 'N/A',
                                 BotVersion: BotVersions
                             })
                             data3.save()
                             const updated = new MessageEmbed()
                                 .setTitle('The bot has now been updated')
-                                .setDescription(`To find the changes, please head here [Change Log](https://docs.ticketbot.tk/change-log)`)
+                                .setDescription(`To find the changes, please head here [Change Log](https://docs.ticketbot.co.uk/change-log)`)
                             interaction.reply({ embeds: [updated] })
 
                             const newchannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == "GUILD_TEXT")
@@ -155,7 +157,7 @@ module.exports.run = async (client, interaction) => {
                             data3.save()
                             const updated = new MessageEmbed()
                                 .setTitle('The bot has now been updated')
-                                .setDescription(`To find the changes, please head here [Change Log](https://docs.ticketbot.tk/change-log)`)
+                                .setDescription(`To find the changes, please head here [Change Log](https://docs.ticketbots.co.uk/change-log)`)
                             interaction.reply({ embeds: [updated] })
     
                             const newchannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == "GUILD_TEXT")
@@ -182,7 +184,7 @@ module.exports.run = async (client, interaction) => {
                                 })
 
                             } else {
-                                interaction.reply('We are having issues updating your guild. Please contact support via our support server. Do that by heading to our website')
+                                interaction.channel.send('We are having issues updating your guild. Please contact support via our support server. Do that by heading to our website')
 
                             }
                             database.findOneAndRemove({ ServerID: interaction.guildId }, async (err2, data2) => {

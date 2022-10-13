@@ -11,6 +11,7 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const { Permissions } = require('discord.js');
 const { MessageCollector, Collector } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
+const mongoose = require('mongoose');
 
 
 
@@ -81,7 +82,6 @@ client.on('interactionCreate', interaction => {
 
   let commandMethod = commands.get(name);
   if (commandMethod) {
-
     blacklist.findOne({ UserID: interaction.user.id }, async (err, data) => {
       const check = await db.findOne({ Guild: interaction.guildId })
       const versionCheck = await MainDatabase.findOne({ ServerID: interaction.guildId })
@@ -113,9 +113,37 @@ client.on('interactionCreate', interaction => {
                     .setDescription(`The following command **/${interaction.commandName}** has been disabled in the server by an administrator`)
                     .setColor('#f6f7f8')
                   if (check.Cmds.includes(interaction.commandName)) return interaction.reply({ embeds: [DisabledCommand] })
-                  commandMethod(client, interaction)
+                  if (versionCheck.Important === 'Enabled') {
+                    commandMethod(client, interaction)
+                   // commandMethod(client, interaction)
+                    // const ImportantAnnouncement = new MessageEmbed()
+                    //   .setTitle('Imporant announcement from bot owner')
+                    //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
+                    //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
+
+                    // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
+                    // setTimeout(() => {
+                    //   commandMethod(client, interaction)
+                    // }, 2000);
+                  } else {
+                    commandMethod(client, interaction)
+                  }
                 } else {
-                  commandMethod(client, interaction)
+                  if (versionCheck.Important === 'Enabled') {
+                    commandMethod(client, interaction)
+                  //  commandMethod(client, interaction)
+                    // const ImportantAnnouncement = new MessageEmbed()
+                    //   .setTitle('Imporant announcement from bot owner')
+                    //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
+                    //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
+
+                    // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
+                    // setTimeout(() => {
+                    //   commandMethod(client, interaction)
+                    // }, 2000);
+                  } else {
+                    commandMethod(client, interaction)
+                  }
                 }
               }
             }
@@ -130,6 +158,7 @@ client.on('interactionCreate', interaction => {
           .addField('Admin', `${data.Admin}`)
         interaction.reply({ embeds: [BlacklistedFromBot] })
       }
+
     })
   }
 
