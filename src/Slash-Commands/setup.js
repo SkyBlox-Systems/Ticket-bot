@@ -294,6 +294,8 @@ module.exports.run = (client, interaction) => {
                 ROBLOX: 'Disabled',
                 TypeOfServer: 'First',
                 Important: 'Enabled',
+
+                WebsiteCode: "N/A",
                 BotVersion: BotVersions
               })
               data2.save()

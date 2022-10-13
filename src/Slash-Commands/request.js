@@ -57,6 +57,15 @@ module.exports.run = async (client, interaction) => {
             text: `This guild ${interaction.guildId} // ${interaction.guild.name} has requested guild data. please send the email back to the following email ${emails}. \n your sincerely, \n Ticket Bot Automatic email system`,
         }
 
+        const emailDataUser = {
+            to: emails,
+            subject: 'Request data Received',
+            text: `Dear ${interaction.username}, \nWe are emailing you to let you know that the team has gotten your request. Please allow up to 5 working days to get your guild data. \n\n your sincerely, \n Ticket Bot Automatic email system`,
+        }
+
+        sendMail(emailData, emailConfig)
+        sendMail(emailDataUser, emailConfig)
+=======
         sendMail(emailData, emailConfig)
 
        const emailsent = new MessageEmbed()

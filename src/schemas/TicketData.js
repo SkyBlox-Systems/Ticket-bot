@@ -43,6 +43,7 @@ const TicketData = mongoose.Schema({
   ROBLOX: String,
   TypeOfServer: String,
   Important: String,
+  WebsiteCode: String,
   BotVersion: String
 })
 
