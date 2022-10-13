@@ -65,6 +65,8 @@ module.exports.run = async (client, interaction) => {
 
         sendMail(emailData, emailConfig)
         sendMail(emailDataUser, emailConfig)
+=======
+        sendMail(emailData, emailConfig)
 
        const emailsent = new MessageEmbed()
        .setTitle('Request sent')

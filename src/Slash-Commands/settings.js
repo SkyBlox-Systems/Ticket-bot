@@ -67,6 +67,7 @@ module.exports.run = async (client, interaction) => {
             .addField('Second Server', `${data.SecondServer}`, true)
             .addField('Important Announcement', `${data.Important}`, true)
             .addField('Custom Code', `${data.WebsiteCode}`, true)
+            .addField('Important Announcement', `${data.ImportantAnnouncement}`, true)
             .addField(`Bot Version`, `${data.BotVersion}`, true)
 
           const ListSettingsPaid2 = new MessageEmbed()
@@ -127,6 +128,7 @@ module.exports.run = async (client, interaction) => {
             .addField('ModMail', `${data.ModMail}`, true)
             .addField('Important Announcement', `${data.Important}`, true)
             .addField('Custom Code', `${data.WebsiteCode}`, true)
+            .addField('Important Announcement', `${data.ImportantAnnouncement}`, true)
             .addField(`Bot Version`, `${data.BotVersion}`, true)
 
           interaction.reply({ embeds: [ListSettings] })
@@ -1338,7 +1340,6 @@ module.exports.run = async (client, interaction) => {
               })
             })
           }
-
           if (value === 'transcriptid') {
             editdropdown.components[0].setDisabled(true)
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })

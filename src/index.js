@@ -125,6 +125,15 @@ client.on('interactionCreate', interaction => {
                     // setTimeout(() => {
                     //   commandMethod(client, interaction)
                     // }, 2000);
+                    const ImportantAnnouncement = new MessageEmbed()
+                      .setTitle('Imporant announcement from bot owner')
+                      .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
+                      .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
+
+                    await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
+                    setTimeout(() => {
+                      commandMethod(client, interaction)
+                    }, 2000);
                   } else {
                     commandMethod(client, interaction)
                   }
@@ -141,6 +150,15 @@ client.on('interactionCreate', interaction => {
                     // setTimeout(() => {
                     //   commandMethod(client, interaction)
                     // }, 2000);
+                    const ImportantAnnouncement = new MessageEmbed()
+                      .setTitle('Imporant announcement from bot owner')
+                      .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
+                      .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
+
+                    await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
+                    setTimeout(() => {
+                      commandMethod(client, interaction)
+                    }, 2000);
                   } else {
                     commandMethod(client, interaction)
                   }

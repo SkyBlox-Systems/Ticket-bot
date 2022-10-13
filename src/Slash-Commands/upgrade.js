@@ -76,7 +76,10 @@ module.exports.run = async (client, interaction) => {
                                 ROBLOX: data3.ROBLOX || 'Disabled',
                                 TypeOfServer: data3.TypeOfServer || 'First',
                                 Important: data3.Important || 'Enabled',
+
                                 WebsiteCode: data3.WebsiteCode || 'N/A',
+
+
                                 BotVersion: BotVersions
                             })
                             data3.save()
