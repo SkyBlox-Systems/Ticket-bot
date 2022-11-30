@@ -20,6 +20,8 @@ const MainDatabase = require('./schemas/TicketData')
 const blacklist = require('./schemas/Blacklist-schema');
 const ClaimTicket = require('./schemas/ticketclaim');
 const { truncate } = require('fs/promises');
+const GiveawayDatabase = require('./schemas/giveaways-user-data');
+
 
 
 
@@ -115,7 +117,7 @@ client.on('interactionCreate', interaction => {
                   if (check.Cmds.includes(interaction.commandName)) return interaction.reply({ embeds: [DisabledCommand] })
                   if (versionCheck.Important === 'Enabled') {
                     commandMethod(client, interaction)
-                   // commandMethod(client, interaction)
+                    // commandMethod(client, interaction)
                     // const ImportantAnnouncement = new MessageEmbed()
                     //   .setTitle('Imporant announcement from bot owner')
                     //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
@@ -131,7 +133,7 @@ client.on('interactionCreate', interaction => {
                 } else {
                   if (versionCheck.Important === 'Enabled') {
                     commandMethod(client, interaction)
-                  //  commandMethod(client, interaction)
+                    //  commandMethod(client, interaction)
                     // const ImportantAnnouncement = new MessageEmbed()
                     //   .setTitle('Imporant announcement from bot owner')
                     //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
@@ -169,17 +171,45 @@ client.on('interactionCreate', interaction => {
   const TicketChannelIdChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'feedback' && ch.type == 'GUILD_TEXT');
 
   if (!interaction.isModalSubmit()) return;
-  const usertitle = interaction.fields.getTextInputValue("userFeedbackID")
-  const userfeedback = interaction.fields.getTextInputValue("userMessage")
+    if (interaction.customId === "user") {
+      const usertitle = interaction.fields.getTextInputValue("userFeedbackID")
+      const userfeedback = interaction.fields.getTextInputValue("userMessage")
 
-  const userEmbed = new MessageEmbed()
-    .setTitle('New feedback!')
-    .setDescription(`${interaction.user.id} has sent a user feedback message. Below is the message`)
-    .addField('User', `${usertitle}`)
-    .addField('Message', `${userfeedback}`)
+      const userEmbed = new MessageEmbed()
+        .setTitle('New feedback!')
+        .setDescription(`${interaction.user.id} has sent a user feedback message. Below is the message`)
+        .addField('User', `${usertitle}`)
+        .addField('Message', `${userfeedback}`)
 
-  TicketChannelIdChannel.send({ embeds: [userEmbed] })
-  interaction.reply('Feedback sent!')
+      TicketChannelIdChannel.send({ embeds: [userEmbed] })
+      interaction.reply('Feedback sent!')
+    }
+    if (interaction.customId === "giveaway") {
+      const GiveawayEmail = interaction.fields.getTextInputValue("Email")
+      const GiveawayWhy = interaction.fields.getTextInputValue("Why")
+
+      const GiveawayDM = new MessageEmbed()
+        .setTitle('Giveaway')
+        .setDescription('You have entered into the christmas giveaway! You can not enter again unless told to by admins of the bot.')
+
+       const usergiveaway = client.users.cache.get(interaction.user.id)
+       usergiveaway.send({ embeds: [GiveawayDM]})
+
+      GiveawayDatabase.findOne({ UserID: interaction.user.id }, (err, data) => {
+        if (err) throw err;
+        if (data) {
+          // do nothing
+        } else {
+          data = new GiveawayDatabase({
+            UserID: interaction.user.id,
+            Email: GiveawayEmail,
+            Why: GiveawayWhy,
+            Usage: 1
+          })
+          data.save()
+        }
+      })
+    }
 });
 
 

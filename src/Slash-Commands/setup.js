@@ -307,7 +307,7 @@ module.exports.run = (client, interaction) => {
       }
 
     } else {
-      if (value === 'Second') {
+      if (value === 'second') {
         editdropdown.components[0].setDisabled(true)
         interaction.editReply({ embeds: [WelcomeEmbed], components: [editdropdown], ephemeral: true })
         if (interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager')) {
@@ -478,7 +478,7 @@ module.exports.run = (client, interaction) => {
                 data2 = new TicketDataMain({
                   ServerID: interaction.guildId,
                   OwnerID: interaction.guild.ownerId,
-                  SecondServer: 'Disabled',
+                  SecondServer: 'Enabled',
                   SecondServerID: 'N/A',
                   SecondServerSupportRoleID: 'N/A',
                   SecondServerAdminRoleID: 'N/A',
