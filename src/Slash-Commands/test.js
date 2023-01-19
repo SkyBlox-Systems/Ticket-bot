@@ -17,5 +17,6 @@ module.exports.data = new SlashCommandBuilder()
 module.exports.run = async (client, interaction) => {
     // console.log(timestamp.now())
     // interaction.reply(`<t:${Math.round(timestamp.now())}:f>`)
+    console.log(interaction.commandName)
 
 }

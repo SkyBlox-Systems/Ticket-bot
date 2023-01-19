@@ -67,7 +67,6 @@ module.exports.run = async (client, interaction) => {
             .addField('Second Server', `${data.SecondServer}`, true)
             .addField('Important Announcement', `${data.Important}`, true)
             .addField('Custom Code', `${data.WebsiteCode}`, true)
-            .addField('Important Announcement', `${data.ImportantAnnouncement}`, true)
             .addField(`Bot Version`, `${data.BotVersion}`, true)
 
           const ListSettingsPaid2 = new MessageEmbed()
@@ -128,7 +127,6 @@ module.exports.run = async (client, interaction) => {
             .addField('ModMail', `${data.ModMail}`, true)
             .addField('Important Announcement', `${data.Important}`, true)
             .addField('Custom Code', `${data.WebsiteCode}`, true)
-            .addField('Important Announcement', `${data.ImportantAnnouncement}`, true)
             .addField(`Bot Version`, `${data.BotVersion}`, true)
 
           interaction.reply({ embeds: [ListSettings] })
@@ -774,30 +772,31 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
-              if (err) throw err;
-              if (data) {
-                if (data.SecondServer === 'Disabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServer: 'Enabled' }, async (err1, data1) => {
-                    if (err1) throw err;
-                    if (data1) {
-                      data1.save()
-                      collected.reply('Second Server has been enabled on this guild')
-                    }
-                  })
-                } else {
-                  if (data.SecondServer === 'Enabled') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServer: 'Disabled' }, async (err1, data1) => {
-                      if (err1) throw err;
-                      if (data1) {
-                        data1.save()
-                        collected.reply('Second server has been disabled on this guild')
-                      }
-                    })
-                  }
-                }
-              }
-            })
+              collected.reply('Disabled')
+            // MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            //   if (err) throw err;
+            //   if (data) {
+            //     if (data.SecondServer === 'Disabled') {
+            //       MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServer: 'Enabled' }, async (err1, data1) => {
+            //         if (err1) throw err;
+            //         if (data1) {
+            //           data1.save()
+            //           collected.reply('Second Server has been enabled on this guild')
+            //         }
+            //       })
+            //     } else {
+            //       if (data.SecondServer === 'Enabled') {
+            //         MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServer: 'Disabled' }, async (err1, data1) => {
+            //           if (err1) throw err;
+            //           if (data1) {
+            //             data1.save()
+            //             collected.reply('Second server has been disabled on this guild')
+            //           }
+            //         })
+            //       }
+            //     }
+            //   }
+           //})
           }
           if (value === 'reaction') {
             editdropdown.components[0].setDisabled(true)
@@ -1340,6 +1339,7 @@ module.exports.run = async (client, interaction) => {
               })
             })
           }
+
           if (value === 'transcriptid') {
             editdropdown.components[0].setDisabled(true)
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })

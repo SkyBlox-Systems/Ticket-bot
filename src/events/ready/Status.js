@@ -9,7 +9,7 @@ module.exports = class ReadyEvent extends BaseEvent {
   async run (client) {
     const activities = [
       `${client.guilds.cache.size} servers!`,
-		`Shard #0`,
+		`Shard #${client.shard.ids} / #2`,
 		`${client.guilds.cache.reduce((a, b) => a + b.memberCount, 0)} users!`,
 		`Version ${BotVersions}`
 		];

@@ -205,7 +205,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                   .setTitle(`Ticket`)
                                                   .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
                                                   .addField('Reason', `${data.Reason}`, true)
-                                                  .addField('Time open', `${data, Time}`, true)
+                                                  .addField('Time open', `<t:${data.Time}:f>`, true)
                                                   .addField('Priority', `${data.Priority}`, true)
 
                                                 const DMTicketClaimClosed = new MessageEmbed()
@@ -255,7 +255,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                 .addField('Transcript', `Disabled for ModMail`)
                                                 // .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
                                                 .addField('Reason', `${data.Reason}`)
-                                                .addField('Time', `${data.Time}`)
+                                                .addField('Time', `<t:${data.Time}:f>`)
                                                 .addField('Claim User', `<@${data.ClaimUserID}>`)
 
                                               TranscriptLogs.send({ embeds: [CloseEmbed] })
@@ -297,7 +297,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                     .setTitle(`Ticket`)
                                                     .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
                                                     .addField('Reason', `${data.Reason}`, true)
-                                                    .addField('Time open', `${data, Time}`, true)
+                                                    .addField('Time open', `<t:${data.Time}:f>`, true)
                                                     .addField('Priority', `${data.Priority}`, true)
 
                                                   const DMTicketClaimClosed = new MessageEmbed()
@@ -347,7 +347,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                   .addField('Transcript', `Disabled in v3.0 due to issues`)
                                                   // .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
                                                   .addField('Reason', `${data.Reason}`)
-                                                  .addField('Time', `${data.Time}`)
+                                                  .addField('Time', `<t:${data.Time}:f>`)
                                                   .addField('Claim User', `<@${data.ClaimUserID}>`)
 
                                                 const discordTranscripts = require('discord-html-transcripts');
@@ -410,7 +410,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                               .setTitle(`Ticket`)
                                               .setDescription(`<@${data.ClaimUserID}> has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you. Please rate the support below`)
                                               .addField('Reason', `${data.Reason}`, true)
-                                              .addField('Time open', `${data, Time}`, true)
+                                              .addField('Time open', `<t:${data.Time}:f>`, true)
                                               .addField('Priority', `${data.Priority}`, true)
 
                                             const DMTicketClaimClosed = new MessageEmbed()
