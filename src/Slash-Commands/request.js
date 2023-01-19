@@ -40,12 +40,12 @@ module.exports.run = async (client, interaction) => {
 
         const emailConfig = {
             options: {
-                host: 'smtp.office365.com',
+                host: 'smtp.ionos.co.uk',
                 port: 587,
                 secure: false,
                 auth: {
                     user: 'no-reply@skybloxsystems.com',
-                    pass: 'richard1234YT',
+                    pass: '!3Y&R3Yf##&ddAH4edRbGMAm&@Yj$X5A9$ABLfn',
                 }
             },
             from: 'no-reply@skybloxsystems.com',
@@ -65,8 +65,6 @@ module.exports.run = async (client, interaction) => {
 
         sendMail(emailData, emailConfig)
         sendMail(emailDataUser, emailConfig)
-=======
-        sendMail(emailData, emailConfig)
 
        const emailsent = new MessageEmbed()
        .setTitle('Request sent')

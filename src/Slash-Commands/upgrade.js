@@ -30,7 +30,6 @@ module.exports.run = async (client, interaction) => {
     database.findOne({ ServerID: interaction.guildId }, async (err, data) => {
         if (err) throw err;
         if (data) {
-            if (data.SecondServer === 'Disabled' || undefined)  {
                 if (data.BotVersion !== BotVersions) {
                     database.findOne({ ServerID: interaction.guildId }, async (err3, data3) => {
                         if (err3) throw err;
@@ -76,10 +75,7 @@ module.exports.run = async (client, interaction) => {
                                 ROBLOX: data3.ROBLOX || 'Disabled',
                                 TypeOfServer: data3.TypeOfServer || 'First',
                                 Important: data3.Important || 'Enabled',
-
                                 WebsiteCode: data3.WebsiteCode || 'N/A',
-
-
                                 BotVersion: BotVersions
                             })
                             data3.save()
@@ -131,9 +127,6 @@ module.exports.run = async (client, interaction) => {
                         interaction.reply({ embeds: [alreadyupdated] })
                     }
                 }
-            } else {
-                interaction.reply('There is currently a issue with upgrading to v4.0. Hang in there. Please check back in 10-20 minutes. We are upgrading all guild database.')
-            }
 
         } else {
             if (data.SecondServer === 'Enabled') {

@@ -69,11 +69,6 @@ module.exports.run = (client, interaction) => {
             description: 'Setup this guild',
             value: 'first',
           },
-          {
-            label: 'Second Guild',
-            description: 'Setup second guild for support',
-            value: 'second',
-          },
         ]),
     );
   interaction.reply({ embeds: [WelcomeEmbed], components: [editdropdown], ephemeral: true });
@@ -221,7 +216,7 @@ module.exports.run = (client, interaction) => {
           const TicketChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
           const TicketChannelMessage = new MessageEmbed()
             .setTitle('Ticket')
-            .setDescription('In this channel, You can only open a ticket. If you try and run the command in any other channel, it will not work. To make a ticket, please use the command `!ticket`, or `/ticket`.')
+            .setDescription('In this channel, You can only open a ticket. If you try and run the command in any other channel, it will not work. To make a ticket, please use the command `/ticket`.')
             .setColor('#f6f7f8')
 
           const StaffroomChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == 'GUILD_TEXT');
@@ -294,7 +289,6 @@ module.exports.run = (client, interaction) => {
                 ROBLOX: 'Disabled',
                 TypeOfServer: 'First',
                 Important: 'Enabled',
-
                 WebsiteCode: "N/A",
                 BotVersion: BotVersions
               })
@@ -308,7 +302,7 @@ module.exports.run = (client, interaction) => {
       }
 
     } else {
-      if (value === 'Second') {
+      if (value === 'second') {
         editdropdown.components[0].setDisabled(true)
         interaction.editReply({ embeds: [WelcomeEmbed], components: [editdropdown], ephemeral: true })
         if (interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager')) {
@@ -479,7 +473,7 @@ module.exports.run = (client, interaction) => {
                 data2 = new TicketDataMain({
                   ServerID: interaction.guildId,
                   OwnerID: interaction.guild.ownerId,
-                  SecondServer: 'Disabled',
+                  SecondServer: 'Enabled',
                   SecondServerID: 'N/A',
                   SecondServerSupportRoleID: 'N/A',
                   SecondServerAdminRoleID: 'N/A',

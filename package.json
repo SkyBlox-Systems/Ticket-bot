@@ -15,6 +15,7 @@
     "@discordjs/builders": "^0.15.0",
     "@discordjs/rest": "^0.5.0",
     "axios": "^0.24.0",
+    "chalk": "^4.1.2",
     "config": "^3.3.6",
     "cron": "^1.8.2",
     "dbd-dark-dashboard": "^1.5.2",

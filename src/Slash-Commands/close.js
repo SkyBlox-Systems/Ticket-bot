@@ -226,7 +226,7 @@ module.exports.run = (client, interaction) => {
                                               .setTitle(`Ticket`)
                                               .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
                                               .addField('Reason', `${data.Reason}`, true)
-                                              .addField('Time open', `${data,Time}`, true)
+                                              .addField('Time open', `<t:${data.Time}:f>`, true)
                                               .addField('Priority', `${data.Priority}`, true)
 
                                             const DMTicketClaimClosed = new MessageEmbed()
@@ -318,7 +318,7 @@ module.exports.run = (client, interaction) => {
                                                 .setTitle(`Ticket`)
                                                 .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
                                                 .addField('Reason', `${data.Reason}`, true)
-                                                .addField('Time open', `${data,Time}`, true)
+                                                .addField('Time open', `<t:${data.Time}:f>`, true)
                                                 .addField('Priority', `${data.Priority}`, true)
 
                                               const DMTicketClaimClosed = new MessageEmbed()
@@ -431,7 +431,7 @@ module.exports.run = (client, interaction) => {
                                           .setTitle(`Ticket`)
                                           .setDescription(`<@${data.ClaimUserID}> has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you. Please rate the support below`)
                                           .addField('Reason', `${data.Reason}`, true)
-                                          .addField('Time open', `${data,Time}`, true)
+                                          .addField('Time open', `<t:${data.Time}:f>`, true)
                                           .addField('Priority', `${data.Priority}`, true)
 
                                         const DMTicketClaimClosed = new MessageEmbed()
@@ -598,7 +598,7 @@ module.exports.run = (client, interaction) => {
                                 .setTitle(`Ticket`)
                                 .setDescription(`<@${data3.ClaimUserID}> ${data1.CloseMessage}. Please rate the support below`)
                                 .addField('Reason', `${data.Reason}`, true)
-                                .addField('Time open', `${data,Time}`, true)
+                                .addField('Time open', `<t:${data.Time}:f>`, true)
                                 .addField('Priority', `${data.Priority}`, true)
 
                               const DMTicketClaimClosed = new MessageEmbed()
