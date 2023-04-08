@@ -110,11 +110,11 @@ module.exports.run = (client, interaction) => {
                 const embed = new EmbedBuilder()
                   .setTitle(`Ticket`)
                   .addFields([
-                    {name: 'Infomation', value: `You have already opened a ticket. Please close your current ticket.`, inline: true},
-                    {name: 'Channel', value: `<#${data45.ChannelID}>`, inline: true},
-                    {name: 'Reason', value: `${data45.Reason}`, inline: true},
-                    {name: 'Ticket ID', value: `${data45.TicketIDs}`, inline: true},
-                    {name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true}
+                    { name: 'Infomation', value: `You have already opened a ticket. Please close your current ticket.`, inline: true },
+                    { name: 'Channel', value: `<#${data45.ChannelID}>`, inline: true },
+                    { name: 'Reason', value: `${data45.Reason}`, inline: true },
+                    { name: 'Ticket ID', value: `${data45.TicketIDs}`, inline: true },
+                    { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
                   ])
                 await interaction.reply({ embeds: [embed] })
               } else {
@@ -138,12 +138,12 @@ module.exports.run = (client, interaction) => {
                     const open = new EmbedBuilder()
                       .setColor('#f6f7f8')
                       .setTimestamp()
-                      .setFooter(`Ticket ID: <#${chan.id}>`)
+                      .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                       .setTitle(`Ticket`)
                       .addFields([
-                        {name: 'Information', value: `<@${interaction.user.id}> ${data01.OpenTicket}`, inline: true},
-                        {name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true},
-                        {name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true}
+                        { name: 'Information', value: `<@${interaction.user.id}> ${data01.OpenTicket}`, inline: true },
+                        { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
+                        { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
                       ])
 
                     await interaction.reply({ embeds: [open] });
@@ -153,9 +153,11 @@ module.exports.run = (client, interaction) => {
                       .setTimestamp()
                       .setTitle('Ticket open')
                       .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can send a message to your ticket by replying to our DMs with your ticketID: ${generator}`)
-                      .addField('TicketID', `${generator}`, true)
-                      .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
-                      .addField('Priority', `${PriorityList}` || `N/A`, true)
+                      .addFields([
+                        { name: 'TicketID', value: `${generator}`, inline: true },
+                        { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
+                      ])
+                      .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
                     await interaction.user.send({ embeds: [DmPerson] });
 
                     const TicketSupportID = newguild.roles.cache.find(roles => roles.id === data01.SecondServerSupportRoleID)
@@ -198,15 +200,17 @@ module.exports.run = (client, interaction) => {
                     const thankyou = new EmbedBuilder()
                       .setColor('#f6f7f8')
                       .setTimestamp()
-                      .setFooter(`Ticket ID: <#${chan.id}>`)
+                      .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                       .setTitle('Ticket')
                       .setDescription('To reply to this user ticket, please use the following command `/ticketreply message:` ')
-                      .addField('Information', `${data01.TicketMessage}`, true)
-                      .addField('Issue', `${MSG}.`, true)
-                      .addField('User', `<@${interaction.user.id}>`, true)
-                      .addField('Staff', `${TicketSupportID} ${TicketManagerID}`, true)
-                      .addField('Ticket Id', `${generator}`, true)
-                      .addField('Priority', `${PriorityList}` || `N/A`, true)
+                      .addFields([
+                        { name: 'Infomation', value: `${data01.TicketMessage}`, inline: true },
+                        { name: 'Issue', value: `${MSG}`, inline: true },
+                        { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                        { name: 'Staff', value: `${TicketSupportID} ${TicketManagerID}`, inline: true },
+                        { name: 'Ticket ID', value: `${generator}`, inline: true },
+                        { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
+                      ])
                     await chan.send({ embeds: [thankyou] }).then((m) => {
                       m.pin()
                     })
@@ -236,12 +240,14 @@ module.exports.run = (client, interaction) => {
                         const open = new EmbedBuilder()
                           .setColor('#f6f7f8')
                           .setTimestamp()
-                          .setFooter(`Ticket ID: <#${chan.id}>`)
+                          .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                           .setTitle(`Ticket`)
-                          .addField('Information', `<@${interaction.user.id}> ${data01.OpenTicket}`, true)
-                          .addField('Channel', `Your ticket is <#${chan.id}>`, true)
-                          .addField('Priority', `${PriorityList}` || `N/A`, true)
-                          .addField('Open Time', `<t:${MainTime}:f>`, true)
+                          .addFields([
+                            { name: 'Infomation', value: `<@${interaction.user.id}> ${data01.OpenTicket}`, inline: true },
+                            { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
+                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                          ])
 
                         await interaction.reply({ embeds: [open], ephemeral: true });
 
@@ -250,13 +256,12 @@ module.exports.run = (client, interaction) => {
                           .setTimestamp()
                           .setTitle('Ticket open')
                           .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can send a message to your ticket by replying to our DMs with your ticketID: ${generator}`)
-                          .addField('TicketID', `${generator}`, true)
                           .addFields([
-                            {name: 'TicketID', value: `${generator}`, inline: true},
-                            {name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true},
-                            {name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true}
+                            { name: 'TicketID', value: `${generator}`, inline: true },
+                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
                           ])
-                          .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
+                          .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
 
                         await interaction.user.send({ embeds: [DmPerson] });
 
@@ -266,16 +271,18 @@ module.exports.run = (client, interaction) => {
                         const thankyou = new EmbedBuilder()
                           .setColor('#f6f7f8')
                           .setTimestamp()
-                          .setFooter(`Ticket ID: <#${chan.id}>`)
+                          .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                           .setTitle('Ticket')
                           .setDescription('To reply to this user ticket, please use the following command `/ticketreply message:` ')
-                          .addField('Information', `${data01.TicketMessage}`, true)
-                          .addField('Issue', `${MSG}.`, true)
-                          .addField('User', `<@${interaction.user.id}>`, true)
-                          .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
-                          .addField('Ticket Id', `${generator}`, true)
-                          .addField('Priority', `${PriorityList}` || `N/A`, true)
-                          .addField('Open Time', `<t:${MainTime}:f>`, true)
+                          .addFields([
+                            { name: 'Infomation', value: `${data01.TicketMessage}`, inline: true },
+                            { name: 'Issue', value: `${MSG}`, inline: true },
+                            { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                            { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
+                            { name: 'Ticket  ID', value: `${generator}`, inline: true },
+                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                          ])
 
                         await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                           m.pin()
@@ -306,8 +313,10 @@ module.exports.run = (client, interaction) => {
                               const DatabaseTicketMessage = new EmbedBuilder()
                                 .setTitle('Ticket error')
                                 .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
-                                .addField('Ticket ID', `${data01.TicketIDs}`, true)
-                                .addField('reason', `${data01.Reason}.`, true);
+                                .addFields([
+                                  { name: 'Ticket ID', value: `${data01.TicketIDs}`, inline: true },
+                                  { name: 'Reason', value: `${data01.Reason}`, inline: true },
+                                ])
 
                               interaction.channel.send({ embeds: [DatabaseTicketMessage] }).then(m2 => {
                                 m2.react('✅')
@@ -388,7 +397,7 @@ module.exports.run = (client, interaction) => {
                                 const RBLXusername = 'Not Linked to Bloxlink'
                                 interaction.guild.channels.create(name, { parent: Ticketcat }).then(async (chan) => {
                                   chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
-      
+
                                   chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
                                     SEND_MESSAGES: false,
                                     VIEW_CHANNEL: false
@@ -405,49 +414,56 @@ module.exports.run = (client, interaction) => {
                                     MANAGE_CHANNELS: true,
                                     ATTACH_FILES: true,
                                   })
-      
+
                                   const open = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
-                                    .setFooter(`Ticket ID: <#${chan.id}>`)
+                                    .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                                     .setTitle(`Ticket`)
-                                    .addField('Information', `<@${interaction.user.id}> I have open a ticket for you!`, true)
-                                    .addField('Channel', `Your ticket is <#${chan.id}>`, true)
-                                    .addField('Priority', `${PriorityList}` || `N/A`, true)
-                                    .addField('Open Time', `<t:${MainTime}:f>`, true)
+                                    .addFields([
+                                      { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
+                                      { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
+                                      { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                    ])
 
 
-      
+
                                   await interaction.reply({ embeds: [open], ephemeral: true });
-      
+
                                   const DmPerson = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle('Ticket open')
                                     .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can found your ticket here: <#${chan.id}>`)
-                                    .addField('TicketID', `${generator}`, true)
-                                    .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
-                                    .addField('Priority', `${PriorityList}` || `N/A`, true)
-                                    .addField('Open Time', `<t:${MainTime}:f>`)
+                                    .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
+                                    .addFields([
+                                      { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                      { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+
+                                    ])
 
                                   await interaction.user.send({ embeds: [DmPerson] });
-      
+
                                   const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                   const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
-      
+
                                   const thankyou = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
-                                    .setFooter(`Ticket ID: <#${chan.id}>`)
+                                    .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                                     .setTitle('Ticket')
-                                    .addField('Information', `${data01.TicketMessage}`, true)
-                                    .addField('Issue', `${MSG}.`, true)
-                                    .addField('User', `<@${interaction.user.id}>`, true)
-                                    .addField('Roblox username', `${RBLXusername}`)
-                                    .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
-                                    .addField('Ticket Id', `${generator}`, true)
-                                    .addField('Priority', `${PriorityList}` || `N/A`, true)
-                                    .addField('Open Time', `<t:${MainTime}:f>`, true)
+                                    .addFields([
+                                      { name: 'Information', value: `${data01.TicketMessage}`, inline: true },
+                                      { name: 'Issue', value: `${MSG}`, inline: true },
+                                      { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                      { name: 'Roblox username', value: `${RBLXusername}`, inline: true },
+                                      { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
+                                      { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                      { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                                    ])
 
 
                                   await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
@@ -479,15 +495,16 @@ module.exports.run = (client, interaction) => {
                                         const DatabaseTicketMessage = new EmbedBuilder()
                                           .setTitle('Ticket error')
                                           .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
-                                          .addField('Ticket ID', `${data01.TicketIDs}`, true)
-                                          .addField('reason', `${data01.Reason}.`, true);
-      
+                                          .addFields([
+                                            { name: 'Ticket ID', value: `${data01.TicketIDs}`, inline: true },
+                                            { name: 'Reason', value: `${data01.Reason}`, inline: true }
+                                          ])
                                         interaction.channel.send({ embeds: [DatabaseTicketMessage] }).then(m2 => {
                                           m2.react('✅')
-      
+
                                           const filter25 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
                                           const collector25 = m2.createReactionCollector({ filter: filter25, max: 1, time: 30000 }); // 5 min
-      
+
                                           collector25.on('collect', () => {
                                             m2.delete()
                                             ClaimTicket.findOneAndDelete({ id: data.id }, { ServerID: data01.ServerID }, async (err3, data3) => {
@@ -498,15 +515,15 @@ module.exports.run = (client, interaction) => {
                                               interaction.channel.send({ embeds: [deletedd] })
                                               const DeleteChannelWhenError = interaction.guild.channels.cache.get(`${chan.id}`);
                                               DeleteChannelWhenError.delete();
-      
+
                                               setTimeout(() => {
-      
+
                                               }, 5000);
                                             })
                                           })
                                         })
-      
-      
+
+
                                       }
                                     } else {
                                       data = new ClaimTicket({
@@ -535,14 +552,14 @@ module.exports.run = (client, interaction) => {
                                         }
                                       })
                                     }
-      
+
                                   })
                                 })
                               } else {
-                                const RBLXusername =  noblox.getUsernameFromId(response.user.robloxId)
+                                const RBLXusername = noblox.getUsernameFromId(response.user.robloxId)
                                 interaction.guild.channels.create(name, { parent: Ticketcat }).then(async (chan) => {
                                   chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
-      
+
                                   chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
                                     SEND_MESSAGES: false,
                                     VIEW_CHANNEL: false
@@ -559,50 +576,57 @@ module.exports.run = (client, interaction) => {
                                     MANAGE_CHANNELS: true,
                                     ATTACH_FILES: true,
                                   })
-      
+
                                   const open = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
-                                    .setFooter(`Ticket ID: <#${chan.id}>`)
+                                    .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                                     .setTitle(`Ticket`)
-                                    .addField('Information', `<@${interaction.user.id}> I have open a ticket for you!`, true)
-                                    .addField('Channel', `Your ticket is <#${chan.id}>`, true)
-                                    .addField('Priority', `${PriorityList}` || `N/A`, true)
-                                    .addField('Open Time', `<t:${MainTime}:f>`, true)
+                                    .addFields([
+                                      { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
+                                      { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
+                                      { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                    ])
 
 
-      
+
+
                                   await interaction.reply({ embeds: [open], ephemeral: true });
-      
+
                                   const DmPerson = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle('Ticket open')
                                     .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can found your ticket here: <#${chan.id}>`)
-                                    .addField('TicketID', `${generator}`, true)
-                                    .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
-                                    .addField('Priority', `${PriorityList}` || `N/A`, true)
-                                    .addField('Open Time', `<t:${MainTime}:f>`, true)
+                                    .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
+                                    .addFields([
+                                      { name: 'TicketID', value: `${generator}`, inline: true },
+                                      { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                    ])
 
 
                                   await interaction.user.send({ embeds: [DmPerson] });
-      
+
                                   const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                   const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
-      
+
                                   const thankyou = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
-                                    .setFooter(`Ticket ID: <#${chan.id}>`)
+                                    .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                                     .setTitle('Ticket')
-                                    .addField('Information', `${data01.TicketMessage}`, true)
-                                    .addField('Issue', `${MSG}.`, true)
-                                    .addField('User', `<@${interaction.user.id}>`, true)
-                                    .addField('Roblox username', `${RBLXusername}`)
-                                    .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
-                                    .addField('Ticket Id', `${generator}`, true)
-                                    .addField('Priority', `${PriorityList}` || `N/A`, true)
-                                    .addField('Open Time', `<t:${MainTime}:f>`, true)
+                                    .addFields([
+                                      { name: 'Information', value: `${data01.TicketMessage}`, inline: true },
+                                      { name: 'Issue', value: `${MSG}`, inline: true },
+                                      { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                      { name: 'Roblox username', value: `${RBLXusername}`, inline: true },
+                                      { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
+                                      { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                      { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                                    ])
 
                                   await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                                     m.pin()
@@ -633,15 +657,17 @@ module.exports.run = (client, interaction) => {
                                         const DatabaseTicketMessage = new EmbedBuilder()
                                           .setTitle('Ticket error')
                                           .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
-                                          .addField('Ticket ID', `${data01.TicketIDs}`, true)
-                                          .addField('reason', `${data01.Reason}.`, true);
-      
+                                          .addFields([
+                                            { name: 'Ticket ID', value: `${data01.TicketIDs}`, inline: true },
+                                            { name: 'Reason', value: `${data01.Reason}`, inline: true }
+                                          ])
+
                                         interaction.channel.send({ embeds: [DatabaseTicketMessage] }).then(m2 => {
                                           m2.react('✅')
-      
+
                                           const filter25 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
                                           const collector25 = m2.createReactionCollector({ filter: filter25, max: 1, time: 30000 }); // 5 min
-      
+
                                           collector25.on('collect', () => {
                                             m2.delete()
                                             ClaimTicket.findOneAndDelete({ id: data.id }, { ServerID: data01.ServerID }, async (err3, data3) => {
@@ -652,15 +678,15 @@ module.exports.run = (client, interaction) => {
                                               interaction.channel.send({ embeds: [deletedd] })
                                               const DeleteChannelWhenError = interaction.guild.channels.cache.get(`${chan.id}`);
                                               DeleteChannelWhenError.delete();
-      
+
                                               setTimeout(() => {
-      
+
                                               }, 5000);
                                             })
                                           })
                                         })
-      
-      
+
+
                                       }
                                     } else {
                                       data = new ClaimTicket({
@@ -689,7 +715,7 @@ module.exports.run = (client, interaction) => {
                                         }
                                       })
                                     }
-      
+
                                   })
                                 })
                               }
@@ -722,12 +748,15 @@ module.exports.run = (client, interaction) => {
                               const open = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
-                                .setFooter(`Ticket ID: <#${chan.id}>`)
+                                .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                                 .setTitle(`Ticket`)
-                                .addField('Information', `<@${interaction.user.id}> I have open a ticket for you!`, true)
-                                .addField('Channel', `Your ticket is <#${chan.id}>`, true)
-                                .addField('Priority', `${PriorityList}` || `N/A`, true)
-                                .addField('Open Time', `<t:${MainTime}:f>`, true)
+                                .addFields([
+                                  { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
+                                  { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
+                                  { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                  { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                                ])
+
 
 
                               await interaction.reply({ embeds: [open], ephemeral: true });
@@ -737,10 +766,12 @@ module.exports.run = (client, interaction) => {
                                 .setTimestamp()
                                 .setTitle('Ticket open')
                                 .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can found your ticket here: <#${chan.id}>`)
-                                .addField('TicketID', `${generator}`, true)
-                                .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
-                                .addField('Priority', `${PriorityList}` || `N/A`, true)
-                                .addField('Open Time', `<t:${MainTime}:f>`, true)
+                                .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
+                                .addFields([
+                                  { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                  { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                  { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                ])
 
                               await interaction.user.send({ embeds: [DmPerson] });
 
@@ -750,15 +781,17 @@ module.exports.run = (client, interaction) => {
                               const thankyou = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
-                                .setFooter(`Ticket ID: <#${chan.id}>`)
+                                .setFooter({ text: `Ticket ID: <#${chan.id}>`})
                                 .setTitle('Ticket')
-                                .addField('Information', `${data01.TicketMessage}`, true)
-                                .addField('Issue', `${MSG}.`, true)
-                                .addField('User', `<@${interaction.user.id}>`, true)
-                                .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
-                                .addField('Ticket Id', `${generator}`, true)
-                                .addField('Priority', `${PriorityList}` || `N/A`, true)
-                                .addField('Open Time', `<t:${MainTime}:f>`, true)
+                                .addFields([
+                                  {name: 'Information', value: `${data01.TicketMessage}`, inline: true},
+                                  {name: 'Issue', value: `${MSG}`, inline: true},
+                                  {name: 'User', value: `<@${interaction.user.id}>`, inline: true},
+                                  {name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true},
+                                  {name: 'Ticket ID', value: `${generator}`, inline: true},
+                                  {name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true},
+                                  {name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true},
+                                ])
 
                               await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                                 m.pin()
@@ -789,8 +822,10 @@ module.exports.run = (client, interaction) => {
                                     const DatabaseTicketMessage = new EmbedBuilder()
                                       .setTitle('Ticket error')
                                       .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
-                                      .addField('Ticket ID', `${data01.TicketIDs}`, true)
-                                      .addField('reason', `${data01.Reason}.`, true);
+                                      .addFields([
+                                        {name: 'Ticket ID', value: `${data01.TicketIDs}`, inline: true},
+                                        {name: 'Reason', value: `${data01.Reason}.`, inline: true},
+                                      ])
 
                                     interaction.channel.send({ embeds: [DatabaseTicketMessage] }).then(m2 => {
                                       m2.react('✅')
