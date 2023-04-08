@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const pagination = require('discordjs-button-pagination');
-const Discord = require('discord.js');
+const {Discord, EmbedBuilder} = require('discord.js');
+const MainDatabase = require('../schemas/TicketData')
+
 
 module.exports.data = new SlashCommandBuilder()
     .setName('remove')
@@ -14,63 +16,66 @@ module.exports.run = (client, interaction) => {
 
     const getid = interaction.options.getString('id')
 
-    if (err01) throw err01;
-    if (data01) {
-        const perms = new MessageEmbed()
-            .setColor('RED')
-            .setTimestamp()
-            .setTitle(`Error`)
-            .setDescription(`You don't have the following permissions: Manage_message.`)
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
 
-        const invaild = new MessageEmbed()
-            .setColor('RED')
-            .setTimestamp()
-            .setTitle(`Error`)
-            .setDescription(`You didn't mention a user, or you gave an invaild id.`)
+        if (err01) throw err01;
+        if (data01) {
+            const perms = new EmbedBuilder()
+                .setColor('#FF0000')
+                .setTimestamp()
+                .setTitle(`Error`)
+                .setDescription(`You don't have the following permissions: Manage_message.`)
 
-        const NoMessage = new MessageEmbed()
-            .setColor('RED')
-            .setTimestamp()
-            .setTitle(`Error`)
-            .setDescription(`You did not specify your message`)
+            const invaild = new EmbedBuilder()
+                .setColor('#FF0000')
+                .setTimestamp()
+                .setTitle(`Error`)
+                .setDescription(`You didn't mention a user, or you gave an invaild id.`)
 
-        const Added = new MessageEmbed()
-            .setColor('GREEN')
-            .setTimestamp()
-            .setTitle('Removed')
-            .setDescription(`<@${interaction.author.id}> have removed you to the following ticket <#${interaction.channel.id}>`)
+            const NoMessage = new EmbedBuilder()
+                .setColor('#FF0000')
+                .setTimestamp()
+                .setTitle(`Error`)
+                .setDescription(`You did not specify your message`)
 
-        const AdminPerms = new MessageEmbed()
-            .setColor('RED')
-            .setTimestamp()
-            .setTitle('ERROR')
-            .setDescription('The person you tried to remove is the creator of the ticket or have customer service perms.')
+            const Added = new EmbedBuilder()
+                .setColor('#00FF00')
+                .setTimestamp()
+                .setTitle('Removed')
+                .setDescription(`<@${interaction.user.id}> have removed you to the following ticket <#${interaction.channel.id}>`)
 
-        if (!interaction.channel.name.startsWith("ticket-" || "staff-")) return interaction.reply("This is not a valid ticket")
-        if (!interaction.member.permissions.has("MANAGE_MESSAGES"))
-            return interaction.reply({ embeds: [perms] });
-        let user =
-            interaction.mentions.members.first() ||
-            interaction.guild.members.cache.get(args[0]);
-        if (!user)
-            return interaction.channel.send(invaild);
-        user.user
-        if (user.permissions.has("MANAGE_MESSAGES")) return interaction.reply({ embeds: [AdminPerms] })
-            .send(Added)
-        message.channel.permissionOverwrites.edit(user, {
-            SEND_MESSAGES: false,
-            VIEW_CHANNEL: false,
-            ATTATCH_FILES: false,
-        })
-        const Logs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
-            .then(() => Logs.send(`Remove ${user.user.tag} to the following ticket <@${interaction.channel.id}>`))
-            .then(() => interaction.reply(`Removed ${user.user.tag} from this ticket!`));
-    } else {
-        const NoData = new MessageEmbed()
-            .setTitle('Not updated')
-            .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
+            const AdminPerms = new EmbedBuilder()
+                .setColor('#FF0000')
+                .setTimestamp()
+                .setTitle('ERROR')
+                .setDescription('The person you tried to remove is the creator of the ticket or have customer service perms.')
 
-        interaction.reply({ embeds: [NoData] })
-    }
+            if (!interaction.channel.name.startsWith("ticket-" || "staff-")) return interaction.reply("This is not a valid ticket")
+            if (!interaction.member.permissions.has("MANAGE_MESSAGES"))
+                return interaction.reply({ embeds: [perms] });
+            let user =
+                interaction.mentions.members.first() ||
+                interaction.guild.members.cache.get(args[0]);
+            if (!user)
+                return interaction.channel.send(invaild);
+            user.user
+            if (user.permissions.has("MANAGE_MESSAGES")) return interaction.reply({ embeds: [AdminPerms] })
+                .send(Added)
+            message.channel.permissionOverwrites.edit(user, {
+                SEND_MESSAGES: false,
+                VIEW_CHANNEL: false,
+                ATTATCH_FILES: false,
+            })
+            const Logs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
+                .then(() => Logs.send(`Remove ${user.user.tag} to the following ticket <@${interaction.channel.id}>`))
+                .then(() => interaction.reply(`Removed ${user.user.tag} from this ticket!`));
+        } else {
+            const NoData = new EmbedBuilder()
+                .setTitle('Not updated')
+                .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
+
+            interaction.reply({ embeds: [NoData] })
+        }
+    })
 
 }

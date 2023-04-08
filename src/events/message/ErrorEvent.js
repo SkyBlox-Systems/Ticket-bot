@@ -1,6 +1,6 @@
 const BaseEvent = require('../../utils/structures/BaseEvent');
 const blacklist = require('../../schemas/Blacklist-schema');
-const { MessageEmbed, Interaction } = require('discord.js');
+const { EmbedBuilder, Interaction } = require('discord.js');
 const mongoose = require('mongoose');
 const db = require('../../schemas/commands')
 const MainDatabase = require('../../schemas/TicketData')
@@ -22,13 +22,13 @@ module.exports = class MessageEvent extends BaseEvent {
     process.on('unhandledRejection', (reason, p) => {
       
 
-      const ErrorEmbed = new MessageEmbed()
-        .setColor('RED')
+      const ErrorEmbed = new EmbedBuilder()
+        .setColor('#FF0000')
         .setTitle('⚠️ Error')
         .setDescription(`An error has occured when running the command **N/A**. An report of this error has been sent to the admins of the bot.`)
       message.channel.send({ embeds: [ErrorEmbed] })
 
-      const StaffEmbed = new MessageEmbed()
+      const StaffEmbed = new EmbedBuilder()
       .setTitle('⚠️ ERROR')
       .setDescription(`**Unhandled Rejection/Catch: \n\n** Reason: **${reason}** \n Command: **N/A**`)
 

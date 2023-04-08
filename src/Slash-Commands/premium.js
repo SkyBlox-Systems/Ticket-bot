@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 const ProKeys = require('../schemas/keys');
 const { ObjectId } = require('mongodb');
@@ -17,7 +17,7 @@ module.exports.data = new SlashCommandBuilder()
 
 module.exports.run = async (client, interaction) => {
 
-    const notOwner = new MessageEmbed()
+    const notOwner = new EmbedBuilder()
         .setTitle('Owner only command!')
     if (interaction.user.id != interaction.guild.ownerId) {
         interaction.reply({ embeds: [notOwner] })
@@ -36,7 +36,7 @@ module.exports.run = async (client, interaction) => {
 
                         data1.Pro.forEach(async (element, i) => {
                             if (element === MSG) {
-                                const foundcode = new MessageEmbed()
+                                const foundcode = new EmbedBuilder()
                                     .setTitle('Premium')
                                     .setDescription(`The code **${MSG}** is a vaild existing code. Would you like to claim premium on this server?`)
                                 const PremiumEmoji = await interaction.reply({ embeds: [foundcode], fetchReply: true })

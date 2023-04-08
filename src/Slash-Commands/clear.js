@@ -11,7 +11,7 @@ module.exports.data = new SlashCommandBuilder()
 
 module.exports.run = (client, interaction) => {
     if (!interaction.member.permissions.has("ADMINISTRATOR")) {
-        const NoPerms = new MessageEmbed()
+        const NoPerms = new EmbedBuilder()
             .setTitle('Error')
             .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
             return interaction.reply({ embeds: [NoPerms] })

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const Discord = require('discord.js');
 
 module.exports.data = new SlashCommandBuilder()
@@ -10,7 +10,7 @@ module.exports.data = new SlashCommandBuilder()
 module.exports.run = (client, interaction) => {
 
     if (interaction.user.id !== '406164395643633665') {
-        const NotOwner = new MessageEmbed()
+        const NotOwner = new EmbedBuilder()
             .setColor('RANDOM')
             .setTimestamp()
             .setTitle('Help')

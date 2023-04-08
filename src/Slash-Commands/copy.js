@@ -1,11 +1,11 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const ticketclaim = require('../schemas/ticketclaim')
 const MainFile = require('../../slappey.json')
 const ProKeys = require('../schemas/keys')
-const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 
 
@@ -14,14 +14,14 @@ module.exports.data = new SlashCommandBuilder()
     .setDescription('copy Command')
 
 module.exports.run = async (client, interaction) => {
-    const ServerOwner = new MessageEmbed()
+    const ServerOwner = new EmbedBuilder()
         .setTitle('Error')
         .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
         .setColor('#f9f9fa')
 
-    const row = new MessageActionRow()
+    const row = new ActionRowBuilder()
         .addComponents(
-            new MessageSelectMenu()
+            new StringSelectMenuBuilder()
                 .setCustomId('select')
                 .setPlaceholder('Nothing selected')
                 .addOptions([

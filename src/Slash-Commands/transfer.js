@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const ticketclaim = require('../schemas/ticketclaim')
 const MainFile = require('../../slappey.json')
 const MainDatabase = require('../schemas/TicketData')
@@ -27,7 +27,7 @@ module.exports.data = new SlashCommandBuilder()
             .setRequired(true));
 
 module.exports.run = (client, interaction) => {
-    const ServerOwner = new MessageEmbed()
+    const ServerOwner = new EmbedBuilder()
         .setTitle('Error')
         .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
         .setColor('#f9f9fa')
@@ -58,7 +58,7 @@ module.exports.run = (client, interaction) => {
                                         if (data1.PaidGuild === 'Yes') {
                                             interaction.reply('This guild already have premium.')
                                         } else {
-                                            const licenceembed = new MessageEmbed()
+                                            const licenceembed = new EmbedBuilder()
                                                 .setTitle('⚠ Warning ⚠')
                                                 .setDescription(`You are about to transfer your premium to this server **${newguild.name} / ${MSG}**. Are you sure you want to do this?`)
                                             const licenceemoji = await interaction.reply({ embeds: [licenceembed], fetchReply: true })
@@ -114,7 +114,7 @@ module.exports.run = (client, interaction) => {
                 } else {
                     if (newguild !== undefined) {
                         if (newguild.ownerId === interaction.guild.ownerId) {
-                            const WarningTransfer = new MessageEmbed()
+                            const WarningTransfer = new EmbedBuilder()
                             .setTitle('⚠ Warning ⚠')
                             .setDescription(`You are about to transfer your guild data to this guild **${newguild.name} / ${MSG}**. Are you sure you want to do this? **YOU WILL LOSE EVERYTHING!**`)
 

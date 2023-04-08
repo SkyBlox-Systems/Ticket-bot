@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const bot = require('discord.js');
 const discord = require('discord.js');
 const fs = require('fs').promises;
@@ -19,7 +19,7 @@ module.exports.data = new SlashCommandBuilder()
 
     module.exports.run = (client, interaction) => {
       if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {
-        const NoPerms = new MessageEmbed()
+        const NoPerms = new EmbedBuilder()
             .setTitle('Error')
             .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
             return interaction.reply({ embeds: [NoPerms] })
@@ -50,7 +50,7 @@ module.exports.data = new SlashCommandBuilder()
                         MANAGE_CHANNELS: true,
                       }) 
         
-                      const NoLocked = new MessageEmbed()
+                      const NoLocked = new EmbedBuilder()
                       .setTitle('Locked')
                       .setDescription(`<@${interaction.user.id}> has locked your ticket! This ticket can not be closed unless it has been unlocked once again. Please contact an Ticket Support manager if this was a mistake.`)
         
@@ -77,7 +77,7 @@ module.exports.data = new SlashCommandBuilder()
                           ATTACH_FILES: true,
                           MANAGE_CHANNELS: true,
                         }) 
-                        const YesLocked = new MessageEmbed()
+                        const YesLocked = new EmbedBuilder()
                         .setTitle('Unlocked')
                         .setDescription(`<@${interaction.user.id}> has unlocked your ticket! You can may use this ticket as normal.`)
         
@@ -134,7 +134,7 @@ module.exports.data = new SlashCommandBuilder()
                           MANAGE_CHANNELS: true,
                         }) 
           
-                        const NoLocked = new MessageEmbed()
+                        const NoLocked = new EmbedBuilder()
                         .setTitle('Locked')
                         .setDescription(`<@${interaction.user.id}> has locked your ticket! This ticket can not be closed unless it has been unlocked once again. Please contact an Ticket Support manager if this was a mistake.`)
           
@@ -173,7 +173,7 @@ module.exports.data = new SlashCommandBuilder()
                             ATTACH_FILES: true,
                             MANAGE_CHANNELS: true,
                           }) 
-                          const YesLocked = new MessageEmbed()
+                          const YesLocked = new EmbedBuilder()
                           .setTitle('Unlocked')
                           .setDescription(`<@${interaction.user.id}> has unlocked your ticket! You can may use this ticket as normal.`)
           
@@ -201,7 +201,7 @@ module.exports.data = new SlashCommandBuilder()
               }
       
             } else {
-              const NoData = new MessageEmbed()
+              const NoData = new EmbedBuilder()
                 .setTitle('Not updated')
                 .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.3** and the latest update is **v2.2** Please get the owner to run ${client.prefix}update`)
       

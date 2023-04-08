@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const Discord = require('discord.js');
 
 module.exports.data = new SlashCommandBuilder()
@@ -14,7 +14,7 @@ module.exports.data = new SlashCommandBuilder()
 module.exports.run = (client, interaction) => {
 
     if (interaction.user.id !== '406164395643633665') {
-        const NotOwner = new MessageEmbed()
+        const NotOwner = new EmbedBuilder()
             .setColor('RANDOM')
             .setTimestamp()
             .setTitle('Help')
@@ -32,10 +32,12 @@ module.exports.run = (client, interaction) => {
 
         const dmowner = client.users.cache.get(guild.ownerId)
 
-        const DM = new MessageEmbed()
+        const DM = new EmbedBuilder()
         .setTitle('New DM')
         .setDescription('You have received a DM from the bot owner. If this message duplicates, it means you have more than 1 guild with our bot in. The message what the owner provided is below')
-        .addField('Message', `${messageforuser}`)
+        .addFields([
+            {name: 'Message', value: `${messageforuser}`}
+        ])
 
         dmowner.send({ embeds: [DM]})
     })

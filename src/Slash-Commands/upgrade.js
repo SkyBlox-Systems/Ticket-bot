@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js')
+const { EmbedBuilder } = require('discord.js')
 const Discord = require('discord.js');
 const database = require('../schemas/TicketData')
 const { BotVersions } = require('../../slappey.json')
-const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 const axios = require('axios');
 
 
@@ -18,7 +18,7 @@ module.exports.run = async (client, interaction) => {
 
     // const msg =  interaction.channel.send(`upgrade..`);
 
-    const ServerOwner = new MessageEmbed()
+    const ServerOwner = new EmbedBuilder()
         .setTitle('Error')
         .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
 
@@ -79,7 +79,7 @@ module.exports.run = async (client, interaction) => {
                                 BotVersion: BotVersions
                             })
                             data3.save()
-                            const updated = new MessageEmbed()
+                            const updated = new EmbedBuilder()
                                 .setTitle('The bot has now been updated')
                                 .setDescription(`To find the changes, please head here [Change Log](https://docs.ticketbot.co.uk/change-log)`)
                             interaction.reply({ embeds: [updated] })
@@ -121,7 +121,7 @@ module.exports.run = async (client, interaction) => {
                     })
                 } else {
                     if (data.BotVersion === BotVersions) {
-                        const alreadyupdated = new MessageEmbed()
+                        const alreadyupdated = new EmbedBuilder()
                             .setTitle(`Bot in this guild is already on the latest version (**v${BotVersions}**).`)
 
                         interaction.reply({ embeds: [alreadyupdated] })
@@ -151,7 +151,7 @@ module.exports.run = async (client, interaction) => {
                                 BotVersion: BotVersions
                             })
                             data3.save()
-                            const updated = new MessageEmbed()
+                            const updated = new EmbedBuilder()
                                 .setTitle('The bot has now been updated')
                                 .setDescription(`To find the changes, please head here [Change Log](https://docs.ticketbots.co.uk/change-log)`)
                             interaction.reply({ embeds: [updated] })
@@ -193,7 +193,7 @@ module.exports.run = async (client, interaction) => {
                     })
                 } else {
                     if (data.BotVersion === BotVersions) {
-                        const alreadyupdated = new MessageEmbed()
+                        const alreadyupdated = new EmbedBuilder()
                             .setTitle(`Bot in this guild is already on the latest version (**v${BotVersions}**).`)
     
                         interaction.reply({ embeds: [alreadyupdated] })

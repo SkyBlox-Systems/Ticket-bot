@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports.data = new SlashCommandBuilder()
     .setName('userinfo')
@@ -25,18 +25,20 @@ module.exports.run = (client, interaction) => {
                 break;
         }
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(`${interaction.user.username} stats`)
             .setColor(`#f3f3f3`)
             .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-            .addField('Name: ', `${interaction.user.username}`, true)
-            .addField('#️⃣ Discriminator: ', `#${interaction.user.discriminator}`, true)
-            .addField('🆔 ID: ', `${interaction.user.id}`, true)
-            .addField('Current Status: ', `Broken right now`, true)
-            .addField('Avater Link', `[Click Here](${interaction.user.displayAvatarURL()})`)
-            .addField('Creation Date: ', `${interaction.guild.createdAt.toLocaleDateString("en-us")}`, true)
-            .addField('Joined Date: ', `${interaction.guild.joinedAt.toLocaleDateString("en-us")}`, true)
-            .addField('User Roles: ', `${user.roles.cache.map(role => role.toString()).join(" ,")}`, true)
+            .addFields([
+                {name: 'Name:', value: `${interaction.user.username}`, inline: true},
+                {name: '#️⃣ Discriminator:', value: `#${interaction.user.discriminator}`, inline: true},
+                {name: '🆔 ID:', value: `${interaction.user.id}`, inline: true},
+                {name: 'Current Status:', value: `Broken right now`, inline: true},
+                {name: 'Avater Link:', value: `[Click Here](${interaction.user.displayAvatarURL()})`},
+                {name: 'Creation Date:', value: `${interaction.guild.createdAt.toLocaleDateString("en-us")}`, inline: true},
+                {name: 'Joined Date:', value: `${interaction.guild.joinedAt.toLocaleDateString("en-us")}`, inline: true},
+                {name: 'User Roles:', value: `${user.roles.cache.map(role => role.toString()).join(" ,")}`, inline: true}
+            ])
                 // {
                 //     name: "Activity: ",
                 //     value: interaction.user.presence.activities[0] ? interaction.user.presence.activities[0].name : `User isn't playing a game!`,

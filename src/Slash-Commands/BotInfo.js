@@ -4,7 +4,7 @@ const { utc } = require('moment');
 const os = require('os');
 const ms = require('ms');
 const core = os.cpus()[0];
-const { MessageEmbed, version: djsversion} = require('discord.js');
+const { EmbedBuilder, version: djsversion} = require('discord.js');
 
 var total_memory = os.totalmem(); 
 var total_mem_in_kb = total_memory/1024; 
@@ -22,10 +22,9 @@ module.exports.data = new SlashCommandBuilder()
     .setDescription('Bot Info Command')
 
     module.exports.run = (client, interaction) => {
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setThumbnail(client.user.displayAvatarURL())
             .setTitle('Bot Stats')
-            .setColor('RANDOM')
             .addFields(
                 {
                     name: '🌐 Servers',

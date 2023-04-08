@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
 const ClaimTicket = require('../schemas/ticketclaim');
 const { findOneAndUpdate } = require('../schemas/ticketclaim');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const MainDatabase = require('../schemas/TicketData');
 
@@ -32,7 +32,7 @@ module.exports.run = (client, interaction) => {
         if (err01) throw err01;
         if (data01) {
             if (!interaction.member.roles.cache.some(r => r.name === "ticket support")) {
-                const NoPerms = new MessageEmbed()
+                const NoPerms = new EmbedBuilder()
                     .setTitle('Error')
                     .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
 
@@ -54,16 +54,16 @@ module.exports.run = (client, interaction) => {
                                 data2.save()
 
 
-                                const TicketClaimed = new MessageEmbed()
+                                const TicketClaimed = new EmbedBuilder()
                                     .setTitle('Ticket Claimed!')
                                     .setDescription(`<#${data2.ChannelID}> has been claimed by <@${interaction.user.id}> You should off be given the permission to send the message in the ticket!`)
 
-                                const TicketClaimedDM = new MessageEmbed()
+                                const TicketClaimedDM = new EmbedBuilder()
                                     .setTitle('Ticket Claimed!')
                                     .setDescription(`Your ticket <#${data2.ChannelID}> has been claimed by <@${interaction.user.id}>! For you to reply, you need to reply to our DMs with your ticket id ${data2.TicketIDs}`)
 
                                 //  if (message.author.id !== data2.ClaimUserID) {
-                                //    const AlreadyClaimed = new MessageEmbed()
+                                //    const AlreadyClaimed = new EmbedBuilder()
                                 //      .setTitle('Ticket already claimed!')
                                 //      .setDescription(`This ticket has already been claimed by <@${data2.ClaimUserID}>`)
 
@@ -118,16 +118,16 @@ module.exports.run = (client, interaction) => {
                                         data2.save()
         
         
-                                        const TicketClaimed = new MessageEmbed()
+                                        const TicketClaimed = new EmbedBuilder()
                                             .setTitle('Ticket Claimed!')
                                             .setDescription(`<#${data2.ChannelID}> has been claimed by <@${interaction.user.id}> You should off be given the permission to send the message in the ticket!`)
         
-                                        const TicketClaimedDM = new MessageEmbed()
+                                        const TicketClaimedDM = new EmbedBuilder()
                                             .setTitle('Ticket Claimed!')
                                             .setDescription(`Your ticket <#${data2.ChannelID}> has been claimed by <@${interaction.user.id}>! For you to reply, you need to reply to our DMs with your ticket id ${data2.TicketIDs}`)
         
                                         //  if (message.author.id !== data2.ClaimUserID) {
-                                        //    const AlreadyClaimed = new MessageEmbed()
+                                        //    const AlreadyClaimed = new EmbedBuilder()
                                         //      .setTitle('Ticket already claimed!')
                                         //      .setDescription(`This ticket has already been claimed by <@${data2.ClaimUserID}>`)
         
@@ -182,14 +182,14 @@ module.exports.run = (client, interaction) => {
         
         
         
-                                            const TicketClaimed = new MessageEmbed()
+                                            const TicketClaimed = new EmbedBuilder()
                                                 .setTitle('Ticket Claimed!')
                                                 .setDescription(`<#${data2.ChannelID}> has been claimed by <@${interaction.user.id}> You should off be given the permission to send the message in the ticket!`)
         
                                         
         
                                             //  if (message.author.id !== data2.ClaimUserID) {
-                                            //    const AlreadyClaimed = new MessageEmbed()
+                                            //    const AlreadyClaimed = new EmbedBuilder()
                                             //      .setTitle('Ticket already claimed!')
                                             //      .setDescription(`This ticket has already been claimed by <@${data2.ClaimUserID}>`)
         
@@ -200,7 +200,7 @@ module.exports.run = (client, interaction) => {
         
                                             if (VCTicketClaim.type === 'GUILD_TEXT') {
         
-                                                const TicketClaimedDM = new MessageEmbed()
+                                                const TicketClaimedDM = new EmbedBuilder()
                                                 .setTitle('Ticket Claimed!')
                                                 .setDescription(`Your ticket <#${data2.ChannelID}> has been claimed by <@${interaction.user.id}>!`)
                                                 
@@ -224,7 +224,7 @@ module.exports.run = (client, interaction) => {
                                                 const dmUserID = data2.id;
         
                                                 
-                                                const TicketVCClaimedDM = new MessageEmbed()
+                                                const TicketVCClaimedDM = new EmbedBuilder()
                                                 .setTitle('Ticket Claimed!')
                                                 .setDescription(`Your ticket <#${data2.ChannelID}> has been claimed by <@${interaction.user.id}>! You are required to join the voice call on this date **${PremDate}** and time **${PremTime}**`)
         

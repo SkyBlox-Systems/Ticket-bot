@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 const ticketclaim = require('../schemas/ticketclaim')
 const MainFile = require('../../slappey.json')
 const ProKeys = require('../schemas/keys')
-const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 
 
@@ -17,28 +17,28 @@ module.exports.data = new SlashCommandBuilder()
             .setRequired(true))
 
 module.exports.run = async (client, interaction) => {
-    const ServerOwner = new MessageEmbed()
+    const ServerOwner = new EmbedBuilder()
         .setTitle('Error')
         .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
 
-    const ButtonList = new MessageActionRow()
+    const ButtonList = new ActionRowBuilder()
         .addComponents(
-            new MessageButton()
+            new ButtonBuilder()
                 .setCustomId('create')
                 .setLabel('Create')
-                .setStyle('SUCCESS')
+                .setStyle(ButtonStyle.Success)
                 .setEmoji('🎫'),
-            new MessageButton()
+            new ButtonBuilder()
                 .setCustomId('delete')
                 .setLabel('Delete')
-                .setStyle('DANGER'),
+                .setStyle(ButtonStyle.Danger),
         );
     const Main = interaction.options.getString('channel')
 
     if (interaction.user.id != interaction.guild.ownerId)
         return collected.reply({ embeds: [ServerOwner] });
 
-    const MainEmbed = new MessageEmbed()
+    const MainEmbed = new EmbedBuilder()
         .setTitle('Create ticket 🎫')
         .setDescription('Please react if you want to create a ticket')
 

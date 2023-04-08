@@ -1,10 +1,10 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const MainFile = require('../../slappey.json')
 const ProKeys = require('../schemas/keys')
-const { MessageActionRow, Modal, TextInputComponent } = require('discord.js');
+const { ActionRowBuilder, ModalBuilder, TextInputBuilder } = require('discord.js');
 const GiveawayFile = require('../schemas/giveaways-user-data')
 const { BotOwnerID } = require('../../slappey.json')
 
@@ -14,7 +14,7 @@ module.exports.data = new SlashCommandBuilder()
     .setDescription('giveaway Command');
 
 module.exports.run = async (client, interaction) => {
-    const Owner = new MessageEmbed()
+    const Owner = new EmbedBuilder()
         .setTitle('Error')
         .setDescription('This command is restricted to bot owner only. Please wait until the release.')
         .setColor('#f9f9fa')
@@ -30,22 +30,22 @@ module.exports.run = async (client, interaction) => {
                 interaction.reply('You have already entered and used all of your usage.')
             }
         } else {
-            const usermodal = new Modal()
+            const userModalBuilder = new ModalBuilderBuilder()
                 .setTitle('Giveaway')
                 .setCustomId("giveaway")
                 .addComponents(
-                    new MessageActionRow({
+                    new ActionRowBuilder({
                         components: [
-                            new TextInputComponent()
+                            new TextInputBuilder()
                                 .setCustomId("Email")
                                 .setPlaceholder("Type it in here")
                                 .setLabel("Please enter your email.")
-                                .setStyle('SHORT')
+                                .setStyle(ButtonStyle.Primary)
                         ]
                     }),
-                    new MessageActionRow({
+                    new ActionRowBuilder({
                         components: [
-                            new TextInputComponent()
+                            new TextInputBuilder()
                                 .setCustomId("Why")
                                 .setPlaceholder("Type it in here")
                                 .setLabel("Why do you want to win this giveaway?")
@@ -53,7 +53,7 @@ module.exports.run = async (client, interaction) => {
                         ]
                     }),
                 )
-          //  await interaction.showModal(usermodal)
+          //  await interaction.showModal(userModalBuilder)
         }
     })
 }

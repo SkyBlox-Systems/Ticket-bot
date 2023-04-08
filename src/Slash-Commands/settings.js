@@ -3,10 +3,10 @@ const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 const mongoose = require('mongoose');
-const { MessageEmbed, Guild, MessageCollector, Collector } = require('discord.js');
+const { EmbedBuilder, Guild, MessageCollector, Collector } = require('discord.js');
 var today = new Date();
 var dd = String(today.getDate());
-const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 
 module.exports.data = new SlashCommandBuilder()
   .setName('settings')
@@ -35,7 +35,7 @@ module.exports.data = new SlashCommandBuilder()
 
 module.exports.run = async (client, interaction) => {
 
-  const ServerOwner = new MessageEmbed()
+  const ServerOwner = new EmbedBuilder()
     .setTitle('Error')
     .setDescription('This command is restricted to guild owner only. Please do not try and use this command because you will not get anywhere.')
 
@@ -46,7 +46,7 @@ module.exports.run = async (client, interaction) => {
       if (err) throw err;
       if (data) {
         if (data.PaidGuild === 'Yes') {
-          const ListSettingsPaid = new MessageEmbed()
+          const ListSettingsPaid = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
             .setDescription('List of the bot settings for the guild.')
             .addField(`ServerID`, `${data.ServerID}`, true)
@@ -69,7 +69,7 @@ module.exports.run = async (client, interaction) => {
             .addField('Custom Code', `${data.WebsiteCode}`, true)
             .addField(`Bot Version`, `${data.BotVersion}`, true)
 
-          const ListSettingsPaid2 = new MessageEmbed()
+          const ListSettingsPaid2 = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
             .setDescription('List of the bot settings for the guild (premium only).')
             .addField(`Voice Call Tickets`, `${data.VoiceTicket}`, true)
@@ -78,12 +78,12 @@ module.exports.run = async (client, interaction) => {
             .addField(`Ticket ID Length`, `${data.TicketIDLength}`, true)
             .addField(`Custom features`, `Soon`, true)
 
-          const button1 = new Discord.MessageButton()
+          const button1 = new Discord.ButtonBuilder()
             .setCustomId("previousbtn")
             .setLabel("Previous")
             .setStyle("DANGER");
 
-          const button2 = new Discord.MessageButton()
+          const button2 = new Discord.ButtonBuilder()
             .setCustomId("nextbtn")
             .setLabel("Next")
             .setStyle("SUCCESS");
@@ -107,7 +107,7 @@ module.exports.run = async (client, interaction) => {
         } else {
           if (data.SecondServer === 'Enabled')
             return interaction.reply('Can not view the settings as this is a second guild')
-          const ListSettings = new MessageEmbed()
+          const ListSettings = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
             .setDescription('List of the bot settings for the server.')
             .addField(`ServerID`, `${data.ServerID}`, true)
@@ -143,9 +143,9 @@ module.exports.run = async (client, interaction) => {
       if (err01) throw err;
       if (data01) {
 
-        const editdropdown = new MessageActionRow()
+        const editdropdown = new ActionRowBuilder()
           .addComponents(
-            new MessageSelectMenu()
+            new StringSelectMenuBuilder()
               .setCustomId('edit')
               .setPlaceholder('Nothing selected')
               .addOptions([
@@ -249,7 +249,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -259,7 +259,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -292,7 +292,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -302,7 +302,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -335,7 +335,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -345,7 +345,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -378,7 +378,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -388,7 +388,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -421,7 +421,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -431,7 +431,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -464,7 +464,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -474,7 +474,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -516,7 +516,7 @@ module.exports.run = async (client, interaction) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
-                      const disabledtranscript = new MessageEmbed()
+                      const disabledtranscript = new EmbedBuilder()
                         .setTitle('Transcript has been disabled on this server.')
 
                       collected.reply({ embeds: [disabledtranscript] })
@@ -529,7 +529,7 @@ module.exports.run = async (client, interaction) => {
                       if (err2) throw err;
                       if (data2) {
                         data2.save()
-                        const enabledtranscript = new MessageEmbed()
+                        const enabledtranscript = new EmbedBuilder()
                           .setTitle('Transcript has been enabled on this server.')
                         collected.reply({ embeds: [enabledtranscript] })
                       }
@@ -553,7 +553,7 @@ module.exports.run = async (client, interaction) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
-                      const disabledtickets = new MessageEmbed()
+                      const disabledtickets = new EmbedBuilder()
                         .setTitle('Tickets has been disabled on this server.')
                       collected.reply({ embeds: [disabledtickets] })
                     }
@@ -562,7 +562,7 @@ module.exports.run = async (client, interaction) => {
                   if (data.EnableTicket === 'Disabled') {
                     MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { EnableTicket: 'Enabled' }, async (err2, data2) => {
                       data2.save()
-                      const enableddtickets = new MessageEmbed()
+                      const enableddtickets = new EmbedBuilder()
                         .setTitle('Tickets has been enabled on this server.')
                       collected.reply({ embeds: [enableddtickets] })
                     })
@@ -659,7 +659,7 @@ module.exports.run = async (client, interaction) => {
                   if (err06) throw err06;
                   if (data06) {
                     data06.save()
-                    const MainEmbed = new MessageEmbed()
+                    const MainEmbed = new EmbedBuilder()
                       .setTitle('Done')
                       .setDescription('We have generated your API key')
                       .addField(`API Key`, `${generator}`)
@@ -668,7 +668,7 @@ module.exports.run = async (client, interaction) => {
                   }
                 })
               } else {
-                const AlreadyFoundAPIKey = new MessageEmbed()
+                const AlreadyFoundAPIKey = new EmbedBuilder()
                   .setTitle('Error')
                   .setDescription(`You already have a API key linked to this server. If you want a new one, please react with a ✅. If you want to keep the current one, please react with ❌`)
                   .addField(`API Key`, `${data.APIKey}`)
@@ -698,7 +698,7 @@ module.exports.run = async (client, interaction) => {
                     if (err07) throw err07;
                     if (data07) {
                       data07.save()
-                      const MainEmbed2 = new MessageEmbed()
+                      const MainEmbed2 = new EmbedBuilder()
                         .setTitle('Done')
                         .setDescription('We have generated your API key')
                         .addField(`API Key`, `${generator2}`)
@@ -720,7 +720,7 @@ module.exports.run = async (client, interaction) => {
               if (err) throw err;
               if (data) {
                 if (data.PaidGuild === 'Yes') {
-                  const EditMessage = new MessageEmbed()
+                  const EditMessage = new EmbedBuilder()
                     .setTitle('Edit')
                     .setDescription('Please type out the id you want to set?')
                   collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -730,7 +730,7 @@ module.exports.run = async (client, interaction) => {
                   Collector.on('collect', m1 => {
                   })
                   Collector.on('end', async (m2) => {
-                    const YouSureToUpdate = new MessageEmbed()
+                    const YouSureToUpdate = new EmbedBuilder()
                       .setTitle('You sure?')
                       .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -913,7 +913,7 @@ module.exports.run = async (client, interaction) => {
                   if (err06) throw err06;
                   if (data06) {
                     data06.save()
-                    const MainEmbed = new MessageEmbed()
+                    const MainEmbed = new EmbedBuilder()
                       .setTitle('Done')
                       .setDescription('We have generated your code')
                       .addField(`Code`, `${generator}`)
@@ -922,7 +922,7 @@ module.exports.run = async (client, interaction) => {
                   }
                 })
               } else {
-                const AlreadyFoundAPIKey = new MessageEmbed()
+                const AlreadyFoundAPIKey = new EmbedBuilder()
                   .setTitle('Error')
                   .setDescription(`You already have a code linked to this server. If you want a new one, please react with a ✅. If you want to keep the current one, please react with ❌`)
                   .addField(`Code`, `${data.WebsiteCode}`)
@@ -952,7 +952,7 @@ module.exports.run = async (client, interaction) => {
                     if (err07) throw err07;
                     if (data07) {
                       data07.save()
-                      const MainEmbed2 = new MessageEmbed()
+                      const MainEmbed2 = new EmbedBuilder()
                       .setTitle('Done')
                       .setDescription('We have generated your code')
                       .addField(`Code`, `${generator}`)
@@ -987,7 +987,7 @@ module.exports.run = async (client, interaction) => {
 
 
 
-        const AutoSetup = new MessageEmbed()
+        const AutoSetup = new EmbedBuilder()
           .setTitle('Settings')
           .setDescription('This is only suggested to be used if this is your first time using the bot on the server The following thing will be added to settings. React with ✅ to do the setup or react with ❌ to cancel')
           .addField('TicketChannelID', `${TicketChannelMain2.id}`)
@@ -1031,9 +1031,9 @@ module.exports.run = async (client, interaction) => {
       if (data) {
         if (data.SecondServer === 'Disabled')
           return interaction.reply('This command can not be used as the feature is disabled within this guild.')
-        const editdropdown = new MessageActionRow()
+        const editdropdown = new ActionRowBuilder()
           .addComponents(
-            new MessageSelectMenu()
+            new StringSelectMenuBuilder()
               .setCustomId('edit')
               .setPlaceholder('Nothing selected')
               .addOptions([
@@ -1091,7 +1091,7 @@ module.exports.run = async (client, interaction) => {
             editdropdown.components[0].setDisabled(true)
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (data.TypeOfServer == 'First') {
-              const MainEmbed = new MessageEmbed()
+              const MainEmbed = new EmbedBuilder()
                 .setTitle('View second guild')
                 .setDescription('List of the bot settings for the guild')
                 .addField('Second guild', `${data.SecondServer}`, true)
@@ -1107,7 +1107,7 @@ module.exports.run = async (client, interaction) => {
 
             } else {
               if (data.TypeOfServer === 'Second') {
-                const MainEmbed = new MessageEmbed()
+                const MainEmbed = new EmbedBuilder()
                   .setTitle('View first guild')
                   .setDescription('List of the bot settings for the guild')
                   .addField('first guild', `${data.SecondServer}`, true)
@@ -1130,7 +1130,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1140,7 +1140,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -1173,7 +1173,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1183,7 +1183,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -1216,7 +1216,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1226,7 +1226,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -1259,7 +1259,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1269,7 +1269,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -1302,7 +1302,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1312,7 +1312,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -1345,7 +1345,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1355,7 +1355,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 

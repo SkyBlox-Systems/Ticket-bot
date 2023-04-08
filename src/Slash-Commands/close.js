@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const bot = require('discord.js');
 const discord = require('discord.js');
 const fs = require('fs').promises;
@@ -13,6 +13,8 @@ const ClaimTicket = require('../schemas/ticketclaim')
 const MainDatabase = require('../schemas/TicketData');
 const { mainModule } = require('process');
 const { response } = require('express');
+const { ButtonStyle } = require('discord.js');
+
 
 module.exports.data = new SlashCommandBuilder()
   .setName('close')
@@ -41,32 +43,32 @@ module.exports.data = new SlashCommandBuilder()
 
 module.exports.run = (client, interaction) => {
 
-  const ButtonList = new MessageActionRow()
+  const ButtonList = new ActionRowBuilder()
     .addComponents(
-      new MessageButton()
+      new ButtonBuilder()
         .setCustomId("rate1")
         .setLabel("1")
-        .setStyle("PRIMARY")
+        .setStyle(ButtonStyle.Primary)
         .setEmoji("⭐"),
-      new MessageButton()
+      new ButtonBuilder()
         .setCustomId("rate2")
         .setLabel("2")
-        .setStyle("PRIMARY")
+        .setStyle(ButtonStyle.Primary)
         .setEmoji("⭐"),
-      new MessageButton()
+      new ButtonBuilder()
         .setCustomId("rate3")
         .setLabel('3')
-        .setStyle('PRIMARY')
+        .setStyle(ButtonStyle.Primary)
         .setEmoji('⭐'),
-        new MessageButton()
+        new ButtonBuilder()
         .setCustomId("rate4")
         .setLabel('4')
-        .setStyle('PRIMARY')
+        .setStyle(ButtonStyle.Primary)
         .setEmoji('⭐'),
-        new MessageButton()
+        new ButtonBuilder()
         .setCustomId("rate5")
         .setLabel('5')
-        .setStyle('PRIMARY')
+        .setStyle(ButtonStyle.Primary)
         .setEmoji('⭐')
     );
 
@@ -88,7 +90,7 @@ module.exports.run = (client, interaction) => {
             if (err2001) throw err2001;
             if (data2001) {
               if (data2001.Locked === 'Yes') {
-                const cannotclose = new MessageEmbed()
+                const cannotclose = new EmbedBuilder()
                   .setTitle('Can not close')
                   .setDescription('This ticket can not be closed because it is currently locked. Please unlock it by one of the staff members.')
                 return interaction.reply({ embeds: [cannotclose] })
@@ -104,14 +106,14 @@ module.exports.run = (client, interaction) => {
                           if (data200.ClaimUserID === "") {
 
                             if (!interaction.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
-                              const NoPerms2 = new MessageEmbed()
+                              const NoPerms2 = new EmbedBuilder()
                                 .setTitle('Error')
                                 .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
 
                               return interaction.reply({ embeds: [NoPerms2] })
                             }
 
-                            const NoClaimer = new MessageEmbed()
+                            const NoClaimer = new EmbedBuilder()
                               .setTitle('Error')
                               .setDescription('No staff member has not claimed the ticket. This ticket can not be closed')
 
@@ -132,69 +134,69 @@ module.exports.run = (client, interaction) => {
                               const generators = makeURL(20)
 
 
-                              const ticketembed = new MessageEmbed()
+                              const ticketembed = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will cancel the command within 10 seconds.`)
 
-                              const closed = new MessageEmbed()
+                              const closed = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
 
-                              const Logs = new MessageEmbed()
+                              const Logs = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle('Ticket-logs')
                                 .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully. \n\n All tickets are removed of our server within 24 hours.`)
 
-                              const notclosed = new MessageEmbed()
+                              const notclosed = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`Close cancelled.`)
 
-                              const closing = new MessageEmbed()
+                              const closing = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`Your ticket will be closed in 5 seconds`)
                                 .setFooter(`Making a transcript....`)
 
-                              const ticketembed2 = new MessageEmbed()
+                              const ticketembed2 = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will automatticaly close within 10 seconds.`)
 
-                              const closed2 = new MessageEmbed()
+                              const closed2 = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
 
-                              const Logs2 = new MessageEmbed()
+                              const Logs2 = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle('Ticket-logs')
                                 .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully.`)
 
-                              const notclosed2 = new MessageEmbed()
+                              const notclosed2 = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`Close cancelled.`)
 
-                              const closing2 = new MessageEmbed()
+                              const closing2 = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`Your ticket will be closed in 5 seconds`)
 
                               if (!interaction.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
-                                const NoPerms3 = new MessageEmbed()
+                                const NoPerms3 = new EmbedBuilder()
                                   .setTitle('Error')
                                   .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
 
@@ -220,16 +222,18 @@ module.exports.run = (client, interaction) => {
                                           if (err) throw err;
                                           if (data) {
 
-                                            const DMTicketCreatorClosed = new MessageEmbed()
+                                            const DMTicketCreatorClosed = new EmbedBuilder()
                                               .setColor('#f5f5f5')
                                               .setTimestamp()
                                               .setTitle(`Ticket`)
                                               .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
-                                              .addField('Reason', `${data.Reason}`, true)
-                                              .addField('Time open', `<t:${data.Time}:f>`, true)
-                                              .addField('Priority', `${data.Priority}`, true)
+                                              .addFields([
+                                                {name: 'Reason', value: `${data.Reason}`, inline: true},
+                                                {name: 'Time open', value: `<t:${data.Time}:f>`, inline: true},
+                                                {name: 'Priority', value: `${data.Priority}`, inline: true}
+                                              ])
 
-                                            const DMTicketClaimClosed = new MessageEmbed()
+                                            const DMTicketClaimClosed = new EmbedBuilder()
                                               .setColor('#f5f5f5')
                                               .setTimestamp()
                                               .setTitle(`Ticket`)
@@ -270,14 +274,15 @@ module.exports.run = (client, interaction) => {
 
                                           SupportLogs.send({ embeds: [Logs] })
 
-                                          const CloseEmbed = new MessageEmbed()
+                                          const CloseEmbed = new EmbedBuilder()
                                             .setTitle('Transcript')
                                             .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
-                                            .addField('Transcript', `Disabled for ModMail`)
-                                            // .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
-                                            .addField('Reason', `${data.Reason}`)
-                                            .addField('Ticket Open', `<t:${data.Time}:f>`)
-                                            .addField('Claim User', `<@${data.ClaimUserID}>`)
+                                            .addFields([
+                                              {name: 'Transcript', value: 'Disabled for ModMail'},
+                                              {name: 'Reason', value: `${data.Reason}`},
+                                              {name: 'Ticket Open', value: `<t:${data.Time}:f>`},
+                                              {name: 'Claim user', value: `<@${data.ClaimUserID}>`}
+                                            ])
 
                                           TranscriptLogs.send({ embeds: [CloseEmbed] })
 
@@ -312,16 +317,19 @@ module.exports.run = (client, interaction) => {
                                             if (err) throw err;
                                             if (data) {
 
-                                              const DMTicketCreatorClosed = new MessageEmbed()
+                                              const DMTicketCreatorClosed = new EmbedBuilder()
                                                 .setColor('#f5f5f5')
                                                 .setTimestamp()
                                                 .setTitle(`Ticket`)
                                                 .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
-                                                .addField('Reason', `${data.Reason}`, true)
-                                                .addField('Time open', `<t:${data.Time}:f>`, true)
-                                                .addField('Priority', `${data.Priority}`, true)
+                                                .addFields([
+                                                  {name: 'Reason', value: `${data.Reason}`, inline: true},
+                                                  {name: 'Time open', value: `<t:${data.Time}:f>`, inline: true},
+                                                  {name: 'Priority', value: `${data.Priority}`, inline: true}
+                                                ])
 
-                                              const DMTicketClaimClosed = new MessageEmbed()
+
+                                              const DMTicketClaimClosed = new EmbedBuilder()
                                                 .setColor('#f5f5f5')
                                                 .setTimestamp()
                                                 .setTitle(`Ticket`)
@@ -362,14 +370,15 @@ module.exports.run = (client, interaction) => {
 
                                             SupportLogs.send({ embeds: [Logs] })
 
-                                            const CloseEmbed = new MessageEmbed()
+                                            const CloseEmbed = new EmbedBuilder()
                                               .setTitle('Transcript')
                                               .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
-                                              .addField('Transcript', `Disabled in v3.0 due to issues`)
-                                              // .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
-                                              .addField('Reason', `${data.Reason}`)
-                                              .addField('Ticket Open', `<t:${data.Time}:f>`)
-                                              .addField('Claim User', `<@${data.ClaimUserID}>`)
+                                              .addFields([
+                                                {name: 'Transcript', value: 'Disabled until further notice'},
+                                                {name: 'Reason', value: `${data.Reason}`},
+                                                {name: 'Ticket Open', value: `<t:${data.Time}:f>`},
+                                                {name: 'Claim User', value: `<@${data.ClaimUserID}>`}
+                                              ])
 
                                             const discordTranscripts = require('discord-html-transcripts');
 
@@ -401,7 +410,7 @@ module.exports.run = (client, interaction) => {
 
                             } else {
                               if (!message.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
-                                const NoPerms = new MessageEmbed()
+                                const NoPerms = new EmbedBuilder()
                                   .setTitle('Error')
                                   .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
 
@@ -425,16 +434,18 @@ module.exports.run = (client, interaction) => {
                                       if (err) throw err;
                                       if (data) {
 
-                                        const DMTicketCreatorClosed = new MessageEmbed()
+                                        const DMTicketCreatorClosed = new EmbedBuilder()
                                           .setColor('#f5f5f5')
                                           .setTimestamp()
                                           .setTitle(`Ticket`)
                                           .setDescription(`<@${data.ClaimUserID}> has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you. Please rate the support below`)
-                                          .addField('Reason', `${data.Reason}`, true)
-                                          .addField('Time open', `<t:${data.Time}:f>`, true)
-                                          .addField('Priority', `${data.Priority}`, true)
+                                          .addFields([
+                                            {name: 'Reason', value: `${data.Reason}`, inline: true},
+                                            {name: 'Time open', value: `<t:${data.Time}:f>`, inline: true},
+                                            {name: 'Priority', value: `${data.Priority}`, inline: true}
+                                          ])
 
-                                        const DMTicketClaimClosed = new MessageEmbed()
+                                        const DMTicketClaimClosed = new EmbedBuilder()
                                           .setColor('#f5f5f5')
                                           .setTimestamp()
                                           .setTitle(`Ticket`)
@@ -492,7 +503,7 @@ module.exports.run = (client, interaction) => {
                       })
 
                     } else {
-                      const NoData = new MessageEmbed()
+                      const NoData = new EmbedBuilder()
                         .setTitle('Not updated')
                         .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
 
@@ -527,7 +538,7 @@ module.exports.run = (client, interaction) => {
                 } else {
 
                   if (!interaction.member.roles.cache.some(r => r.id === `${data1.SupportRoleID}`)) {
-                    const NoPerms2 = new MessageEmbed()
+                    const NoPerms2 = new EmbedBuilder()
                       .setTitle('Error')
                       .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
 
@@ -546,31 +557,31 @@ module.exports.run = (client, interaction) => {
                   const generators = makeURL(20)
 
 
-                  const ticketembed = new MessageEmbed()
+                  const ticketembed = new EmbedBuilder()
                     .setColor('#f6f7f8')
                     .setTimestamp()
                     .setTitle(`Ticket`)
                     .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will cancel the command within 10 seconds.`)
 
-                  const closed = new MessageEmbed()
+                  const closed = new EmbedBuilder()
                     .setColor('#f6f7f8')
                     .setTimestamp()
                     .setTitle(`Ticket`)
                     .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
 
-                  const Logs = new MessageEmbed()
+                  const Logs = new EmbedBuilder()
                     .setColor('#f6f7f8')
                     .setTimestamp()
                     .setTitle('Ticket-logs')
                     .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully. \n\n All tickets are removed of our server within 24 hours.`)
 
-                  const notclosed = new MessageEmbed()
+                  const notclosed = new EmbedBuilder()
                     .setColor('#f6f7f8')
                     .setTimestamp()
                     .setTitle(`Ticket`)
                     .setDescription(`Close cancelled.`)
 
-                  const closing = new MessageEmbed()
+                  const closing = new EmbedBuilder()
                     .setColor('#f6f7f8')
                     .setTimestamp()
                     .setTitle(`Ticket`)
@@ -592,16 +603,18 @@ module.exports.run = (client, interaction) => {
                             if (err3) throw err;
                             if (data3) {
 
-                              const DMTicketCreatorClosed = new MessageEmbed()
+                              const DMTicketCreatorClosed = new EmbedBuilder()
                                 .setColor('#f5f5f5')
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`<@${data3.ClaimUserID}> ${data1.CloseMessage}. Please rate the support below`)
-                                .addField('Reason', `${data.Reason}`, true)
-                                .addField('Time open', `<t:${data.Time}:f>`, true)
-                                .addField('Priority', `${data.Priority}`, true)
+                                .addFields([
+                                  {name: 'Reason', value: `${data.Reason}`, inline: true},
+                                  {name: 'Time open', value: `<t:${data.Time}:f`, inline: true},
+                                  {name: 'Priority', value: `${data.Priority}`, inline: true}
+                                ])
 
-                              const DMTicketClaimClosed = new MessageEmbed()
+                              const DMTicketClaimClosed = new EmbedBuilder()
                                 .setColor('#f5f5f5')
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
@@ -644,14 +657,16 @@ module.exports.run = (client, interaction) => {
 
                             SupportLogs.send({ embeds: [Logs] })
 
-                            const CloseEmbed = new MessageEmbed()
+                            const CloseEmbed = new EmbedBuilder()
                               .setTitle('Transcript')
                               .setDescription(`${data1.TranscriptMessage} ${interaction.channel.name}`)
-                              .addField('Transcript', `Disabled for voice calls`)
-                              // .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
-                              .addField('Reason', `${data.Reason}`)
-                              .addField('Ticket Open', `<t:${data.Time}:f>`)
-                              .addField('Claim User', `<@${data.ClaimUserID}>`)
+                              .addFields([
+                                {name: 'Transcript', value: 'Disabled for voice calls'},
+                                {name: 'Reason', value: `${data.Reason}`},
+                                {name: 'Ticket Open', value: `<t:${data.Time}:f>`},
+                                {name: 'Claim user', value: `<@${data.ClaimUserID}>`}
+                              ])
+
 
                             TranscriptLogs.send({ embeds: [CloseEmbed] })
 

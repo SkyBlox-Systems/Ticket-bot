@@ -1,113 +1,130 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
 const MainDatabase = require('../schemas/TicketData');
+const {pagination, ButtonTypes, ButtonStyles} = require('@devraelfreeze/discordjs-pagination');
 
 module.exports.data = new SlashCommandBuilder()
   .setName('help')
   .setDescription('Help Command');
 
 module.exports.run = (client, interaction) => {
-  const Info = new Discord.MessageEmbed()
+  const Info = new Discord.EmbedBuilder()
     .setTitle('📑 Info')
-    .addField(`/botinfo`, 'Infomation about the bot')
-    .addField(`/help`, 'List all the commands for the bot')
-    .addField(`/guildinfo`, 'Tells you infomation about the guild')
-    .addField(`/support`, 'The discord guild and the docs for the bot')
-    .addField(`/userinfo`, 'Get your discord account infomation')
-    .addField(`/status`, 'Status of the virtual machine and bot')
-    .addField(`/settings`, 'Settings for your guild (View it)')
-    .addField(`/feedback`, `Send feedback of a user or guild`)
-    .addField(`/premium`, `See if this guild is premium or not`)
+    .addFields([
+      {name: '/botinfo', value: 'Infomation about the bot'},
+      {name: '/help', value: 'List all the commands for the bot'},
+      {name: '/guildinfo', value: 'Tells you infomation about the guild'},
+      {name: '/support', value: 'The discord guild and the docs for the bot'},
+      {name: '/userinfo', value: 'Get your discord account infomation'},
+      {name: '/status', value: 'Status of the virtual machine and bot'},
+      {name: '/settings', value: 'Settings for your guild (View it)'},
+      {name: '/feedback', value: 'Send feedback of a user or guild'},
+      {name: '(`/premium', value: 'See if this guild is premium or not'},
+    ])
     .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
     .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})
     .setColor('#58b9ff')
     .setTimestamp()
   
-  const fun = new Discord.MessageEmbed()
+  const fun = new Discord.EmbedBuilder()
   .setTitle('🎉 Fun')
-  .addField('/christmas', 'List how many days until christmas')
-  .addField('/shortner', 'Short a link, using our domain')
+  .addFields([
+    {name: '/christmas', value: 'List how many days until christmas'},
+    {name: '/shortner', value: 'Short a link, using our domain'},
+  ])
   .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
   .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})
   .setColor('#58b9ff')
   .setTimestamp()
 
-  const support = new Discord.MessageEmbed()
+  const support = new Discord.EmbedBuilder()
     .setTitle('📞 Support')
-    .addField(`/ticket`, 'Channel customer support')
-    .addField(`/add`, 'Add user to ticket')
-    .addField(`/remove`, 'Remove a user from the ticket')
-    .addField(`/close`, 'Close ticket')
-    .addField(`/ClaimTicket`, 'Claim Ticket')
+    .addFields([
+      {name: '/ticket', value: 'Channel customer support'},
+      {name: '/add', value: 'Add user to ticket'},
+      {name: '/remove', value: 'Remove a user from the ticket'},
+      {name: '/close', value: 'Close ticket'},
+      {name: '/ClaimTicket' ,value: 'Claim Ticket'},
+    ])
     .setColor('#58b9ff')
     .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
     .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})
     .setTimestamp()
 
-  const Prem = new Discord.MessageEmbed()
+  const Prem = new Discord.EmbedBuilder()
   .setTitle('🎫 Premium')
-  .addField('/vcticket', 'Make a voice call ticket')
-  .addField('/custom', 'Custom bot for your guild')
+  .addFields([
+    {name: '/vcticket', value: 'Make a voice call ticket'},
+    {name: '/custom', value: 'Custom bot for your guild'},
+  ])
   .setColor('#58b9ff')
   .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
   .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})
   .setTimestamp()
 
-  const Moderator = new Discord.MessageEmbed()
+  const Moderator = new Discord.EmbedBuilder()
     .setTitle('⚙️ Moderator')
-    .addField(`/ban`, 'Ban users')
-    .addField(`/kick`, 'Kick user from guild')
-    .addField(`/warn`, 'warn user in the guild')
+    .addFields([
+      {name: '/ban', value: 'Ban users'},
+      {name: '/kick', value: 'Kick user from guild'},
+      {name: '/warn', value: 'warn user in the guild'},
+    ])
     .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
     .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})
     .setColor('#58b9ff')
     .setTimestamp()
 
-  const Admin = new Discord.MessageEmbed()
+  const Admin = new Discord.EmbedBuilder()
     .setTitle('⚙️ Admin')
-    .addField(`/clear`, 'Clear channel')
-    .addField(`/announce`, 'Announce something to a channel from the bot')
-    .addField(`/CommandEnable`, 'Enable a command')
-    .addField(`/CommandDisable`, 'Disable a command')
-    .addField(`/dm`, `DM a user in the guild`)
+    .addFields([
+      {name: '/clear', value: 'Clear channel'},
+      {name: '/announce', value: 'Announce something to a channel from the bot'},
+      {name: '/CommandEnable', value: 'Enable a command'},
+      {name: '/CommandDisable', value: 'Disable a command'},
+      {name: '/dm', value: 'DM a user in the guild'},
+    ])
     .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
     .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})
     .setColor('#58b9ff')
     .setTimestamp()
 
-  const ServerOwner = new Discord.MessageEmbed()
+  const ServerOwner = new Discord.EmbedBuilder()
     .setTitle('🛠 Guild Owner')
-    .addField(`/setup`, 'Setup everything')
-    .addField(`/ServerAnnounce`, 'Shutdown the bot')
-    .addField(`/settings`, 'Settings for your guild (Can edit)')
-    .addField(`/transfer`, `Transfer your data to another guild`)
-    .addField(`/premium`, `Add premium to the guild`)
-    .addField(`/fix`, `Fix issues within the guild database`)
-    .addField('/reaction', `Set up ticket reactions`)
+    .addFields([
+      {name: '/setup', value: 'Setup everything'},
+      {name: '/ServerAnnounce', value: 'Shutdown the bot'},
+      {name: '/settings', value: 'Settings for your guild (Can edit)'},
+      {name: '/transfer', value: 'Transfer your data to another guild'},
+      {name: '/premium', value: 'Add premium to the guild'},
+      {name: '/fix', value: 'Fix issues within the guild database'},
+      {name: '/reaction', value: 'Set up ticket reactions'},
+    ])
     .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
     .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})
     .setColor('#58b9ff')
     .setTimestamp()
 
-  const Owner = new Discord.MessageEmbed()
+  const Owner = new Discord.EmbedBuilder()
     .setTitle('🛠 Owner')
-    .addField(`/restart`, 'Restart the bot')
-    .addField(`/Eval`, 'Bot infomation')
-    .addField(`/shutdown`, 'Shutdown the bot')
-    .addField(`/servers`, 'List all of the servers')
-    .addField(`/blacklist`, 'Blacklist user from bot')
+    .addFields([
+      {name: '/restart', value: 'Restart the bot'},
+      {name: '/Eval', value: 'Bot infomation'},
+      {name: '/shutdown', value: 'Shutdown the bot'},
+      {name: '/servers', value: 'List all of the servers'},
+      {name: '/blacklist', value: 'Blacklist user from bot'},
+    ])
+
     .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
     .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})
     .setColor('#58b9ff')
     .setTimestamp()
 
-  const button1 = new Discord.MessageButton()
+  const button1 = new Discord.ButtonBuilder()
     .setCustomId("previousbtn")
     .setLabel("Previous")
     .setStyle("DANGER");
 
-  const button2 = new Discord.MessageButton()
+  const button2 = new Discord.ButtonBuilder()
     .setCustomId("nextbtn")
     .setLabel("Next")
     .setStyle("SUCCESS");

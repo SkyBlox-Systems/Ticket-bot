@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder  } = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 
 module.exports.data = new SlashCommandBuilder()
@@ -13,7 +13,7 @@ module.exports.data = new SlashCommandBuilder()
 
     module.exports.run = (client, interaction) => {
       if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {
-        const NoPerms = new MessageEmbed()
+        const NoPerms = new EmbedBuilder()
             .setTitle('Error')
             .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
             return interaction.reply({ embeds: [NoPerms] })
@@ -24,29 +24,29 @@ module.exports.data = new SlashCommandBuilder()
         MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
             if (err01) throw err01;
             if (data01) {
-              const perms = new MessageEmbed()
-            .setColor('RED')
+              const perms = new EmbedBuilder()
+            .setColor('#FF0000')
             .setTimestamp()
             .setTitle(`Error`)
             .setDescription(`You don't have the following permissions: Manage_message.`)
       
-          const invaild = new MessageEmbed()
-            .setColor('RED')
+          const invaild = new EmbedBuilder()
+            .setColor('#FF0000')
             .setTimestamp()
             .setTitle(`Error`)
             .setDescription(`You didn't mention a user, or you gave an invaild id.`)
       
-          const NoMessage = new MessageEmbed()
-            .setColor('RED')
+          const NoMessage = new EmbedBuilder()
+            .setColor('#FF0000')
             .setTimestamp()
             .setTitle(`Error`)
             .setDescription(`You did not specify your message`)
       
-          const Added = new MessageEmbed()
-            .setColor('GREEN')
+          const Added = new EmbedBuilder()
+            .setColor('#00FF00')
             .setTimestamp()
             .setTitle('Added')
-            .setDescription(`<@${interaction.author.id}> have added you to the following ticket <#${interaction.channel.id}>`)
+            .setDescription(`<@${interaction.user.id}> have added you to the following ticket <#${interaction.channel.id}>`)
       
           if (!interaction.channel.name.startsWith("ticket-")) return interaction.reply("This is not a valid ticket")
           if (!interaction.member.permissions.has("MANAGE_MESSAGES"))
@@ -68,7 +68,7 @@ module.exports.data = new SlashCommandBuilder()
           .then(() => Logs.send(`Added ${user.user.tag} to the following ticket <@${interaction.channel.id}>`))
             .then(() => interaction.reply(`Added ${user.user.tag} to this ticket!`));
             } else {
-              const NoData = new MessageEmbed()
+              const NoData = new EmbedBuilder()
                 .setTitle('Not updated')
                 .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
       

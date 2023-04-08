@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Discord, Channel } = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const ClaimTicket = require('../schemas/ticketclaim')
 const MainDatabase = require('../schemas/TicketData')
@@ -22,7 +22,7 @@ module.exports.run = (client, interaction) => {
   const MSG = interaction.options.getString('reason')
   const Xmas95 = new Date('December 31, 2021 00:00:00');
   if (Xmas95.getDate() == dd) {
-    const DisabledInAllServers = new MessageEmbed()
+    const DisabledInAllServers = new EmbedBuilder()
       .setTitle('Disabled!')
       .setDescription('The bot owner has disabled all creations of ticket in all servers for worldwide events. Please expect this to be enabled within 24 hours')
 
@@ -33,7 +33,7 @@ module.exports.run = (client, interaction) => {
       if (err01) throw err01;
       if (data01) {
         if (data01.TicketTrackerChannelID === 'N/A') {
-          const ErrorDataBase = new MessageEmbed()
+          const ErrorDataBase = new EmbedBuilder()
             .setTitle('Error')
             .setDescription(`The Ticket Tracker is not set up in settings. Please edit it by using the command ${client.prefix}settings`)
           interaction.reply({ embeds: [ErrorDataBase] })
@@ -60,7 +60,7 @@ module.exports.run = (client, interaction) => {
               ClaimTicket.findOne({ id: user, ServerID: interaction.guildId}, async (err45, data45) => {
                 if (err45) throw err;
                 if (data45) {
-                  const embed = new MessageEmbed()
+                  const embed = new EmbedBuilder()
                     .setTitle(`Ticket`)
                     .addField('Information', `You have already opened a ticket. Please close your current ticket.`, true)
                     .addField('Channel', `<#${data45.ChannelID}>`, true)
@@ -83,14 +83,14 @@ module.exports.run = (client, interaction) => {
                         CONNECT: true,
                       })
       
-                      const open = new MessageEmbed()
+                      const open = new EmbedBuilder()
                         .setColor('#f6f7f8')
                         .setTimestamp()
                         .setTitle(`Ticket`)
                         .addField('Information', `<@${interaction.user.id}> I have open a ticket for you!`, true)
                       await interaction.reply({ embeds: [open] });
       
-                      const DmPerson = new MessageEmbed()
+                      const DmPerson = new EmbedBuilder()
                         .setColor('#f6f7f8')
                         .setTimestamp()
                         .setTitle('Ticket open')
@@ -124,7 +124,7 @@ module.exports.run = (client, interaction) => {
                             const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                             TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket!`)
                           } else {
-                            const DatabaseTicketMessage = new MessageEmbed()
+                            const DatabaseTicketMessage = new EmbedBuilder()
                               .setTitle('Ticket error')
                               .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
                               .addField('Ticket ID', `${data01.TicketIDs}`, true)
@@ -141,7 +141,7 @@ module.exports.run = (client, interaction) => {
                                 ClaimTicket.findOneAndDelete({ id: data.id }, { ServerID: data01.ServerID }, async (err3, data3) => {
                                   if (err3) throw err;
                                   console.log(data3)
-                                  const deletedd = new MessageEmbed()
+                                  const deletedd = new EmbedBuilder()
                                     .setTitle('Info removed from database, please make another ticket!')
                                   interaction.channel.send({ embeds: [deletedd] })
                                   const DeleteChannelWhenError = interaction.guild.channels.cache.get(`${chan.id}`);
@@ -194,7 +194,7 @@ module.exports.run = (client, interaction) => {
 
           } else {
             if (data01.VoiceTicket === 'Disabled') {
-              const disabledTicket = new MessageEmbed()
+              const disabledTicket = new EmbedBuilder()
                 .setTitle('Disabled!')
                 .setDescription('Server owner has disabled the creation of voice tickets in this server or, this server do not own premium.')
 
@@ -207,7 +207,7 @@ module.exports.run = (client, interaction) => {
           }
         }
       } else {
-        const NoData = new MessageEmbed()
+        const NoData = new EmbedBuilder()
           .setTitle('Not updated')
           .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
 

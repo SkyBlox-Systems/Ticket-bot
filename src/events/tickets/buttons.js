@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const { BotVersions } = require('../../../slappey.json')
 const MainDatabase = require('../../schemas/TicketData');
 const ClaimTicket = require('../../schemas/ticketclaim');
-const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { Permissions } = require('discord.js');
 const { MessageCollector, Collector } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
@@ -27,32 +27,32 @@ module.exports = class ReadyEvent extends BaseEvent {
     client.on('interactionCreate', async interaction => {
       if (!interaction.isButton()) return
       if (interaction.customId === 'close') {
-        const ButtonList = new MessageActionRow()
+        const ButtonList = new ActionRowBuilder()
           .addComponents(
-            new MessageButton()
+            new ButtonBuilder()
               .setCustomId("rate1")
               .setLabel("1")
-              .setStyle("PRIMARY")
+              .setStyle(ButtonStyle.Primary)
               .setEmoji("⭐"),
-            new MessageButton()
+            new ButtonBuilder()
               .setCustomId("rate2")
               .setLabel("2")
-              .setStyle("PRIMARY")
+              .setStyle(ButtonStyle.Primary)
               .setEmoji("⭐"),
-            new MessageButton()
+            new ButtonBuilder()
               .setCustomId("rate3")
               .setLabel('3')
-              .setStyle('PRIMARY')
+              .setStyle(ButtonStyle.Primary)
               .setEmoji('⭐'),
-            new MessageButton()
+            new ButtonBuilder()
               .setCustomId("rate4")
               .setLabel('4')
-              .setStyle('PRIMARY')
+              .setStyle(ButtonStyle.Primary)
               .setEmoji('⭐'),
-            new MessageButton()
+            new ButtonBuilder()
               .setCustomId("rate5")
               .setLabel('5')
-              .setStyle('PRIMARY')
+              .setStyle(ButtonStyle.Primary)
               .setEmoji('⭐')
           );
 
@@ -67,7 +67,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                 if (err2001) throw err2001;
                 if (data2001) {
                   if (data2001.Locked === 'Yes') {
-                    const cannotclose = new MessageEmbed()
+                    const cannotclose = new EmbedBuilder()
                       .setTitle('Can not close')
                       .setDescription('This ticket can not be closed because it is currently locked. Please unlock it by one of the staff members.')
                     return interaction.reply({ embeds: [cannotclose] })
@@ -83,14 +83,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                               if (data200.ClaimUserID === "") {
 
                                 if (!interaction.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
-                                  const NoPerms2 = new MessageEmbed()
+                                  const NoPerms2 = new EmbedBuilder()
                                     .setTitle('Error')
                                     .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
 
                                   return interaction.reply({ embeds: [NoPerms2] })
                                 }
 
-                                const NoClaimer = new MessageEmbed()
+                                const NoClaimer = new EmbedBuilder()
                                   .setTitle('Error')
                                   .setDescription('No staff member has not claimed the ticket. This ticket can not be closed')
 
@@ -111,69 +111,69 @@ module.exports = class ReadyEvent extends BaseEvent {
                                   const generators = makeURL(20)
 
 
-                                  const ticketembed = new MessageEmbed()
+                                  const ticketembed = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will cancel the command within 10 seconds.`)
 
-                                  const closed = new MessageEmbed()
+                                  const closed = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
 
-                                  const Logs = new MessageEmbed()
+                                  const Logs = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle('Ticket-logs')
                                     .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully. \n\n All tickets are removed of our server within 24 hours.`)
 
-                                  const notclosed = new MessageEmbed()
+                                  const notclosed = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`Close cancelled.`)
 
-                                  const closing = new MessageEmbed()
+                                  const closing = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`Your ticket will be closed in 5 seconds`)
                                     .setFooter(`Making a transcript....`)
 
-                                  const ticketembed2 = new MessageEmbed()
+                                  const ticketembed2 = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will automatticaly close within 10 seconds.`)
 
-                                  const closed2 = new MessageEmbed()
+                                  const closed2 = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
 
-                                  const Logs2 = new MessageEmbed()
+                                  const Logs2 = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle('Ticket-logs')
                                     .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully.`)
 
-                                  const notclosed2 = new MessageEmbed()
+                                  const notclosed2 = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`Close cancelled.`)
 
-                                  const closing2 = new MessageEmbed()
+                                  const closing2 = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`Your ticket will be closed in 5 seconds`)
 
                                   if (!interaction.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
-                                    const NoPerms3 = new MessageEmbed()
+                                    const NoPerms3 = new EmbedBuilder()
                                       .setTitle('Error')
                                       .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
 
@@ -199,7 +199,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                               if (err) throw err;
                                               if (data) {
 
-                                                const DMTicketCreatorClosed = new MessageEmbed()
+                                                const DMTicketCreatorClosed = new EmbedBuilder()
                                                   .setColor('#f5f5f5')
                                                   .setTimestamp()
                                                   .setTitle(`Ticket`)
@@ -208,7 +208,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                   .addField('Time open', `<t:${data.Time}:f>`, true)
                                                   .addField('Priority', `${data.Priority}`, true)
 
-                                                const DMTicketClaimClosed = new MessageEmbed()
+                                                const DMTicketClaimClosed = new EmbedBuilder()
                                                   .setColor('#f5f5f5')
                                                   .setTimestamp()
                                                   .setTitle(`Ticket`)
@@ -249,7 +249,7 @@ module.exports = class ReadyEvent extends BaseEvent {
 
                                               SupportLogs.send({ embeds: [Logs] })
 
-                                              const CloseEmbed = new MessageEmbed()
+                                              const CloseEmbed = new EmbedBuilder()
                                                 .setTitle('Transcript')
                                                 .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
                                                 .addField('Transcript', `Disabled for ModMail`)
@@ -291,7 +291,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                 if (err) throw err;
                                                 if (data) {
 
-                                                  const DMTicketCreatorClosed = new MessageEmbed()
+                                                  const DMTicketCreatorClosed = new EmbedBuilder()
                                                     .setColor('#f5f5f5')
                                                     .setTimestamp()
                                                     .setTitle(`Ticket`)
@@ -300,7 +300,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                     .addField('Time open', `<t:${data.Time}:f>`, true)
                                                     .addField('Priority', `${data.Priority}`, true)
 
-                                                  const DMTicketClaimClosed = new MessageEmbed()
+                                                  const DMTicketClaimClosed = new EmbedBuilder()
                                                     .setColor('#f5f5f5')
                                                     .setTimestamp()
                                                     .setTitle(`Ticket`)
@@ -341,7 +341,7 @@ module.exports = class ReadyEvent extends BaseEvent {
 
                                                 SupportLogs.send({ embeds: [Logs] })
 
-                                                const CloseEmbed = new MessageEmbed()
+                                                const CloseEmbed = new EmbedBuilder()
                                                   .setTitle('Transcript')
                                                   .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
                                                   .addField('Transcript', `Disabled in v3.0 due to issues`)
@@ -380,7 +380,7 @@ module.exports = class ReadyEvent extends BaseEvent {
 
                                 } else {
                                   if (!message.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
-                                    const NoPerms = new MessageEmbed()
+                                    const NoPerms = new EmbedBuilder()
                                       .setTitle('Error')
                                       .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
 
@@ -404,7 +404,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                           if (err) throw err;
                                           if (data) {
 
-                                            const DMTicketCreatorClosed = new MessageEmbed()
+                                            const DMTicketCreatorClosed = new EmbedBuilder()
                                               .setColor('#f5f5f5')
                                               .setTimestamp()
                                               .setTitle(`Ticket`)
@@ -413,7 +413,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                               .addField('Time open', `<t:${data.Time}:f>`, true)
                                               .addField('Priority', `${data.Priority}`, true)
 
-                                            const DMTicketClaimClosed = new MessageEmbed()
+                                            const DMTicketClaimClosed = new EmbedBuilder()
                                               .setColor('#f5f5f5')
                                               .setTimestamp()
                                               .setTitle(`Ticket`)
@@ -471,7 +471,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                           })
 
                         } else {
-                          const NoData = new MessageEmbed()
+                          const NoData = new EmbedBuilder()
                             .setTitle('Not updated')
                             .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
 
@@ -492,7 +492,7 @@ module.exports = class ReadyEvent extends BaseEvent {
       }
       if (interaction.customId === 'lock') {
         if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {
-          const NoPerms = new MessageEmbed()
+          const NoPerms = new EmbedBuilder()
             .setTitle('Error')
             .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
           return interaction.reply({ embeds: [NoPerms] })
@@ -530,7 +530,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                         ATTACH_FILES: false,
                         MANAGE_CHANNELS: true,
                       })
-                      const NoLocked = new MessageEmbed()
+                      const NoLocked = new EmbedBuilder()
                         .setTitle('Locked')
                         .setDescription(`<@${interaction.user.id}> has locked your ticket! This ticket can not be closed unless it has been unlocked once again. Please contact an Ticket Support manager if this was a mistake.`)
                       interaction.reply({ embeds: [NoLocked] })
@@ -552,7 +552,7 @@ module.exports = class ReadyEvent extends BaseEvent {
       }
       if (interaction.customId === 'unlock') {
         if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {
-          const NoPerms = new MessageEmbed()
+          const NoPerms = new EmbedBuilder()
             .setTitle('Error')
             .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
           return interaction.reply({ embeds: [NoPerms] })
@@ -590,7 +590,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                         ATTACH_FILES: true,
                         MANAGE_CHANNELS: true,
                       })
-                      const NoLocked = new MessageEmbed()
+                      const NoLocked = new EmbedBuilder()
                         .setTitle('Locked')
                         .setDescription(`<@${interaction.user.id}> has unlocked your ticket! This ticket can not be closed unless it has been unlocked once again. Please contact an Ticket Support manager if this was a mistake.`)
                       interaction.reply({ embeds: [NoLocked] })
@@ -626,24 +626,24 @@ module.exports = class ReadyEvent extends BaseEvent {
     client.on('interactionCreate', interaction => {
       if (!interaction.isButton()) return
       if (interaction.customId === 'create') {
-        const ButtonList = new MessageActionRow()
+        const ButtonList = new ActionRowBuilder()
           .addComponents(
-            new MessageButton()
+            new ButtonBuilder()
               .setCustomId('close')
               .setLabel('Close')
               .setStyle('SUCCESS')
               .setEmoji('📫'),
-            new MessageButton()
+            new ButtonBuilder()
               .setCustomId("lock")
               .setLabel("Lock")
               .setStyle("DANGER")
               .setEmoji("🔒"),
-            new MessageButton()
+            new ButtonBuilder()
               .setCustomId("unlock")
               .setLabel("Unlock")
-              .setStyle("PRIMARY")
+              .setStyle(ButtonStyle.Primary)
               .setEmoji("🔓"),
-            new MessageButton()
+            new ButtonBuilder()
               .setCustomId("transcript")
               .setLabel('Transcript')
               .setStyle('SECONDARY')
@@ -654,7 +654,7 @@ module.exports = class ReadyEvent extends BaseEvent {
           if (err01) throw err01;
           if (data01) {
             if (data01.TicketTrackerChannelID === 'N/A') {
-              const ErrorDataBase = new MessageEmbed()
+              const ErrorDataBase = new EmbedBuilder()
                 .setTitle('Error')
                 .setDescription(`The Ticket Tracker is not set up in settings. Please edit it by using the command ${client.prefix}settings`)
               interaction.reply({ embeds: [ErrorDataBase] })
@@ -679,7 +679,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                 ClaimTicket.findOne({ id: user, ServerID: interaction.guildId }, async (err45, data45) => {
                   if (err45) throw err;
                   if (data45) {
-                    const embed = new MessageEmbed()
+                    const embed = new EmbedBuilder()
                       .setTitle(`Ticket`)
                       .addField('Information', `You have already opened a ticket. Please close your current ticket.`, true)
                       .addField('Channel', `<#${data45.ChannelID}>`, true)
@@ -719,7 +719,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                               MANAGE_CHANNELS: true,
                             })
 
-                            const open = new MessageEmbed()
+                            const open = new EmbedBuilder()
                               .setColor('#f6f7f8')
                               .setTimestamp()
                               .setFooter(`Ticket ID: <#${chan.id}>`)
@@ -730,7 +730,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                               .addField('Open Time', `<t:${MainTime}:f>`, true)
                             await interaction.reply({ embeds: [open], ephemeral: true });
 
-                            const DmPerson = new MessageEmbed()
+                            const DmPerson = new EmbedBuilder()
                               .setColor('#f6f7f8')
                               .setTimestamp()
                               .setTitle('Ticket open')
@@ -744,7 +744,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                             const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                             const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
 
-                            const thankyou = new MessageEmbed()
+                            const thankyou = new EmbedBuilder()
                               .setColor('#f6f7f8')
                               .setTimestamp()
                               .setFooter(`Ticket ID: <#${chan.id}>`)
@@ -783,7 +783,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                   const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                   TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket!`)
                                 } else {
-                                  const DatabaseTicketMessage = new MessageEmbed()
+                                  const DatabaseTicketMessage = new EmbedBuilder()
                                     .setTitle('Ticket error')
                                     .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
                                     .addField('Ticket ID', `${data01.TicketIDs}`, true)
@@ -800,7 +800,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                       ClaimTicket.findOneAndDelete({ id: data.id }, { ServerID: data01.ServerID }, async (err3, data3) => {
                                         if (err3) throw err;
                                         console.log(data3)
-                                        const deletedd = new MessageEmbed()
+                                        const deletedd = new EmbedBuilder()
                                           .setTitle('Info removed from database, please make another ticket!')
                                         interaction.channel.send({ embeds: [deletedd] })
                                         const DeleteChannelWhenError = interaction.guild.channels.cache.get(`${chan.id}`);
@@ -868,7 +868,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                 ATTACH_FILES: true,
                               })
 
-                              const open = new MessageEmbed()
+                              const open = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setFooter(`Ticket ID: <#${chan.id}>`)
@@ -880,7 +880,7 @@ module.exports = class ReadyEvent extends BaseEvent {
 
                               await interaction.reply({ embeds: [open], ephemeral: true });
 
-                              const DmPerson = new MessageEmbed()
+                              const DmPerson = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle('Ticket open')
@@ -894,7 +894,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                               const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                               const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
 
-                              const thankyou = new MessageEmbed()
+                              const thankyou = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setFooter(`Ticket ID: <#${chan.id}>`)
@@ -932,7 +932,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                     const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                     TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket!`)
                                   } else {
-                                    const DatabaseTicketMessage = new MessageEmbed()
+                                    const DatabaseTicketMessage = new EmbedBuilder()
                                       .setTitle('Ticket error')
                                       .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
                                       .addField('Ticket ID', `${data01.TicketIDs}`, true)
@@ -949,7 +949,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                         ClaimTicket.findOneAndDelete({ id: data.id }, { ServerID: data01.ServerID }, async (err3, data3) => {
                                           if (err3) throw err;
                                           console.log(data3)
-                                          const deletedd = new MessageEmbed()
+                                          const deletedd = new EmbedBuilder()
                                             .setTitle('Info removed from database, please make another ticket!')
                                           interaction.channel.send({ embeds: [deletedd] })
                                           const DeleteChannelWhenError = interaction.guild.channels.cache.get(`${chan.id}`);
@@ -1002,7 +1002,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                 })
               } else {
                 if (data01.EnableTicket === 'Disabled') {
-                  const disabledTicket = new MessageEmbed()
+                  const disabledTicket = new EmbedBuilder()
                     .setTitle('Disabled!')
                     .setDescription('Server owner has disabled the creation of tickets in this server.')
 
@@ -1011,7 +1011,7 @@ module.exports = class ReadyEvent extends BaseEvent {
               }
             }
           } else {
-            const NoData = new MessageEmbed()
+            const NoData = new EmbedBuilder()
               .setTitle('Not updated')
               .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
             interaction.reply({ embeds: [NoData] })
@@ -1019,7 +1019,7 @@ module.exports = class ReadyEvent extends BaseEvent {
         })
       }
       if (interaction.customId === 'delete') {
-        const ServerOwner = new MessageEmbed()
+        const ServerOwner = new EmbedBuilder()
           .setTitle('Error')
           .setDescription('This command is restricted to guild owner only. Please do not try and use this command because you will not get anywhere.')
         if (interaction.user.id != interaction.guild.ownerId)
