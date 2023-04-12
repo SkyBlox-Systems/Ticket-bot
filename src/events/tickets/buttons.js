@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const { BotVersions } = require('../../../slappey.json')
 const MainDatabase = require('../../schemas/TicketData');
 const ClaimTicket = require('../../schemas/ticketclaim');
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, PermissionFlagsBits } = require('discord.js');
 const { Permissions } = require('discord.js');
 const { MessageCollector, Collector } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
@@ -56,223 +56,138 @@ module.exports = class ReadyEvent extends BaseEvent {
               .setEmoji('⭐')
           );
 
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
-          if (err) throw err;
-          if (data) {
-            if (data.SecondServer === 'Enabled') {
-              interaction.reply('This feature is currently disabled')
-            } else {
 
-              ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err2001, data2001) => {
-                if (err2001) throw err2001;
-                if (data2001) {
-                  if (data2001.Locked === 'Yes') {
-                    const cannotclose = new EmbedBuilder()
-                      .setTitle('Can not close')
-                      .setDescription('This ticket can not be closed because it is currently locked. Please unlock it by one of the staff members.')
-                    return interaction.reply({ embeds: [cannotclose] })
-                  } else {
-                    if (data2001.Locked === 'No') {
-                      MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
-                        if (err01) throw err01;
-                        if (data01) {
-
-                          ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err200, data200) => {
-                            if (err200) throw err200;
-                            if (data200) {
-                              if (data200.ClaimUserID === "") {
-
-                                if (!interaction.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
-                                  const NoPerms2 = new EmbedBuilder()
-                                    .setTitle('Error')
-                                    .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
-
-                                  return interaction.reply({ embeds: [NoPerms2] })
-                                }
-
-                                const NoClaimer = new EmbedBuilder()
-                                  .setTitle('Error')
-                                  .setDescription('No staff member has not claimed the ticket. This ticket can not be closed')
-
-                                interaction.reply({ embeds: [NoClaimer] })
-
-                              } else {
-
-                                if (data01.Transcript === "Yes") {
-                                  function makeURL(length) {
-                                    var result = '';
-                                    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                                    var charactersLength = characters.length;
-                                    for (var i = 0; i < length; i++) {
-                                      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-                                    }
-                                    return result;
-                                  }
-                                  const generators = makeURL(20)
+        const premiumstring = interaction.options.getString('premium');
+        const idstring = interaction.options.getString('id');
+        const normalstring = interaction.options.getString('normal');
 
 
-                                  const ticketembed = new EmbedBuilder()
-                                    .setColor('#f6f7f8')
-                                    .setTimestamp()
-                                    .setTitle(`Ticket`)
-                                    .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will cancel the command within 10 seconds.`)
+        if (normalstring === 'close') {
+          MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            if (err) throw err;
+            if (data) {
+              if (data.SecondServer === 'Enabled') {
+                interaction.reply('This feature is currently disabled')
+              } else {
 
-                                  const closed = new EmbedBuilder()
-                                    .setColor('#f6f7f8')
-                                    .setTimestamp()
-                                    .setTitle(`Ticket`)
-                                    .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
+                ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err2001, data2001) => {
+                  if (err2001) throw err2001;
+                  if (data2001) {
+                    if (data2001.Locked === 'Yes') {
+                      const cannotclose = new EmbedBuilder()
+                        .setTitle('Can not close')
+                        .setDescription('This ticket can not be closed because it is currently locked. Please unlock it by one of the staff members.')
+                      return interaction.reply({ embeds: [cannotclose] })
+                    } else {
+                      if (data2001.Locked === 'No') {
+                        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+                          if (err01) throw err01;
+                          if (data01) {
 
-                                  const Logs = new EmbedBuilder()
-                                    .setColor('#f6f7f8')
-                                    .setTimestamp()
-                                    .setTitle('Ticket-logs')
-                                    .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully. \n\n All tickets are removed of our server within 24 hours.`)
-
-                                  const notclosed = new EmbedBuilder()
-                                    .setColor('#f6f7f8')
-                                    .setTimestamp()
-                                    .setTitle(`Ticket`)
-                                    .setDescription(`Close cancelled.`)
-
-                                  const closing = new EmbedBuilder()
-                                    .setColor('#f6f7f8')
-                                    .setTimestamp()
-                                    .setTitle(`Ticket`)
-                                    .setDescription(`Your ticket will be closed in 5 seconds`)
-                                    .setFooter(`Making a transcript....`)
-
-                                  const ticketembed2 = new EmbedBuilder()
-                                    .setColor('#f6f7f8')
-                                    .setTimestamp()
-                                    .setTitle(`Ticket`)
-                                    .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will automatticaly close within 10 seconds.`)
-
-                                  const closed2 = new EmbedBuilder()
-                                    .setColor('#f6f7f8')
-                                    .setTimestamp()
-                                    .setTitle(`Ticket`)
-                                    .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
-
-                                  const Logs2 = new EmbedBuilder()
-                                    .setColor('#f6f7f8')
-                                    .setTimestamp()
-                                    .setTitle('Ticket-logs')
-                                    .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully.`)
-
-                                  const notclosed2 = new EmbedBuilder()
-                                    .setColor('#f6f7f8')
-                                    .setTimestamp()
-                                    .setTitle(`Ticket`)
-                                    .setDescription(`Close cancelled.`)
-
-                                  const closing2 = new EmbedBuilder()
-                                    .setColor('#f6f7f8')
-                                    .setTimestamp()
-                                    .setTitle(`Ticket`)
-                                    .setDescription(`Your ticket will be closed in 5 seconds`)
+                            ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err200, data200) => {
+                              if (err200) throw err200;
+                              if (data200) {
+                                if (data200.ClaimUserID === "") {
 
                                   if (!interaction.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
-                                    const NoPerms3 = new EmbedBuilder()
+                                    const NoPerms2 = new EmbedBuilder()
                                       .setTitle('Error')
                                       .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
 
-                                    return interaction.reply({ embeds: [NoPerms3] })
+                                    return interaction.reply({ embeds: [NoPerms2] })
                                   }
 
-                                  if (data01.ModMail === 'Enabled') {
+                                  const NoClaimer = new EmbedBuilder()
+                                    .setTitle('Error')
+                                    .setDescription('No staff member has not claimed the ticket. This ticket can not be closed')
 
-                                    if (!interaction.channel.name.startsWith("ticket-")) return interaction.channel.send("This is not a valid ticket")
-                                    if (!interaction.member.permissions.has("MANAGE_CHANNELS")) return interaction.channel.send("You need MANAGE_CHANNELS permission to use this command")
-                                    interaction.reply({ embeds: [ticketembed] })
-                                      .then((m) => {
-                                        interaction.channel.awaitMessages({
-                                          filter: response => response.content == "yes",
-                                          max: 1,
-                                          time: 10000,
-                                          errors: ['time']
-                                        }).then(() => {
-                                          interaction.channel.send({ embeds: [closing] })
+                                  interaction.reply({ embeds: [NoClaimer] })
 
-                                          setTimeout(() => {
-                                            ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err, data) => {
-                                              if (err) throw err;
-                                              if (data) {
+                                } else {
 
-                                                const DMTicketCreatorClosed = new EmbedBuilder()
-                                                  .setColor('#f5f5f5')
-                                                  .setTimestamp()
-                                                  .setTitle(`Ticket`)
-                                                  .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
-                                                  .addField('Reason', `${data.Reason}`, true)
-                                                  .addField('Time open', `<t:${data.Time}:f>`, true)
-                                                  .addField('Priority', `${data.Priority}`, true)
-
-                                                const DMTicketClaimClosed = new EmbedBuilder()
-                                                  .setColor('#f5f5f5')
-                                                  .setTimestamp()
-                                                  .setTitle(`Ticket`)
-                                                  .setDescription(`You have closed the following ticket-${data.ChannelID} for the following user <@${data.id}>.`)
+                                  if (data01.Transcript === "Yes") {
+                                    function makeURL(length) {
+                                      var result = '';
+                                      var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                                      var charactersLength = characters.length;
+                                      for (var i = 0; i < length; i++) {
+                                        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                                      }
+                                      return result;
+                                    }
+                                    const generators = makeURL(20)
 
 
-                                                const ticketttcreator = client.users.cache.get(data.id)
-                                                ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
+                                    const ticketembed = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setTitle(`Ticket`)
+                                      .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will cancel the command within 10 seconds.`)
 
-                                                const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
-                                                ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
-                                                setTimeout(() => {
-                                                  ClaimTicket.findOneAndDelete({ ChannelID: data.ChannelID }, async (err02, data02) => {
-                                                    if (err02) throw err02;
-                                                    if (data02) {
-                                                      console.log(`${data.id} ticket has been removed from the database`)
-                                                    }
-                                                  })
-                                                }, 5000);
+                                    const closed = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setTitle(`Ticket`)
+                                      .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
 
+                                    const Logs = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setTitle('Ticket-logs')
+                                      .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully. \n\n All tickets are removed of our server within 24 hours.`)
 
-                                              }
+                                    const notclosed = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setTitle(`Ticket`)
+                                      .setDescription(`Close cancelled.`)
 
-                                              MainDatabase.findOne({ ServerID: interaction.guildId }, async (err30, data30) => {
-                                                if (err30) throw err30;
-                                                if (data30) {
-                                                  const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
-                                                  MainTicketTrackerChannel.setName(`Tickets: ${data30.TicketNumber - 1}`)
-                                                }
-                                              })
-                                              interaction.channel.delete()
+                                    const closing = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setTitle(`Ticket`)
+                                      .setDescription(`Your ticket will be closed in 5 seconds`)
+                                      .setFooter(`Making a transcript....`)
 
-                                              const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "GUILD_TEXT")
-                                              const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
+                                    const ticketembed2 = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setTitle(`Ticket`)
+                                      .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will automatticaly close within 10 seconds.`)
 
-                                              const UserName = client.users.cache.find(user => user.id === data.id)
-                                              console.log(UserName)
+                                    const closed2 = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setTitle(`Ticket`)
+                                      .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
 
-                                              SupportLogs.send({ embeds: [Logs] })
+                                    const Logs2 = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setTitle('Ticket-logs')
+                                      .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully.`)
 
-                                              const CloseEmbed = new EmbedBuilder()
-                                                .setTitle('Transcript')
-                                                .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
-                                                .addField('Transcript', `Disabled for ModMail`)
-                                                // .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
-                                                .addField('Reason', `${data.Reason}`)
-                                                .addField('Time', `<t:${data.Time}:f>`)
-                                                .addField('Claim User', `<@${data.ClaimUserID}>`)
+                                    const notclosed2 = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setTitle(`Ticket`)
+                                      .setDescription(`Close cancelled.`)
 
-                                              TranscriptLogs.send({ embeds: [CloseEmbed] })
+                                    const closing2 = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setTitle(`Ticket`)
+                                      .setDescription(`Your ticket will be closed in 5 seconds`)
 
+                                    if (!interaction.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
+                                      const NoPerms3 = new EmbedBuilder()
+                                        .setTitle('Error')
+                                        .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
 
-                                            })
+                                      return interaction.reply({ embeds: [NoPerms3] })
+                                    }
 
-                                          }, 5000);
-                                        }).catch(() => {
-                                          m.edit({ embeds: [notclosed] })
-                                        })
-                                      }).catch(() => {
-                                        m.edit({ embeds: [notclosed] })
-                                      })
-
-                                  } else {
-                                    if (data01.ModMail === 'Disabled') {
+                                    if (data01.ModMail === 'Enabled') {
 
                                       if (!interaction.channel.name.startsWith("ticket-")) return interaction.channel.send("This is not a valid ticket")
                                       if (!interaction.member.permissions.has("MANAGE_CHANNELS")) return interaction.channel.send("You need MANAGE_CHANNELS permission to use this command")
@@ -296,9 +211,11 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                     .setTimestamp()
                                                     .setTitle(`Ticket`)
                                                     .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
-                                                    .addField('Reason', `${data.Reason}`, true)
-                                                    .addField('Time open', `<t:${data.Time}:f>`, true)
-                                                    .addField('Priority', `${data.Priority}`, true)
+                                                    .addFields([
+                                                      { name: 'Reason', value: `${data.Reason}`, inline: true },
+                                                      { name: 'Time open', value: `<t:${data.Time}:f>`, inline: true },
+                                                      { name: 'Priority', value: `${data.Priority}`, inline: true }
+                                                    ])
 
                                                   const DMTicketClaimClosed = new EmbedBuilder()
                                                     .setColor('#f5f5f5')
@@ -344,23 +261,16 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                 const CloseEmbed = new EmbedBuilder()
                                                   .setTitle('Transcript')
                                                   .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
-                                                  .addField('Transcript', `Disabled in v3.0 due to issues`)
-                                                  // .addField('Transcript', `[Click Me](https://shard1.ticketbots.tk/Tickets/${message.guild.id}/${generators}.html)`)
-                                                  .addField('Reason', `${data.Reason}`)
-                                                  .addField('Time', `<t:${data.Time}:f>`)
-                                                  .addField('Claim User', `<@${data.ClaimUserID}>`)
-
-                                                const discordTranscripts = require('discord-html-transcripts');
-
-                                                const channelsss = interaction.channel;
-                                                const attachment = await discordTranscripts.createTranscript(channelsss, {
-                                                  limit: -1, // Max amount of messages to fetch.
-                                                  returnBuffer: false, // Return a buffer instead of a MessageAttachment 
-                                                  fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
-                                                });
+                                                  .addFields([
+                                                    { name: 'Transcript', value: 'Disabled for ModMail' },
+                                                    { name: 'Reason', value: `${data.Reason}` },
+                                                    { name: 'Ticket Open', value: `<t:${data.Time}:f>` },
+                                                    { name: 'Claim user', value: `<@${data.ClaimUserID}>` }
+                                                  ])
 
                                                 TranscriptLogs.send({ embeds: [CloseEmbed] })
-                                                TranscriptLogs.send({ files: [attachment] })
+
+
                                               })
 
                                             }, 5000);
@@ -371,124 +281,411 @@ module.exports = class ReadyEvent extends BaseEvent {
                                           m.edit({ embeds: [notclosed] })
                                         })
 
-                                    }
-                                  }
+                                    } else {
+                                      if (data01.ModMail === 'Disabled') {
+
+                                        if (!interaction.channel.name.startsWith("ticket-")) return interaction.channel.send("This is not a valid ticket")
+                                        if (!interaction.member.permissions.has("MANAGE_CHANNELS")) return interaction.channel.send("You need MANAGE_CHANNELS permission to use this command")
+                                        interaction.reply({ embeds: [ticketembed] })
+                                          .then((m) => {
+                                            interaction.channel.awaitMessages({
+                                              filter: response => response.content == "yes",
+                                              max: 1,
+                                              time: 10000,
+                                              errors: ['time']
+                                            }).then(() => {
+                                              interaction.channel.send({ embeds: [closing] })
+
+                                              setTimeout(() => {
+                                                ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err, data) => {
+                                                  if (err) throw err;
+                                                  if (data) {
+
+                                                    const DMTicketCreatorClosed = new EmbedBuilder()
+                                                      .setColor('#f5f5f5')
+                                                      .setTimestamp()
+                                                      .setTitle(`Ticket`)
+                                                      .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
+                                                      .addFields([
+                                                        { name: 'Reason', value: `${data.Reason}`, inline: true },
+                                                        { name: 'Time open', value: `<t:${data.Time}:f>`, inline: true },
+                                                        { name: 'Priority', value: `${data.Priority}`, inline: true }
+                                                      ])
 
 
+                                                    const DMTicketClaimClosed = new EmbedBuilder()
+                                                      .setColor('#f5f5f5')
+                                                      .setTimestamp()
+                                                      .setTitle(`Ticket`)
+                                                      .setDescription(`You have closed the following ticket-${data.ChannelID} for the following user <@${data.id}>.`)
 
 
+                                                    const ticketttcreator = client.users.cache.get(data.id)
+                                                    ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
 
-                                } else {
-                                  if (!message.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
-                                    const NoPerms = new EmbedBuilder()
-                                      .setTitle('Error')
-                                      .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
-
-                                    return interaction.reply({ embeds: [NoPerms] })
-                                  }
-
-
-                                  if (!interaction.channel.name.startsWith("ticket-")) return interaction.reply("This is not a valid ticket")
-                                  if (!interaction.member.permissions.has("MANAGE_CHANNELS")) return interaction.reply("You need MANAGE_CHANNELS permission to use this command")
-                                  interaction.reply({ embeds: [ticketembed2] }).then((m) => {
-                                    interaction.channel.awaitMessages({
-                                      filter: response => response.content == "yes",
-                                      max: 1,
-                                      time: 10000,
-                                      errors: ['time']
-                                    }).then(() => {
-                                      interaction.channel.send(closing2)
-                                      Transcriptmain();
-                                      setTimeout(() => {
-                                        ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err, data) => {
-                                          if (err) throw err;
-                                          if (data) {
-
-                                            const DMTicketCreatorClosed = new EmbedBuilder()
-                                              .setColor('#f5f5f5')
-                                              .setTimestamp()
-                                              .setTitle(`Ticket`)
-                                              .setDescription(`<@${data.ClaimUserID}> has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you. Please rate the support below`)
-                                              .addField('Reason', `${data.Reason}`, true)
-                                              .addField('Time open', `<t:${data.Time}:f>`, true)
-                                              .addField('Priority', `${data.Priority}`, true)
-
-                                            const DMTicketClaimClosed = new EmbedBuilder()
-                                              .setColor('#f5f5f5')
-                                              .setTimestamp()
-                                              .setTitle(`Ticket`)
-                                              .setDescription(`You have closed the following ticket ${data.ChannelID} for the following user <@${data.id}>.`)
+                                                    const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
+                                                    ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
+                                                    setTimeout(() => {
+                                                      ClaimTicket.findOneAndDelete({ ChannelID: data.ChannelID }, async (err02, data02) => {
+                                                        if (err02) throw err02;
+                                                        if (data02) {
+                                                          console.log(`${data.id} ticket has been removed from the database`)
+                                                        }
+                                                      })
+                                                    }, 5000);
 
 
-                                            const ticketttcreator = client.users.cache.get(data.id)
-                                            ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
+                                                  }
 
-                                            const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
-                                            ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
-                                            setTimeout(() => {
-                                              ClaimTicket.findOneAndDelete({ ChannelID: interaction.channel.id }, async (err02, data02) => {
-                                                if (err02) throw err02;
-                                                if (data02) {
-                                                  console.log(`${data.id} ticket has been removed from the database`)
-                                                }
-                                              })
-                                            }, 5000);
+                                                  MainDatabase.findOne({ ServerID: interaction.guildId }, async (err30, data30) => {
+                                                    if (err30) throw err30;
+                                                    if (data30) {
+                                                      const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
+                                                      MainTicketTrackerChannel.setName(`Tickets: ${data30.TicketNumber - 1}`)
+                                                    }
+                                                  })
+                                                  interaction.channel.delete()
 
+                                                  const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "GUILD_TEXT")
+                                                  const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
 
-                                          }
+                                                  const UserName = client.users.cache.find(user => user.id === data.id)
+                                                  console.log(UserName)
 
-                                          MainDatabase.findOne({ ServerID: interaction.guildId }, async (err300, data300) => {
-                                            if (err300) throw err300;
-                                            if (data300) {
-                                              const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
-                                              MainTicketTrackerChannel.setName(`Tickets: ${data300.TicketNumber - 1}`)
-                                            }
+                                                  SupportLogs.send({ embeds: [Logs] })
+
+                                                  const CloseEmbed = new EmbedBuilder()
+                                                    .setTitle('Transcript')
+                                                    .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
+                                                    .addFields([
+                                                      { name: 'Transcript', value: 'Disabled until further notice' },
+                                                      { name: 'Reason', value: `${data.Reason}` },
+                                                      { name: 'Ticket Open', value: `<t:${data.Time}:f>` },
+                                                      { name: 'Claim User', value: `<@${data.ClaimUserID}>` }
+                                                    ])
+
+                                                  const discordTranscripts = require('discord-html-transcripts');
+
+                                                  const channelsss = interaction.channel;
+                                                  const attachment = await discordTranscripts.createTranscript(channelsss, {
+                                                    limit: -1, // Max amount of messages to fetch.
+                                                    returnBuffer: false, // Return a buffer instead of a MessageAttachment 
+                                                    fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
+                                                  });
+
+                                                  TranscriptLogs.send({ embeds: [CloseEmbed] })
+                                                  TranscriptLogs.send({ files: [attachment] })
+                                                })
+
+                                              }, 5000);
+                                            }).catch(() => {
+                                              m.edit({ embeds: [notclosed] })
+                                            })
+                                          }).catch(() => {
+                                            m.edit({ embeds: [notclosed] })
                                           })
-                                          interaction.channel.delete()
 
-                                          const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "text")
-                                          const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
-
-                                          const UserName = client.users.cache.find(user => user.id === data.id)
-                                          console.log(UserName)
-
-                                          SupportLogs.send({ embeds: [Logs2] })
+                                      }
+                                    }
 
 
-                                        })
 
-                                      }, 5000);
+
+
+                                  } else {
+                                    if (!message.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
+                                      const NoPerms = new EmbedBuilder()
+                                        .setTitle('Error')
+                                        .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
+
+                                      return interaction.reply({ embeds: [NoPerms] })
+                                    }
+
+
+                                    if (!interaction.channel.name.startsWith("ticket-")) return interaction.reply("This is not a valid ticket")
+                                    if (!interaction.member.permissions.has("MANAGE_CHANNELS")) return interaction.reply("You need MANAGE_CHANNELS permission to use this command")
+                                    interaction.reply({ embeds: [ticketembed2] }).then((m) => {
+                                      interaction.channel.awaitMessages({
+                                        filter: response => response.content == "yes",
+                                        max: 1,
+                                        time: 10000,
+                                        errors: ['time']
+                                      }).then(() => {
+                                        interaction.channel.send(closing2)
+                                        Transcriptmain();
+                                        setTimeout(() => {
+                                          ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err, data) => {
+                                            if (err) throw err;
+                                            if (data) {
+
+                                              const DMTicketCreatorClosed = new EmbedBuilder()
+                                                .setColor('#f5f5f5')
+                                                .setTimestamp()
+                                                .setTitle(`Ticket`)
+                                                .setDescription(`<@${data.ClaimUserID}> has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you. Please rate the support below`)
+                                                .addFields([
+                                                  { name: 'Reason', value: `${data.Reason}`, inline: true },
+                                                  { name: 'Time open', value: `<t:${data.Time}:f>`, inline: true },
+                                                  { name: 'Priority', value: `${data.Priority}`, inline: true }
+                                                ])
+
+                                              const DMTicketClaimClosed = new EmbedBuilder()
+                                                .setColor('#f5f5f5')
+                                                .setTimestamp()
+                                                .setTitle(`Ticket`)
+                                                .setDescription(`You have closed the following ticket ${data.ChannelID} for the following user <@${data.id}>.`)
+
+
+                                              const ticketttcreator = client.users.cache.get(data.id)
+                                              ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
+
+                                              const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
+                                              ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
+                                              setTimeout(() => {
+                                                ClaimTicket.findOneAndDelete({ ChannelID: interaction.channel.id }, async (err02, data02) => {
+                                                  if (err02) throw err02;
+                                                  if (data02) {
+                                                    console.log(`${data.id} ticket has been removed from the database`)
+                                                  }
+                                                })
+                                              }, 5000);
+
+
+                                            }
+
+                                            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err300, data300) => {
+                                              if (err300) throw err300;
+                                              if (data300) {
+                                                const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
+                                                MainTicketTrackerChannel.setName(`Tickets: ${data300.TicketNumber - 1}`)
+                                              }
+                                            })
+                                            interaction.channel.delete()
+
+                                            const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "text")
+                                            const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
+
+                                            const UserName = client.users.cache.find(user => user.id === data.id)
+                                            console.log(UserName)
+
+                                            SupportLogs.send({ embeds: [Logs2] })
+
+
+                                          })
+
+                                        }, 5000);
+                                      }).catch(() => {
+                                        interaction.channel.send({ embeds: [notclosed2] })
+                                      })
                                     }).catch(() => {
                                       interaction.channel.send({ embeds: [notclosed2] })
                                     })
-                                  }).catch(() => {
-                                    interaction.channel.send({ embeds: [notclosed2] })
-                                  })
-                                }
+                                  }
 
+                                }
                               }
-                            }
+                            })
+
+                          } else {
+                            const NoData = new EmbedBuilder()
+                              .setTitle('Not updated')
+                              .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
+
+                            interaction.reply({ embeds: [NoData] })
+                          }
+                        })
+
+                      }
+                    }
+                  } else {
+                    interaction.reply('This is not a vaild ticket.')
+                  }
+                })
+
+              }
+            }
+          })
+
+        }
+
+        if (premiumstring === 'voice') {
+          ClaimTicket.findOne({ TicketIDs: idstring }, async (err, data) => {
+            if (err) throw err;
+            if (data) {
+              MainDatabase.findOne({ ServerID: interaction.guildId }, async (err1, data1) => {
+                if (err1) throw err;
+                if (data1) {
+                  if (data1.PaidGuild === 'Yes') {
+                    if (data1.VoiceTicket === 'Enabled') {
+                      if (data.ClaimUserID === '') {
+
+                      } else {
+
+                        if (!interaction.member.roles.cache.some(r => r.id === `${data1.SupportRoleID}`)) {
+                          const NoPerms2 = new EmbedBuilder()
+                            .setTitle('Error')
+                            .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
+
+                          return interaction.reply({ embeds: [NoPerms2] })
+                        }
+
+                        function makeURL(length) {
+                          var result = '';
+                          var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                          var charactersLength = characters.length;
+                          for (var i = 0; i < length; i++) {
+                            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                          }
+                          return result;
+                        }
+                        const generators = makeURL(20)
+
+
+                        const ticketembed = new EmbedBuilder()
+                          .setColor('#f6f7f8')
+                          .setTimestamp()
+                          .setTitle(`Ticket`)
+                          .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will cancel the command within 10 seconds.`)
+
+                        const closed = new EmbedBuilder()
+                          .setColor('#f6f7f8')
+                          .setTimestamp()
+                          .setTitle(`Ticket`)
+                          .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
+
+                        const Logs = new EmbedBuilder()
+                          .setColor('#f6f7f8')
+                          .setTimestamp()
+                          .setTitle('Ticket-logs')
+                          .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully. \n\n All tickets are removed of our server within 24 hours.`)
+
+                        const notclosed = new EmbedBuilder()
+                          .setColor('#f6f7f8')
+                          .setTimestamp()
+                          .setTitle(`Ticket`)
+                          .setDescription(`Close cancelled.`)
+
+                        const closing = new EmbedBuilder()
+                          .setColor('#f6f7f8')
+                          .setTimestamp()
+                          .setTitle(`Ticket`)
+                          .setDescription(`Your ticket will be closed in 5 seconds`)
+                          .setFooter(`Making a transcript....`)
+
+                        interaction.reply({ embeds: [ticketembed] })
+                          .then((m) => {
+                            interaction.channel.awaitMessages({
+                              filter: response => response.content == "yes",
+                              max: 1,
+                              time: 10000,
+                              errors: ['time']
+                            }).then(() => {
+                              interaction.channel.send({ embeds: [closing] })
+
+                              setTimeout(() => {
+                                ClaimTicket.findOne({ ChannelID: data.ChannelID }, async (err3, data3) => {
+                                  if (err3) throw err;
+                                  if (data3) {
+
+                                    const DMTicketCreatorClosed = new EmbedBuilder()
+                                      .setColor('#f5f5f5')
+                                      .setTimestamp()
+                                      .setTitle(`Ticket`)
+                                      .setDescription(`<@${data3.ClaimUserID}> ${data1.CloseMessage}. Please rate the support below`)
+                                      .addFields([
+                                        { name: 'Reason', value: `${data.Reason}`, inline: true },
+                                        { name: 'Time open', value: `<t:${data.Time}:f`, inline: true },
+                                        { name: 'Priority', value: `${data.Priority}`, inline: true }
+                                      ])
+
+                                    const DMTicketClaimClosed = new EmbedBuilder()
+                                      .setColor('#f5f5f5')
+                                      .setTimestamp()
+                                      .setTitle(`Ticket`)
+                                      .setDescription(`You have closed the following ticket-${data3.ChannelID} for the following user <@${data3.id}>.`)
+
+
+                                    const ticketttcreator = client.users.cache.get(data.id)
+                                    ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
+
+                                    const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
+                                    ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
+                                    setTimeout(() => {
+                                      ClaimTicket.findOneAndDelete({ ChannelID: data.ChannelID }, async (err02, data02) => {
+                                        if (err02) throw err02;
+                                        if (data02) {
+                                          console.log(`${data.id} ticket has been removed from the database`)
+                                        }
+                                      })
+                                    }, 5000);
+
+
+                                  }
+
+                                  MainDatabase.findOne({ ServerID: interaction.guildId }, async (err30, data30) => {
+                                    if (err30) throw err30;
+                                    if (data30) {
+                                      const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data1.TicketTrackerChannelID}`)
+                                      MainTicketTrackerChannel.setName(`Tickets: ${data30.TicketNumber - 1}`)
+                                    }
+                                  })
+
+                                  const voicecallchan = interaction.guild.channels.cache.get(data3.ChannelID)
+                                  voicecallchan.delete()
+
+                                  const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "GUILD_TEXT")
+                                  const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
+
+                                  const UserName = client.users.cache.find(user => user.id === data.id)
+                                  console.log(UserName)
+
+                                  SupportLogs.send({ embeds: [Logs] })
+
+                                  const CloseEmbed = new EmbedBuilder()
+                                    .setTitle('Transcript')
+                                    .setDescription(`${data1.TranscriptMessage} ${interaction.channel.name}`)
+                                    .addFields([
+                                      { name: 'Transcript', value: 'Disabled for voice calls' },
+                                      { name: 'Reason', value: `${data.Reason}` },
+                                      { name: 'Ticket Open', value: `<t:${data.Time}:f>` },
+                                      { name: 'Claim user', value: `<@${data.ClaimUserID}>` }
+                                    ])
+
+
+                                  TranscriptLogs.send({ embeds: [CloseEmbed] })
+
+
+                                })
+
+                              }, 5000);
+                            }).catch(() => {
+                              interaction.channel.send({ embeds: [notclosed] })
+                            })
+                          }).catch(() => {
+                            interaction.channel.send({ embeds: [notclosed] })
                           })
 
-                        } else {
-                          const NoData = new EmbedBuilder()
-                            .setTitle('Not updated')
-                            .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
+                      }
 
-                          interaction.reply({ embeds: [NoData] })
-                        }
-                      })
+                    } else {
+                      if (data1.VoiceTicket === 'Disabled') {
+
+                      }
+                    }
+
+                  } else {
+                    if (data1.PaidGuild === 'No') {
 
                     }
                   }
-                } else {
-                  interaction.reply('This is not a vaild ticket.')
+                  // interaction.reply('Voice ticket has not been calimed by anyone. This ticket can not be closed.')
+
                 }
               })
 
             }
-          }
-        })
+          })
+        }
       }
       if (interaction.customId === 'lock') {
         if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {
@@ -512,24 +709,27 @@ module.exports = class ReadyEvent extends BaseEvent {
                     const ClaimUser = data1.ClaimUserID
                     const UserID = data1.id
                     if (data1.Locked === 'No') {
-                      interaction.channel.permissionOverwrites.edit(interaction.guild.roles.cache.find(roles => roles.id === `${data.ManagerRoleID}`), {
-                        SEND_MESSAGES: true,
-                        VIEW_CHANNEL: true,
-                        ATTACH_FILES: true,
-                        MANAGE_CHANNELS: false,
-                      })
-                      interaction.channel.permissionOverwrites.edit(ClaimUser, {
-                        SEND_MESSAGES: true,
-                        VIEW_CHANNEL: true,
-                        ATTACH_FILES: true,
-                        MANAGE_CHANNELS: true,
-                      })
-                      interaction.channel.permissionOverwrites.edit(UserID, {
-                        SEND_MESSAGES: false,
-                        VIEW_CHANNEL: true,
-                        ATTACH_FILES: false,
-                        MANAGE_CHANNELS: true,
-                      })
+                      interaction.channel.permissionOverwrites.set([
+                        {
+                          id: interaction.guild.roles.cache.find(roles => roles.id === `${data.ManagerRoleID}`),
+                          allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles],
+                          deny: [PermissionFlagsBits.ManageChannels]
+                        }
+                      ])
+                      interaction.channel.permissionOverwrites.set([
+                        {
+                          id: ClaimUser,
+                          allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                        }
+                      ])
+
+                      interaction.channel.permissionOverwrites.set([
+                        {
+                          id: UserID,
+                          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageChannels],
+                          deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.AttachFiles]
+                        }
+                      ])
                       const NoLocked = new EmbedBuilder()
                         .setTitle('Locked')
                         .setDescription(`<@${interaction.user.id}> has locked your ticket! This ticket can not be closed unless it has been unlocked once again. Please contact an Ticket Support manager if this was a mistake.`)
@@ -572,24 +772,27 @@ module.exports = class ReadyEvent extends BaseEvent {
                     const ClaimUser = data1.ClaimUserID
                     const UserID = data1.id
                     if (data1.Locked === 'Yes') {
-                      interaction.channel.permissionOverwrites.edit(interaction.guild.roles.cache.find(roles => roles.id === `${data.ManagerRoleID}`), {
-                        SEND_MESSAGES: true,
-                        VIEW_CHANNEL: true,
-                        ATTACH_FILES: true,
-                        MANAGE_CHANNELS: false,
-                      })
-                      interaction.channel.permissionOverwrites.edit(ClaimUser, {
-                        SEND_MESSAGES: true,
-                        VIEW_CHANNEL: true,
-                        ATTACH_FILES: true,
-                        MANAGE_CHANNELS: true,
-                      })
-                      interaction.channel.permissionOverwrites.edit(UserID, {
-                        SEND_MESSAGES: true,
-                        VIEW_CHANNEL: true,
-                        ATTACH_FILES: true,
-                        MANAGE_CHANNELS: true,
-                      })
+                      interaction.channel.permissionOverwrites.set([
+                        {
+                          id: interaction.guild.roles.cache.find(roles => roles.id === `${data.ManagerRoleID}`),
+                          allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles],
+                          deny: [PermissionFlagsBits.ManageChannels]
+                        }
+                      ])
+                      interaction.channel.permissionOverwrites.set([
+                        {
+                          id: ClaimUser,
+                          allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                        }
+                      ])
+
+                      interaction.channel.permissionOverwrites.set([
+                        {
+                          id: UserID,
+                          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageChannels],
+                          deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.AttachFiles]
+                        }
+                      ])
                       const NoLocked = new EmbedBuilder()
                         .setTitle('Locked')
                         .setDescription(`<@${interaction.user.id}> has unlocked your ticket! This ticket can not be closed unless it has been unlocked once again. Please contact an Ticket Support manager if this was a mistake.`)
@@ -631,12 +834,12 @@ module.exports = class ReadyEvent extends BaseEvent {
             new ButtonBuilder()
               .setCustomId('close')
               .setLabel('Close')
-              .setStyle('SUCCESS')
+              .setStyle(ButtonStyle.Success)
               .setEmoji('📫'),
             new ButtonBuilder()
               .setCustomId("lock")
               .setLabel("Lock")
-              .setStyle("DANGER")
+              .setStyle(ButtonStyle.Danger)
               .setEmoji("🔒"),
             new ButtonBuilder()
               .setCustomId("unlock")
@@ -646,237 +849,195 @@ module.exports = class ReadyEvent extends BaseEvent {
             new ButtonBuilder()
               .setCustomId("transcript")
               .setLabel('Transcript')
-              .setStyle('SECONDARY')
+              .setStyle(ButtonStyle.Secondary)
               .setEmoji('🎫')
           );
 
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
-          if (err01) throw err01;
-          if (data01) {
-            if (data01.TicketTrackerChannelID === 'N/A') {
-              const ErrorDataBase = new EmbedBuilder()
-                .setTitle('Error')
-                .setDescription(`The Ticket Tracker is not set up in settings. Please edit it by using the command ${client.prefix}settings`)
-              interaction.reply({ embeds: [ErrorDataBase] })
-            } else {
-              if (data01.EnableTicket === 'Enabled') {
-                function makeURL(length) {
-                  var result = '';
-                  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                  var charactersLength = characters.length;
-                  for (var i = 0; i < length; i++) {
-                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+
+        const Xmas95 = new Date('December 31, 2022 00:00:00');
+        if (Xmas95.getDate() == dd) {
+          const DisabledInAllServers = new EmbedBuilder()
+            .setTitle('Disabled!')
+            .setDescription('The bot owner has disabled all creations of ticket in all servers for worldwide events. https://status.skybloxsystems.com/incident/298944')
+
+          interaction.reply({ embeds: [DisabledInAllServers] })
+        }
+        if (dd != Xmas95.getDate()) {
+          MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+            if (err01) throw err01;
+            if (data01) {
+              if (data01.TicketTrackerChannelID === 'N/A') {
+                const ErrorDataBase = new EmbedBuilder()
+                  .setTitle('Error')
+                  .setDescription(`The Ticket Tracker is not set up in settings. Please edit it by using the command /settings`)
+                interaction.reply({ embeds: [ErrorDataBase] })
+              } else {
+                if (data01.EnableTicket === 'Enabled') {
+                  function makeURL(length) {
+                    var result = '';
+                    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                    var charactersLength = characters.length;
+                    for (var i = 0; i < length; i++) {
+                      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                    }
+                    return result;
                   }
-                  return result;
-                }
 
-                const TicketIDMainLength = data01.TicketIDLength
-                const generator = makeURL(20)
-                const generator2 = makeURL(TicketIDMainLength)
+                  const TicketIDMainLength = data01.TicketIDLength
+                  const generator = makeURL(20)
+                  const generator2 = makeURL(TicketIDMainLength)
 
-                const user = interaction.user.id;
-                const name = "ticket-" + generator2;
-                ClaimTicket.findOne({ id: user, ServerID: interaction.guildId }, async (err45, data45) => {
-                  if (err45) throw err;
-                  if (data45) {
-                    const embed = new EmbedBuilder()
-                      .setTitle(`Ticket`)
-                      .addField('Information', `You have already opened a ticket. Please close your current ticket.`, true)
-                      .addField('Channel', `<#${data45.ChannelID}>`, true)
-                      .addField('Reason', `N/A.`, true)
-                      .addField('Ticket ID', `${data45.TicketIDs}`, true)
-                      .addField('Priority', `N/A`, true)
-                    await interaction.reply({ embeds: [embed] })
-                  } else {
-                    const Ticketcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY")
-
-                    if (data01.SecondServer === 'Enabled') {
-                      interaction.reply('Second guild is currently disabled due to issues')
+                  const user = interaction.user.id;
+                  const names = "ticket-" + generator2;
+                  ClaimTicket.findOne({ id: user, ServerID: interaction.guildId }, async (err45, data45) => {
+                    if (err45) throw err;
+                    if (data45) {
+                      const embed = new EmbedBuilder()
+                        .setTitle(`Ticket`)
+                        .addFields([
+                          { name: 'Infomation', value: `You have already opened a ticket. Please close your current ticket.`, inline: true },
+                          { name: 'Channel', value: `<#${data45.ChannelID}>`, inline: true },
+                          { name: 'Reason', value: `${data45.Reason}`, inline: true },
+                          { name: 'Ticket ID', value: `${data45.TicketIDs}`, inline: true },
+                          { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
+                        ])
+                      await interaction.reply({ embeds: [embed] })
                     } else {
-                      if (data01.SecondServer === 'Disabled') {
-                        if (data01.ModMail === 'Enabled') {
-                          if (data01.SecondServer === 'Enabled') {
-                            // return nothing
-                          }
-                          interaction.guild.channels.create(name, { parent: Ticketcat }).then(async (chan) => {
-                            chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
+                      const Ticketcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == Discord.ChannelType.GuildCategory)
 
-                            chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-                              SEND_MESSAGES: false,
-                              VIEW_CHANNEL: false
-                            })
-                            chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`), {
-                              SEND_MESSAGES: true,
-                              VIEW_CHANNEL: true,
-                              MANAGE_CHANNELS: true,
-                              ATTACH_FILES: true,
-                            })
+                      if (data01.SecondServer === 'Enabled') {
+                        if (data01.SecondServerID === 'N/A')
+                          return interaction.reply('No other guild has been added')
+                        if (data01.SecondServerSupportRoleID === 'N/A')
+                          return interaction.reply('No support role ID has been setup on the other guild')
+                        if (data01.SecondServerManagerRoleID === 'N/A')
+                          return interaction.reply('No support manager role ID has been setup on the other guild')
+                        const newguild = client.guilds.cache.get(data01.SecondServerID)
 
-                            chan.permissionOverwrites.create(user, {
-                              SEND_MESSAGES: true,
-                              VIEW_CHANNEL: true,
-                              ATTACH_FILES: true,
-                              MANAGE_CHANNELS: true,
-                            })
+                        newguild.channels.create({ name: names }).then(async (chan) => {
+                          chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been opened as from: ${currentDateAndTime} UTC.`)
+                          chan.permissionOverwrites.set([
+                            {
+                              id: newguild.roles.everyone,
+                              deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                            }
+                          ])
+                          const open = new EmbedBuilder()
+                            .setColor('#f6f7f8')
+                            .setTimestamp()
+                            .setFooter({ text: `Ticket ID: <#${chan.id}>` })
+                            .setTitle(`Ticket`)
+                            .addFields([
+                              { name: 'Information', value: `<@${interaction.user.id}> ${data01.OpenTicket}`, inline: true },
+                              { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
+                              { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
+                            ])
 
-                            const open = new EmbedBuilder()
-                              .setColor('#f6f7f8')
-                              .setTimestamp()
-                              .setFooter(`Ticket ID: <#${chan.id}>`)
-                              .setTitle(`Ticket`)
-                              .addField('Information', `<@${interaction.user.id}> ${data01.OpenTicket}`, true)
-                              .addField('Channel', `Your ticket is <#${chan.id}>`, true)
-                              .addField('Priority', `N/A`, true)
-                              .addField('Open Time', `<t:${MainTime}:f>`, true)
-                            await interaction.reply({ embeds: [open], ephemeral: true });
+                          await interaction.reply({ embeds: [open] });
 
-                            const DmPerson = new EmbedBuilder()
-                              .setColor('#f6f7f8')
-                              .setTimestamp()
-                              .setTitle('Ticket open')
-                              .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can send a message to your ticket by replying to our DMs with your ticketID: ${generator}`)
-                              .addField('TicketID', `${generator}`, true)
-                              .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
-                              .addField('Priority', `N/A`, true)
-                              .addField('Open Time', `<t:${MainTime}:f>`, true)
-                            await interaction.user.send({ embeds: [DmPerson] });
+                          const DmPerson = new EmbedBuilder()
+                            .setColor('#f6f7f8')
+                            .setTimestamp()
+                            .setTitle('Ticket open')
+                            .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can send a message to your ticket by replying to our DMs with your ticketID: ${generator}`)
+                            .addFields([
+                              { name: 'TicketID', value: `${generator}`, inline: true },
+                              { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
+                            ])
+                            .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
+                          await interaction.user.send({ embeds: [DmPerson] });
 
-                            const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
-                            const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
+                          const TicketSupportID = newguild.roles.cache.find(roles => roles.id === data01.SecondServerSupportRoleID)
+                          const TicketManagerID = newguild.roles.cache.find(roles => roles.id === data01.SecondServerManagerRoleID)
+                          newguild.channels.cache.get(`${data01.SecondServerClaimChannel}`).send(`${TicketSupportID}, ${TicketManagerID} \n<@${interaction.user.id}> has open a support ticket! Please run /claim ticketid:${generator} to claim the ticket!`)
 
-                            const thankyou = new EmbedBuilder()
-                              .setColor('#f6f7f8')
-                              .setTimestamp()
-                              .setFooter(`Ticket ID: <#${chan.id}>`)
-                              .setTitle('Ticket')
-                              .setDescription('To reply to this user ticket, please use the following command `/ticketreply message:` ')
-                              .addField('Information', `${data01.TicketMessage}`, true)
-                              .addField('Issue', `Ticket Reactions.`, true)
-                              .addField('User', `<@${interaction.user.id}>`, true)
-                              .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
-                              .addField('Ticket Id', `${generator}`, true)
-                              .addField('Priority', `N/A`, true)
-                              .addField('Open Time', `<t:${MainTime}:f>`, true)
-                            await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
-                              m.pin()
-                            })
-                            ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
-                              if (err) throw err;
-                              if (data) {
-                                if (data.ServerID !== interaction.guildId) {
-                                  data = new ClaimTicket({
-                                    id: interaction.user.id,
-                                    TicketIDs: generator,
-                                    ServerID: interaction.guildId,
-                                    ChannelID: chan.id,
-                                    Reason: 'Ticket Reactions.',
-                                    Locked: "No",
-                                    Time: currentDateAndTime,
-                                    AddedUser: Array,
-                                    Type: 'Channel',
-                                    ClaimUserID: "",
-                                    Priority: 'N/A'
-                                  })
-                                  data.save()
-                                    .catch(err => console.log(err))
-                                  const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
-                                  const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
-                                  TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket!`)
-                                } else {
-                                  const DatabaseTicketMessage = new EmbedBuilder()
-                                    .setTitle('Ticket error')
-                                    .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
-                                    .addField('Ticket ID', `${data01.TicketIDs}`, true)
-                                    .addField('Reason', `N/A.`, true)
-
-                                  interaction.channel.send({ embeds: [DatabaseTicketMessage] }).then(m2 => {
-                                    m2.react('✅')
-
-                                    const filter25 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
-                                    const collector25 = m2.createReactionCollector({ filter: filter25, max: 1, time: 30000 }); // 5 min
-
-                                    collector25.on('collect', () => {
-                                      m2.delete()
-                                      ClaimTicket.findOneAndDelete({ id: data.id }, { ServerID: data01.ServerID }, async (err3, data3) => {
-                                        if (err3) throw err;
-                                        console.log(data3)
-                                        const deletedd = new EmbedBuilder()
-                                          .setTitle('Info removed from database, please make another ticket!')
-                                        interaction.channel.send({ embeds: [deletedd] })
-                                        const DeleteChannelWhenError = interaction.guild.channels.cache.get(`${chan.id}`);
-                                        DeleteChannelWhenError.delete();
-
-                                        setTimeout(() => {
-
-                                        }, 5000);
-                                      })
-                                    })
-                                  })
-
-
-                                }
-                              } else {
-                                data = new ClaimTicket({
+                          ClaimTicket.findOne({ ServerID: interaction.guildId }, async (err3, data3) => {
+                            if (err3) throw err;
+                            if (data3) {
+                              if (data3.ServerID === interaction.guildId) {
+                                data3 = new ClaimTicket({
                                   id: interaction.user.id,
                                   TicketIDs: generator,
                                   ServerID: interaction.guildId,
                                   ChannelID: chan.id,
-                                  Reason: 'Ticket Reactions',
+                                  Reason: MSG,
                                   Locked: "No",
-                                  Time: MainTime,
+                                  Time: currentDateAndTime,
                                   AddedUser: Array,
                                   Type: 'Channel',
                                   ClaimUserID: "",
-                                  Priority: 'N/A'
+                                  Priority: PriorityList
                                 })
-                                data.save()
-                                  .catch(err => console.log(err))
-                                const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
-                                const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
-                                TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket! \n With slash commands, please run /claim ticketid:${generator}`)
-                                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
-                                  if (err20) throw err20;
-                                  if (data20) {
-                                    data20.save()
-                                    const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
-                                    MainTicketTrackerChannel.setName(`Tickets: ${data20.TicketNumber + 1}`)
-                                  }
-                                })
+                                data3.save()
+                                console.log('data saved')
+                              } else {
+                                console.log('Not saved')
                               }
-
-                            })
+                            }
                           })
-                        } else {
-                          if (data01.ModMail === 'Disabled') {
-                            interaction.guild.channels.create(name, { parent: Ticketcat }).then(async (chan) => {
+                          MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                            if (err20) throw err20;
+                            if (data20) {
+                              data20.save()
+                              const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
+                              MainTicketTrackerChannel.setName(`Tickets: ${data01.TicketNumber + 1}`)
+                            }
+                          })
+
+                          const thankyou = new EmbedBuilder()
+                            .setColor('#f6f7f8')
+                            .setTimestamp()
+                            .setFooter({ text: `Ticket ID: <#${chan.id}>` })
+                            .setTitle('Ticket')
+                            .setDescription('To reply to this user ticket, please use the following command `/ticketreply message:` ')
+                            .addFields([
+                              { name: 'Infomation', value: `${data01.TicketMessage}`, inline: true },
+                              { name: 'Issue', value: `${MSG}`, inline: true },
+                              { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                              { name: 'Staff', value: `${TicketSupportID} ${TicketManagerID}`, inline: true },
+                              { name: 'Ticket ID', value: `${generator}`, inline: true },
+                              { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
+                            ])
+                          await chan.send({ embeds: [thankyou] }).then((m) => {
+                            m.pin()
+                          })
+                        })
+                      } else {
+                        if (data01.SecondServer === 'Disabled') {
+                          if (data01.ModMail === 'Enabled') {
+                            if (data01.SecondServer === 'Enabled') {
+                              // return nothing
+                            }
+                            if (data01.ROBLOX === 'Enabled')
+                              return interaction.reply('ROBLOX support will not work as Mod Mail is enabled.')
+                            interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
                               chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
 
-                              chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-                                SEND_MESSAGES: false,
-                                VIEW_CHANNEL: false
-                              })
-                              chan.permissionOverwrites.create(user, {
-                                SEND_MESSAGES: true,
-                                VIEW_CHANNEL: true,
-                                ATTACH_FILES: true,
-                                MANAGE_CHANNELS: true,
-                              })
-                              chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`), {
-                                SEND_MESSAGES: true,
-                                VIEW_CHANNEL: true,
-                                MANAGE_CHANNELS: true,
-                                ATTACH_FILES: true,
-                              })
+                              chan.permissionOverwrites.set([
+                                {
+                                  id: interaction.guild.roles.everyone,
+                                  deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                                }
+                              ])
+
+                              chan.permissionOverwrites.set([
+                                {
+                                  id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
+                                  allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles]
+                                }
+                              ])
 
                               const open = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
-                                .setFooter(`Ticket ID: <#${chan.id}>`)
+                                .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                                 .setTitle(`Ticket`)
-                                .addField('Information', `<@${interaction.user.id}> I have open a ticket for you!`, true)
-                                .addField('Channel', `Your ticket is <#${chan.id}>`, true)
-                                .addField('Priority', `N/A`, true)
-                                .addField('Open Time', `<t:${MainTime}:f>`, true)
+                                .addFields([
+                                  { name: 'Infomation', value: `<@${interaction.user.id}> ${data01.OpenTicket}`, inline: true },
+                                  { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
+                                  { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                  { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                                ])
 
                               await interaction.reply({ embeds: [open], ephemeral: true });
 
@@ -884,11 +1045,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle('Ticket open')
-                                .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can found your ticket here: <#${chan.id}>`)
-                                .addField('TicketID', `${generator}`, true)
-                                .setFooter(`${interaction.guild.name}| ${interaction.guild.id}`)
-                                .addField('Priority', `N/A`, true)
-                                .addField('Open Time', `<t:${MainTime}:f>`, true)
+                                .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can send a message to your ticket by replying to our DMs with your ticketID: ${generator}`)
+                                .addFields([
+                                  { name: 'TicketID', value: `${generator}`, inline: true },
+                                  { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                  { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                                ])
+                                .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
+
                               await interaction.user.send({ embeds: [DmPerson] });
 
                               const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
@@ -897,15 +1061,19 @@ module.exports = class ReadyEvent extends BaseEvent {
                               const thankyou = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
-                                .setFooter(`Ticket ID: <#${chan.id}>`)
+                                .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                                 .setTitle('Ticket')
-                                .addField('Information', `${data01.TicketMessage}`, true)
-                                .addField('Issue', `Ticket Reactions.`, true)
-                                .addField('User', `<@${interaction.user.id}>`, true)
-                                .addField('Staff', `${TicketManagerID2} ${TicketSupportID2}`, true)
-                                .addField('Ticket Id', `${generator}`, true)
-                                .addField('Priority', `N/A`, true)
-                                .addField('Open Time', `<t:${MainTime}:f>`, true)
+                                .setDescription('To reply to this user ticket, please use the following command `/ticketreply message:` ')
+                                .addFields([
+                                  { name: 'Infomation', value: `${data01.TicketMessage}`, inline: true },
+                                  { name: 'Issue', value: `${MSG}`, inline: true },
+                                  { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                  { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
+                                  { name: 'Ticket  ID', value: `${generator}`, inline: true },
+                                  { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                  { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                ])
+
                               await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                                 m.pin()
                               })
@@ -918,25 +1086,27 @@ module.exports = class ReadyEvent extends BaseEvent {
                                       TicketIDs: generator,
                                       ServerID: interaction.guildId,
                                       ChannelID: chan.id,
-                                      Reason: 'Ticket Reactions.',
+                                      Reason: MSG,
                                       Locked: "No",
                                       Time: MainTime,
                                       AddedUser: Array,
                                       Type: 'Channel',
                                       ClaimUserID: "",
-                                      Priority: 'N/A'
+                                      Priority: PriorityList
                                     })
                                     data.save()
                                       .catch(err => console.log(err))
-                                    const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
+                                    const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                     const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
-                                    TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket!`)
+                                    TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run /claim ticketid:${generator} to claim the ticket!`)
                                   } else {
                                     const DatabaseTicketMessage = new EmbedBuilder()
                                       .setTitle('Ticket error')
                                       .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
-                                      .addField('Ticket ID', `${data01.TicketIDs}`, true)
-                                      .addField('Reason', `N/A.`, true)
+                                      .addFields([
+                                        { name: 'Ticket ID', value: `${data01.TicketIDs}`, inline: true },
+                                        { name: 'Reason', value: `${data01.Reason}`, inline: true },
+                                      ])
 
                                     interaction.channel.send({ embeds: [DatabaseTicketMessage] }).then(m2 => {
                                       m2.react('✅')
@@ -970,53 +1140,584 @@ module.exports = class ReadyEvent extends BaseEvent {
                                     TicketIDs: generator,
                                     ServerID: interaction.guildId,
                                     ChannelID: chan.id,
-                                    Reason: 'Ticket Reactions.',
+                                    Reason: MSG,
                                     Locked: "No",
-                                    Time: currentDateAndTime,
+                                    Time: MainTime,
+                                    AddedUser: Array,
                                     Type: 'Channel',
                                     ClaimUserID: "",
-                                    Priority: 'N/A'
+                                    Priority: PriorityList
                                   })
                                   data.save()
                                     .catch(err => console.log(err))
-                                  const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
+                                  const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                   const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
-                                  TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket! \n With slash commands, please run /claim ticketid:${generator}`)
+                                  TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run /claim ticketid:${generator}`)
                                   MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
                                     if (err20) throw err20;
                                     if (data20) {
                                       data20.save()
                                       const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
-                                      MainTicketTrackerChannel.setName(`Tickets: ${data01.TicketNumber + 1}`)
+                                      MainTicketTrackerChannel.setName(`Tickets: ${data20.TicketNumber + 1}`)
                                     }
                                   })
                                 }
 
                               })
                             })
+                          } else {
+                            if (data01.ModMail === 'Disabled') {
+                              if (data01.ROBLOX === 'Enabled') {
+                                var axios = require('axios');
+                                var data = '';
+
+                                var config = {
+                                  method: 'get',
+                                  url: 'https://v3.blox.link/developer/discord/406164395643633662',
+                                  headers: {
+                                    'api-key': '1c59b661-b2a2-4ec4-847c-77df8da64cee'
+                                  },
+                                  data: data
+                                };
+
+                                axios(config)
+                                  .then(function (response) {
+                                    const noblox = require('noblox.js')
+                                    if (response.data.user.robloxId === undefined) {
+                                      const RBLXusername = 'Not Linked to Bloxlink'
+                                      interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
+                                        chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
+
+                                        chan.permissionOverwrites.set([
+                                          {
+                                            id: interaction.guild.roles.everyone,
+                                            deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                                          }
+                                        ])
+                                        chan.permissionOverwrites.set([
+                                          {
+                                            id: user,
+                                            allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                          }
+                                        ])
+
+                                        chan.permissionOverwrites.set([
+                                          {
+                                            id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
+                                            allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                          }
+                                        ])
+
+                                        const open = new EmbedBuilder()
+                                          .setColor('#f6f7f8')
+                                          .setTimestamp()
+                                          .setFooter({ text: `Ticket ID: <#${chan.id}>` })
+                                          .setTitle(`Ticket`)
+                                          .addFields([
+                                            { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
+                                            { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
+                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                          ])
+
+
+
+                                        await interaction.reply({ embeds: [open], ephemeral: true });
+
+                                        const DmPerson = new EmbedBuilder()
+                                          .setColor('#f6f7f8')
+                                          .setTimestamp()
+                                          .setTitle('Ticket open')
+                                          .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can found your ticket here: <#${chan.id}>`)
+                                          .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
+                                          .addFields([
+                                            { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+
+                                          ])
+
+                                        await interaction.user.send({ embeds: [DmPerson] });
+
+                                        const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
+                                        const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
+
+                                        const thankyou = new EmbedBuilder()
+                                          .setColor('#f6f7f8')
+                                          .setTimestamp()
+                                          .setFooter({ text: `Ticket ID: <#${chan.id}>` })
+                                          .setTitle('Ticket')
+                                          .addFields([
+                                            { name: 'Information', value: `${data01.TicketMessage}`, inline: true },
+                                            { name: 'Issue', value: `${MSG}`, inline: true },
+                                            { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                            { name: 'Roblox username', value: `${RBLXusername}`, inline: true },
+                                            { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
+                                            { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                                          ])
+
+
+                                        await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
+                                          m.pin()
+                                        })
+                                        ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
+                                          if (err) throw err;
+                                          if (data) {
+                                            if (data.ServerID !== interaction.guildId) {
+                                              data = new ClaimTicket({
+                                                id: interaction.user.id,
+                                                TicketIDs: generator,
+                                                ServerID: interaction.guildId,
+                                                ChannelID: chan.id,
+                                                Reason: MSG,
+                                                Locked: "No",
+                                                Time: MainTime,
+                                                AddedUser: Array,
+                                                Type: 'Channel',
+                                                ClaimUserID: "",
+                                                Priority: PriorityList
+                                              })
+                                              data.save()
+                                                .catch(err => console.log(err))
+                                              const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
+                                              const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
+                                              TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run /claim ticketid:${generator} to claim the ticket!`)
+                                            } else {
+                                              const DatabaseTicketMessage = new EmbedBuilder()
+                                                .setTitle('Ticket error')
+                                                .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
+                                                .addFields([
+                                                  { name: 'Ticket ID', value: `${data01.TicketIDs}`, inline: true },
+                                                  { name: 'Reason', value: `${data01.Reason}`, inline: true }
+                                                ])
+                                              interaction.channel.send({ embeds: [DatabaseTicketMessage] }).then(m2 => {
+                                                m2.react('✅')
+
+                                                const filter25 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
+                                                const collector25 = m2.createReactionCollector({ filter: filter25, max: 1, time: 30000 }); // 5 min
+
+                                                collector25.on('collect', () => {
+                                                  m2.delete()
+                                                  ClaimTicket.findOneAndDelete({ id: data.id }, { ServerID: data01.ServerID }, async (err3, data3) => {
+                                                    if (err3) throw err;
+                                                    console.log(data3)
+                                                    const deletedd = new EmbedBuilder()
+                                                      .setTitle('Info removed from database, please make another ticket!')
+                                                    interaction.channel.send({ embeds: [deletedd] })
+                                                    const DeleteChannelWhenError = interaction.guild.channels.cache.get(`${chan.id}`);
+                                                    DeleteChannelWhenError.delete();
+
+                                                    setTimeout(() => {
+
+                                                    }, 5000);
+                                                  })
+                                                })
+                                              })
+
+
+                                            }
+                                          } else {
+                                            data = new ClaimTicket({
+                                              id: interaction.user.id,
+                                              TicketIDs: generator,
+                                              ServerID: interaction.guildId,
+                                              ChannelID: chan.id,
+                                              Reason: MSG,
+                                              Locked: "No",
+                                              Time: MainTime,
+                                              Type: 'Channel',
+                                              ClaimUserID: "",
+                                              Priority: PriorityList
+                                            })
+                                            data.save()
+                                              .catch(err => console.log(err))
+                                            const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
+                                            const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
+                                            TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
+                                            MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                                              if (err20) throw err20;
+                                              if (data20) {
+                                                data20.save()
+                                                const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
+                                                MainTicketTrackerChannel.setName(`Tickets: ${data01.TicketNumber + 1}`)
+                                              }
+                                            })
+                                          }
+
+                                        })
+                                      })
+                                    } else {
+                                      const RBLXusername = noblox.getUsernameFromId(response.user.robloxId)
+                                      interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
+                                        chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
+
+                                        chan.permissionOverwrites.set([
+                                          {
+                                            id: interaction.guild.roles.everyone,
+                                            deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                                          }
+                                        ])
+
+                                        chan.permissionOverwrites.set([
+                                          {
+                                            id: user,
+                                            allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                          }
+                                        ])
+
+
+                                        chan.permissionOverwrites.set([
+                                          {
+                                            id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
+                                            allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                          }
+                                        ])
+
+
+                                        const open = new EmbedBuilder()
+                                          .setColor('#f6f7f8')
+                                          .setTimestamp()
+                                          .setFooter({ text: `Ticket ID: <#${chan.id}>` })
+                                          .setTitle(`Ticket`)
+                                          .addFields([
+                                            { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
+                                            { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
+                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                          ])
+
+
+
+
+                                        await interaction.reply({ embeds: [open], ephemeral: true });
+
+                                        const DmPerson = new EmbedBuilder()
+                                          .setColor('#f6f7f8')
+                                          .setTimestamp()
+                                          .setTitle('Ticket open')
+                                          .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can found your ticket here: <#${chan.id}>`)
+                                          .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
+                                          .addFields([
+                                            { name: 'TicketID', value: `${generator}`, inline: true },
+                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                          ])
+
+
+                                        await interaction.user.send({ embeds: [DmPerson] });
+
+                                        const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
+                                        const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
+
+                                        const thankyou = new EmbedBuilder()
+                                          .setColor('#f6f7f8')
+                                          .setTimestamp()
+                                          .setFooter({ text: `Ticket ID: <#${chan.id}>` })
+                                          .setTitle('Ticket')
+                                          .addFields([
+                                            { name: 'Information', value: `${data01.TicketMessage}`, inline: true },
+                                            { name: 'Issue', value: `${MSG}`, inline: true },
+                                            { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                            { name: 'Roblox username', value: `${RBLXusername}`, inline: true },
+                                            { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
+                                            { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                                          ])
+
+                                        await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
+                                          m.pin()
+                                        })
+                                        ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
+                                          if (err) throw err;
+                                          if (data) {
+                                            if (data.ServerID !== interaction.guildId) {
+                                              data = new ClaimTicket({
+                                                id: interaction.user.id,
+                                                TicketIDs: generator,
+                                                ServerID: interaction.guildId,
+                                                ChannelID: chan.id,
+                                                Reason: MSG,
+                                                Locked: "No",
+                                                Time: MainTime,
+                                                AddedUser: Array,
+                                                Type: 'Channel',
+                                                ClaimUserID: "",
+                                                Priority: PriorityList
+                                              })
+                                              data.save()
+                                                .catch(err => console.log(err))
+                                              const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
+                                              const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
+                                              TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run /claim ticketid:${generator} to claim the ticket!`)
+                                            } else {
+                                              const DatabaseTicketMessage = new EmbedBuilder()
+                                                .setTitle('Ticket error')
+                                                .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
+                                                .addFields([
+                                                  { name: 'Ticket ID', value: `${data01.TicketIDs}`, inline: true },
+                                                  { name: 'Reason', value: `${data01.Reason}`, inline: true }
+                                                ])
+
+                                              interaction.channel.send({ embeds: [DatabaseTicketMessage] }).then(m2 => {
+                                                m2.react('✅')
+
+                                                const filter25 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
+                                                const collector25 = m2.createReactionCollector({ filter: filter25, max: 1, time: 30000 }); // 5 min
+
+                                                collector25.on('collect', () => {
+                                                  m2.delete()
+                                                  ClaimTicket.findOneAndDelete({ id: data.id }, { ServerID: data01.ServerID }, async (err3, data3) => {
+                                                    if (err3) throw err;
+                                                    console.log(data3)
+                                                    const deletedd = new EmbedBuilder()
+                                                      .setTitle('Info removed from database, please make another ticket!')
+                                                    interaction.channel.send({ embeds: [deletedd] })
+                                                    const DeleteChannelWhenError = interaction.guild.channels.cache.get(`${chan.id}`);
+                                                    DeleteChannelWhenError.delete();
+
+                                                    setTimeout(() => {
+
+                                                    }, 5000);
+                                                  })
+                                                })
+                                              })
+
+
+                                            }
+                                          } else {
+                                            data = new ClaimTicket({
+                                              id: interaction.user.id,
+                                              TicketIDs: generator,
+                                              ServerID: interaction.guildId,
+                                              ChannelID: chan.id,
+                                              Reason: MSG,
+                                              Locked: "No",
+                                              Time: MainTime,
+                                              Type: 'Channel',
+                                              ClaimUserID: "",
+                                              Priority: PriorityList
+                                            })
+                                            data.save()
+                                              .catch(err => console.log(err))
+                                            const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
+                                            const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
+                                            TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run /claim ticketid:${generator}`)
+                                            MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                                              if (err20) throw err20;
+                                              if (data20) {
+                                                data20.save()
+                                                const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
+                                                MainTicketTrackerChannel.setName(`Tickets: ${data01.TicketNumber + 1}`)
+                                              }
+                                            })
+                                          }
+
+                                        })
+                                      })
+                                    }
+                                  })
+
+
+
+                              } else {
+                                if (data01.ROBLOX === 'Disabled') {
+                                  interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
+                                    chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
+                                    chan.permissionOverwrites.set([
+                                      {
+                                        id: user,
+                                        allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                      }
+                                    ])
+
+                                    chan.permissionOverwrites.set([
+                                      {
+                                        id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
+                                        allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                      }
+                                    ])
+
+                                    const open = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setFooter({ text: `Ticket ID: <#${chan.id}>` })
+                                      .setTitle(`Ticket`)
+                                      .addFields([
+                                        { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
+                                        { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
+                                        { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                        { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                                      ])
+
+
+
+                                    await interaction.reply({ embeds: [open], ephemeral: true });
+
+                                    const DmPerson = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setTitle('Ticket open')
+                                      .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can found your ticket here: <#${chan.id}>`)
+                                      .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
+                                      .addFields([
+                                        { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                        { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                        { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                      ])
+
+                                    await interaction.user.send({ embeds: [DmPerson] });
+
+                                    const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
+                                    const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
+
+                                    const thankyou = new EmbedBuilder()
+                                      .setColor('#f6f7f8')
+                                      .setTimestamp()
+                                      .setFooter({ text: `Ticket ID: <#${chan.id}>` })
+                                      .setTitle('Ticket')
+                                      .addFields([
+                                        { name: 'Information', value: `${data01.TicketMessage}`, inline: true },
+                                        { name: 'Issue', value: `${MSG}`, inline: true },
+                                        { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                        { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
+                                        { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                        { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                        { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                      ])
+
+                                    await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
+                                      m.pin()
+                                    })
+                                    ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
+                                      if (err) throw err;
+                                      if (data) {
+                                        if (data.ServerID !== interaction.guildId) {
+                                          data = new ClaimTicket({
+                                            id: interaction.user.id,
+                                            TicketIDs: generator,
+                                            ServerID: interaction.guildId,
+                                            ChannelID: chan.id,
+                                            Reason: MSG,
+                                            Locked: "No",
+                                            Time: currentDateAndTime,
+                                            AddedUser: Array,
+                                            Type: 'Channel',
+                                            ClaimUserID: "",
+                                            Priority: PriorityList
+                                          })
+                                          data.save()
+                                            .catch(err => console.log(err))
+                                          const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
+                                          const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
+                                          TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket!`)
+                                        } else {
+                                          const DatabaseTicketMessage = new EmbedBuilder()
+                                            .setTitle('Ticket error')
+                                            .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
+                                            .addFields([
+                                              { name: 'Ticket ID', value: `${data01.TicketIDs}`, inline: true },
+                                              { name: 'Reason', value: `${data01.Reason}.`, inline: true },
+                                            ])
+
+                                          interaction.channel.send({ embeds: [DatabaseTicketMessage] }).then(m2 => {
+                                            m2.react('✅')
+
+                                            const filter25 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
+                                            const collector25 = m2.createReactionCollector({ filter: filter25, max: 1, time: 30000 }); // 5 min
+
+                                            collector25.on('collect', () => {
+                                              m2.delete()
+                                              ClaimTicket.findOneAndDelete({ id: data.id }, { ServerID: data01.ServerID }, async (err3, data3) => {
+                                                if (err3) throw err;
+                                                console.log(data3)
+                                                const deletedd = new EmbedBuilder()
+                                                  .setTitle('Info removed from database, please make another ticket!')
+                                                interaction.channel.send({ embeds: [deletedd] })
+                                                const DeleteChannelWhenError = interaction.guild.channels.cache.get(`${chan.id}`);
+                                                DeleteChannelWhenError.delete();
+
+                                                setTimeout(() => {
+
+                                                }, 5000);
+                                              })
+                                            })
+                                          })
+
+
+                                        }
+                                      } else {
+                                        data = new ClaimTicket({
+                                          id: interaction.user.id,
+                                          TicketIDs: generator,
+                                          ServerID: interaction.guildId,
+                                          ChannelID: chan.id,
+                                          Reason: MSG,
+                                          Locked: "No",
+                                          Time: MainTime,
+                                          Type: 'Channel',
+                                          ClaimUserID: "",
+                                          Priority: PriorityList
+                                        })
+                                        data.save()
+                                          .catch(err => console.log(err))
+                                        const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
+                                        const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
+                                        TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
+                                        MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                                          if (err20) throw err20;
+                                          if (data20) {
+                                            data20.save()
+                                            const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
+                                            MainTicketTrackerChannel.setName(`Tickets: ${data01.TicketNumber + 1}`)
+                                          }
+                                        })
+                                      }
+
+                                    })
+                                  })
+                                }
+                              }
+
+                            }
                           }
+
+
                         }
+
                       }
                     }
-                  }
-                })
-              } else {
-                if (data01.EnableTicket === 'Disabled') {
-                  const disabledTicket = new EmbedBuilder()
-                    .setTitle('Disabled!')
-                    .setDescription('Server owner has disabled the creation of tickets in this server.')
 
-                  interaction.reply({ embeds: [disabledTicket] })
+
+                  })
+
+
+
+                } else {
+                  if (data01.EnableTicket === 'Disabled') {
+                    const disabledTicket = new EmbedBuilder()
+                      .setTitle('Disabled!')
+                      .setDescription('Server owner has disabled the creation of tickets in this server.')
+
+                    interaction.reply({ embeds: [disabledTicket] })
+
+                  }
+
+
+
                 }
               }
+            } else {
+              const NoData = new EmbedBuilder()
+                .setTitle('Not updated')
+                .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
+
+              interaction.reply({ embeds: [NoData] })
             }
-          } else {
-            const NoData = new EmbedBuilder()
-              .setTitle('Not updated')
-              .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
-            interaction.reply({ embeds: [NoData] })
-          }
-        })
+          })
+        }
       }
       if (interaction.customId === 'delete') {
         const ServerOwner = new EmbedBuilder()

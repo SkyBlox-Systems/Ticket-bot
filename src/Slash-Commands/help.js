@@ -1,7 +1,10 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
 const MainDatabase = require('../schemas/TicketData');
-const {pagination, ButtonTypes, ButtonStyles} = require('@devraelfreeze/discordjs-pagination');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } = require('discord.js');
+const paginationEmbed = require('discordjs-v14-pagination');
+
+
 
 module.exports.data = new SlashCommandBuilder()
   .setName('help')
@@ -19,7 +22,7 @@ module.exports.run = (client, interaction) => {
       {name: '/status', value: 'Status of the virtual machine and bot'},
       {name: '/settings', value: 'Settings for your guild (View it)'},
       {name: '/feedback', value: 'Send feedback of a user or guild'},
-      {name: '(`/premium', value: 'See if this guild is premium or not'},
+      {name: '/premium', value: 'See if this guild is premium or not'},
     ])
     .setThumbnail('https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg')
     .setFooter({ text: 'Ticket Bot Help', iconURL: 'https://cdn.discordapp.com/attachments/798916742276579368/799984667071610880/Ticket_Bot.jpg'})
@@ -119,15 +122,6 @@ module.exports.run = (client, interaction) => {
     .setColor('#58b9ff')
     .setTimestamp()
 
-  const button1 = new Discord.ButtonBuilder()
-    .setCustomId("previousbtn")
-    .setLabel("Previous")
-    .setStyle("DANGER");
-
-  const button2 = new Discord.ButtonBuilder()
-    .setCustomId("nextbtn")
-    .setLabel("Next")
-    .setStyle("SUCCESS");
 
   const pages = [
     Info,
@@ -150,7 +144,27 @@ module.exports.run = (client, interaction) => {
     Owner
   ]
 
-  const buttonList = [button1, button2];
+  const firstPageButton = new ButtonBuilder()
+  .setCustomId('first')
+  .setLabel('First')
+  .setStyle(ButtonStyle.Primary);
+
+const previousPageButton = new ButtonBuilder()
+  .setCustomId('previous')
+  .setLabel('Previous')
+  .setStyle(ButtonStyle.Danger);
+
+const nextPageButton = new ButtonBuilder()
+  .setCustomId('next')
+  .setLabel('Next')
+  .setStyle(ButtonStyle.Success);
+
+const lastPageButton = new ButtonBuilder()
+  .setCustomId('last')
+  .setLabel('Last')
+  .setStyle(ButtonStyle.Primary);
+
+  const buttons  = [firstPageButton, previousPageButton, nextPageButton, lastPageButton];
 
 
 
@@ -160,12 +174,20 @@ module.exports.run = (client, interaction) => {
     if (err) throw err;
     if (data) {
       if (data.PaidGuild === 'Yes') {
-        pagination(interaction, pagesprem, buttonList, timeout)
-        interaction.reply({ content: 'help' })
+        paginationEmbed(
+          interaction, // The interaction object
+          pagesprem, // Your array of embeds
+          buttons , // Your array of buttons
+          60000, // (Optional) The timeout for the embed in ms, defaults to 60000 (1 minute)
+      );
       }
       if (data.PaidGuild === 'No') {
-        pagination(interaction, pages, buttonList, timeout)
-        interaction.reply({ content: 'help' })
+        paginationEmbed(
+          interaction, // The interaction object
+          pages, // Your array of embeds
+          buttons, // Your array of buttons
+          60000, // (Optional) The timeout for the embed in ms, defaults to 60000 (1 minute)
+      );
       }
     }
   })

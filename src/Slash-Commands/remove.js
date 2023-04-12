@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const pagination = require('discordjs-button-pagination');
+// const pagination = require('discordjs-button-pagination');
+
 const {Discord, EmbedBuilder} = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 

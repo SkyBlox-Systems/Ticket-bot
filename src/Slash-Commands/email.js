@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
 const fs = require('fs')
 const { sendMail } = require('send-email-api')

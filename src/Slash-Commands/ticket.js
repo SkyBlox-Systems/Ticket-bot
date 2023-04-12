@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Discord, Channel } = require('discord.js');
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const Channel  = require('discord.js');
+const Discord = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const ClaimTicket = require('../schemas/ticketclaim')
 const MainDatabase = require('../schemas/TicketData')
@@ -103,7 +104,7 @@ module.exports.run = (client, interaction) => {
             const generator2 = makeURL(TicketIDMainLength)
 
             const user = interaction.user.id;
-            const name = "ticket-" + generator2;
+            const names = "ticket-" + generator2;
             ClaimTicket.findOne({ id: user, ServerID: interaction.guildId }, async (err45, data45) => {
               if (err45) throw err;
               if (data45) {
@@ -118,7 +119,7 @@ module.exports.run = (client, interaction) => {
                   ])
                 await interaction.reply({ embeds: [embed] })
               } else {
-                const Ticketcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY")
+                const Ticketcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == Discord.ChannelType.GuildCategory)
 
                 if (data01.SecondServer === 'Enabled') {
                   if (data01.SecondServerID === 'N/A')
@@ -129,12 +130,14 @@ module.exports.run = (client, interaction) => {
                     return interaction.reply('No support manager role ID has been setup on the other guild')
                   const newguild = client.guilds.cache.get(data01.SecondServerID)
 
-                  newguild.channels.create(name).then(async (chan) => {
+                  newguild.channels.create({ name: names}).then(async (chan) => {
                     chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been opened as from: ${currentDateAndTime} UTC.`)
-                    chan.permissionOverwrites.create(newguild.roles.everyone, {
-                      SEND_MESSAGES: false,
-                      VIEW_CHANNEL: false,
-                    })
+                    chan.permissionOverwrites.set([
+                      {
+                        id: newguild.roles.everyone,
+                        deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                      }
+                    ])
                     const open = new EmbedBuilder()
                       .setColor('#f6f7f8')
                       .setTimestamp()
@@ -223,19 +226,22 @@ module.exports.run = (client, interaction) => {
                       }
                       if (data01.ROBLOX === 'Enabled')
                         return interaction.reply('ROBLOX support will not work as Mod Mail is enabled.')
-                      interaction.guild.channels.create(name, { parent: Ticketcat }).then(async (chan) => {
+                      interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
                         chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
 
-                        chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-                          SEND_MESSAGES: false,
-                          VIEW_CHANNEL: false
-                        })
-                        chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`), {
-                          SEND_MESSAGES: true,
-                          VIEW_CHANNEL: true,
-                          MANAGE_CHANNELS: true,
-                          ATTACH_FILES: true,
-                        })
+                        chan.permissionOverwrites.set([
+                          {
+                            id: interaction.guild.roles.everyone,
+                            deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                          }
+                        ])
+
+                        chan.permissionOverwrites.set([
+                          {
+                            id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
+                            allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles]
+                          }
+                        ])
 
                         const open = new EmbedBuilder()
                           .setColor('#f6f7f8')
@@ -306,7 +312,7 @@ module.exports.run = (client, interaction) => {
                               })
                               data.save()
                                 .catch(err => console.log(err))
-                              const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
+                              const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                               const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                               TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run /claim ticketid:${generator} to claim the ticket!`)
                             } else {
@@ -360,7 +366,7 @@ module.exports.run = (client, interaction) => {
                             })
                             data.save()
                               .catch(err => console.log(err))
-                            const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
+                            const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                             const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                             TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run /claim ticketid:${generator}`)
                             MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
@@ -395,25 +401,28 @@ module.exports.run = (client, interaction) => {
                               const noblox = require('noblox.js')
                               if (response.data.user.robloxId === undefined) {
                                 const RBLXusername = 'Not Linked to Bloxlink'
-                                interaction.guild.channels.create(name, { parent: Ticketcat }).then(async (chan) => {
+                                interaction.guild.channels.create({ name: names,  parent: Ticketcat }).then(async (chan) => {
                                   chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
 
-                                  chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-                                    SEND_MESSAGES: false,
-                                    VIEW_CHANNEL: false
-                                  })
-                                  chan.permissionOverwrites.create(user, {
-                                    SEND_MESSAGES: true,
-                                    VIEW_CHANNEL: true,
-                                    ATTACH_FILES: true,
-                                    MANAGE_CHANNELS: true,
-                                  })
-                                  chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`), {
-                                    SEND_MESSAGES: true,
-                                    VIEW_CHANNEL: true,
-                                    MANAGE_CHANNELS: true,
-                                    ATTACH_FILES: true,
-                                  })
+                                  chan.permissionOverwrites.set([
+                                    {
+                                      id: interaction.guild.roles.everyone,
+                                      deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                                    }
+                                  ])
+                                  chan.permissionOverwrites.set([
+                                    {
+                                      id: user,
+                                      allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                    }
+                                  ])
+
+                                  chan.permissionOverwrites.set([
+                                    {
+                                      id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
+                                      allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                    }
+                                  ])
 
                                   const open = new EmbedBuilder()
                                     .setColor('#f6f7f8')
@@ -488,7 +497,7 @@ module.exports.run = (client, interaction) => {
                                         })
                                         data.save()
                                           .catch(err => console.log(err))
-                                        const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
+                                        const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                         const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                         TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run /claim ticketid:${generator} to claim the ticket!`)
                                       } else {
@@ -540,7 +549,7 @@ module.exports.run = (client, interaction) => {
                                       })
                                       data.save()
                                         .catch(err => console.log(err))
-                                      const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
+                                      const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                       const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                       TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
                                       MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
@@ -557,26 +566,32 @@ module.exports.run = (client, interaction) => {
                                 })
                               } else {
                                 const RBLXusername = noblox.getUsernameFromId(response.user.robloxId)
-                                interaction.guild.channels.create(name, { parent: Ticketcat }).then(async (chan) => {
+                                interaction.guild.channels.create ({ name: names,  parent: Ticketcat }).then(async (chan) => {
                                   chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
 
-                                  chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-                                    SEND_MESSAGES: false,
-                                    VIEW_CHANNEL: false
-                                  })
-                                  chan.permissionOverwrites.create(user, {
-                                    SEND_MESSAGES: true,
-                                    VIEW_CHANNEL: true,
-                                    ATTACH_FILES: true,
-                                    MANAGE_CHANNELS: true,
-                                  })
-                                  chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`), {
-                                    SEND_MESSAGES: true,
-                                    VIEW_CHANNEL: true,
-                                    MANAGE_CHANNELS: true,
-                                    ATTACH_FILES: true,
-                                  })
+                                  chan.permissionOverwrites.set([
+                                    {
+                                      id: interaction.guild.roles.everyone,
+                                      deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                                    }
+                                  ])
 
+                                  chan.permissionOverwrites.set([
+                                    {
+                                      id: user,
+                                      allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                    }
+                                  ])
+
+                                  
+                                  chan.permissionOverwrites.set([
+                                    {
+                                      id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
+                                      allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                    }
+                                  ])
+
+                
                                   const open = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
@@ -650,7 +665,7 @@ module.exports.run = (client, interaction) => {
                                         })
                                         data.save()
                                           .catch(err => console.log(err))
-                                        const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
+                                        const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                         const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                         TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run /claim ticketid:${generator} to claim the ticket!`)
                                       } else {
@@ -703,7 +718,7 @@ module.exports.run = (client, interaction) => {
                                       })
                                       data.save()
                                         .catch(err => console.log(err))
-                                      const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
+                                      const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                       const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                       TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run /claim ticketid:${generator}`)
                                       MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
@@ -725,25 +740,21 @@ module.exports.run = (client, interaction) => {
 
                         } else {
                           if (data01.ROBLOX === 'Disabled') {
-                            interaction.guild.channels.create(name, { parent: Ticketcat }).then(async (chan) => {
+                            interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
                               chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
+                              chan.permissionOverwrites.set([
+                                {
+                                  id: user,
+                                  allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                }
+                              ])
 
-                              chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-                                SEND_MESSAGES: false,
-                                VIEW_CHANNEL: false
-                              })
-                              chan.permissionOverwrites.create(user, {
-                                SEND_MESSAGES: true,
-                                VIEW_CHANNEL: true,
-                                ATTACH_FILES: true,
-                                MANAGE_CHANNELS: true,
-                              })
-                              chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`), {
-                                SEND_MESSAGES: true,
-                                VIEW_CHANNEL: true,
-                                MANAGE_CHANNELS: true,
-                                ATTACH_FILES: true,
-                              })
+                              chan.permissionOverwrites.set([
+                                {
+                                  id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
+                                  allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                }
+                              ])
 
                               const open = new EmbedBuilder()
                                 .setColor('#f6f7f8')
@@ -781,16 +792,16 @@ module.exports.run = (client, interaction) => {
                               const thankyou = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
-                                .setFooter({ text: `Ticket ID: <#${chan.id}>`})
+                                .setFooter({ text: `Ticket ID: <#${chan.id}>` })
                                 .setTitle('Ticket')
                                 .addFields([
-                                  {name: 'Information', value: `${data01.TicketMessage}`, inline: true},
-                                  {name: 'Issue', value: `${MSG}`, inline: true},
-                                  {name: 'User', value: `<@${interaction.user.id}>`, inline: true},
-                                  {name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true},
-                                  {name: 'Ticket ID', value: `${generator}`, inline: true},
-                                  {name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true},
-                                  {name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true},
+                                  { name: 'Information', value: `${data01.TicketMessage}`, inline: true },
+                                  { name: 'Issue', value: `${MSG}`, inline: true },
+                                  { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                  { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
+                                  { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                  { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                  { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
                                 ])
 
                               await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
@@ -815,7 +826,7 @@ module.exports.run = (client, interaction) => {
                                     })
                                     data.save()
                                       .catch(err => console.log(err))
-                                    const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
+                                    const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                     const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                     TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage} Please run ${client.prefix}ClaimTicket ${generator} to claim the ticket!`)
                                   } else {
@@ -823,8 +834,8 @@ module.exports.run = (client, interaction) => {
                                       .setTitle('Ticket error')
                                       .setDescription('There has been a error with the database. This error is happening because your ticket got removed manually. The current info we got is provided below. If you want to remove the info, please react with a ✅')
                                       .addFields([
-                                        {name: 'Ticket ID', value: `${data01.TicketIDs}`, inline: true},
-                                        {name: 'Reason', value: `${data01.Reason}.`, inline: true},
+                                        { name: 'Ticket ID', value: `${data01.TicketIDs}`, inline: true },
+                                        { name: 'Reason', value: `${data01.Reason}.`, inline: true },
                                       ])
 
                                     interaction.channel.send({ embeds: [DatabaseTicketMessage] }).then(m2 => {
@@ -868,7 +879,7 @@ module.exports.run = (client, interaction) => {
                                   })
                                   data.save()
                                     .catch(err => console.log(err))
-                                  const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == "GUILD_TEXT")
+                                  const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                   const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                   TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
                                   MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
