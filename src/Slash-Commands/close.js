@@ -79,7 +79,7 @@ module.exports.run = (client, interaction) => {
 
 
   if (normalstring === 'close') {
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
       if (err) throw err;
       if (data) {
         if (data.SecondServer === 'Enabled') {
@@ -96,7 +96,7 @@ module.exports.run = (client, interaction) => {
                 return interaction.reply({ embeds: [cannotclose] })
               } else {
                 if (data2001.Locked === 'No') {
-                  MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+                  MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
                     if (err01) throw err01;
                     if (data01) {
 
@@ -146,6 +146,7 @@ module.exports.run = (client, interaction) => {
                                 .setTitle(`Ticket`)
                                 .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
 
+                                
                               const Logs = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
@@ -163,8 +164,10 @@ module.exports.run = (client, interaction) => {
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`Your ticket will be closed in 5 seconds`)
-                                .setFooter(`Making a transcript....`)
+                                .setFooter({ text: `Making a transcript....`})
 
+
+                                
                               const ticketembed2 = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
@@ -194,6 +197,7 @@ module.exports.run = (client, interaction) => {
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`Your ticket will be closed in 5 seconds`)
+
 
                               if (!interaction.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
                                 const NoPerms3 = new EmbedBuilder()
@@ -257,7 +261,7 @@ module.exports.run = (client, interaction) => {
 
                                           }
 
-                                          MainDatabase.findOne({ ServerID: interaction.guildId }, async (err30, data30) => {
+                                          MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err30, data30) => {
                                             if (err30) throw err30;
                                             if (data30) {
                                               const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
@@ -353,7 +357,7 @@ module.exports.run = (client, interaction) => {
 
                                             }
 
-                                            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err30, data30) => {
+                                            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err30, data30) => {
                                               if (err30) throw err30;
                                               if (data30) {
                                                 const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
@@ -469,7 +473,7 @@ module.exports.run = (client, interaction) => {
 
                                       }
 
-                                      MainDatabase.findOne({ ServerID: interaction.guildId }, async (err300, data300) => {
+                                      MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err300, data300) => {
                                         if (err300) throw err300;
                                         if (data300) {
                                           const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
@@ -528,7 +532,7 @@ module.exports.run = (client, interaction) => {
     ClaimTicket.findOne({ TicketIDs: idstring }, async (err, data) => {
       if (err) throw err;
       if (data) {
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err1, data1) => {
+        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err1, data1) => {
           if (err1) throw err;
           if (data1) {
             if (data1.PaidGuild === 'Yes') {
@@ -638,7 +642,7 @@ module.exports.run = (client, interaction) => {
 
                             }
 
-                            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err30, data30) => {
+                            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err30, data30) => {
                               if (err30) throw err30;
                               if (data30) {
                                 const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data1.TicketTrackerChannelID}`)

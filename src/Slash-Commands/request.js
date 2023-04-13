@@ -55,7 +55,7 @@ module.exports.run = async (client, interaction) => {
         const emailData = {
             to: 'admin@skybloxsystems.com',
             subject: 'Request data',
-            text: `This guild ${interaction.guildId} // ${interaction.guild.name} has requested guild data. please send the email back to the following email ${emails}. \n your sincerely, \n Ticket Bot Automatic email system`,
+            text: `This guild ${interaction.guild.id} // ${interaction.guild.name} has requested guild data. please send the email back to the following email ${emails}. \n your sincerely, \n Ticket Bot Automatic email system`,
         }
 
         const emailDataUser = {

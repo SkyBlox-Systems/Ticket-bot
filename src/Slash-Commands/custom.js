@@ -17,7 +17,7 @@ module.exports.run = (client, interaction) => {
 
     if (interaction.user.id != interaction.guild.ownerId)
         return interaction.reply({ embeds: [ServerOwner] });
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
         if (err) throw err;
         if (data) {
             if (data.PaidGuild === 'Yes') {

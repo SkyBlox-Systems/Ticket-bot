@@ -43,7 +43,7 @@ module.exports.run = async (client, interaction) => {
         .setTitle('Create ticket 🎫')
         .setDescription('Please react if you want to create a ticket')
 
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
         if (err) throw err;
         if (data) {
             if (data.UseTicketReactions === 'Yes') {

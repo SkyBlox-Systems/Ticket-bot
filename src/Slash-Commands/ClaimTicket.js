@@ -28,7 +28,7 @@ module.exports.run = (client, interaction) => {
     const PremTime = interaction.options.getString('time')
 
 
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
         if (err01) throw err01;
         if (data01) {
             if (!interaction.member.roles.cache.some(r => r.name === "ticket support")) {
@@ -40,7 +40,7 @@ module.exports.run = (client, interaction) => {
             }
 
             if (data01.SecondServer === 'Enabled') {
-                if (interaction.guildId === data01.SecondServer)
+                if (interaction.guild.id === data01.SecondServer)
                     return interaction.reply('You can not use this command in this guild as you have the second guild enable via settings')
 
                 ClaimTicket.findOne({ TicketIDs: claimit }, async (err, data) => {

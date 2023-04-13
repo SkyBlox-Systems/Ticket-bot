@@ -32,7 +32,7 @@ module.exports.data = new SlashCommandBuilder()
         if (!interaction.member.permissions.has('ADMINISTRATOR')) return interaction.reply({ embeds: [AdminPerms]})
         if (!cmd) return interaction.reply({ embeds: [specifyCommand]})
         if (!!client.commands.get(cmd) === false) return interaction.reply({ embeds: [NotExist]});
-        CommandsSchema.findOne({ Guild: interaction.guildId }, async (err, data) => {
+        CommandsSchema.findOne({ Guild: interaction.guild.id }, async (err, data) => {
             if (err) throw err;
             if (data) {
                 const AlreadyDisabled = new EmbedBuilder()
@@ -44,7 +44,7 @@ module.exports.data = new SlashCommandBuilder()
                 data.Cmds.push(cmd)
             } else {
                 data = new CommandsSchema({
-                    Guild: interaction.guildId,
+                    Guild: interaction.guild.id,
                     Cmds: cmd
                 })
             }

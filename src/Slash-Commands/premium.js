@@ -24,7 +24,7 @@ module.exports.run = async (client, interaction) => {
         interaction.reply({ embeds: [notOwner] })
     }
 
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
         if (err) throw err;
         if (data) {
             if (data.PaidGuild === 'Yes') {
@@ -51,7 +51,7 @@ module.exports.run = async (client, interaction) => {
 
                                 Collector1.on('collect', () => {
                                     const needed = data1.Pro[0].i
-                                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: MSG }, async (err2, data2) => {
+                                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: MSG }, async (err2, data2) => {
                                         if (err2) throw err;
                                         if (data2) {
                                             data2.save()

@@ -21,7 +21,7 @@ module.exports.data = new SlashCommandBuilder()
 
         const usertoadd = interaction.options.getString('id')
 
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
             if (err01) throw err01;
             if (data01) {
               const perms = new EmbedBuilder()

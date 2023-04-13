@@ -63,7 +63,7 @@ module.exports = class ReadyEvent extends BaseEvent {
 
 
         if (normalstring === 'close') {
-          MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+          MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
             if (err) throw err;
             if (data) {
               if (data.SecondServer === 'Enabled') {
@@ -80,7 +80,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                       return interaction.reply({ embeds: [cannotclose] })
                     } else {
                       if (data2001.Locked === 'No') {
-                        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+                        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
                           if (err01) throw err01;
                           if (data01) {
 
@@ -147,7 +147,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                       .setTimestamp()
                                       .setTitle(`Ticket`)
                                       .setDescription(`Your ticket will be closed in 5 seconds`)
-                                      .setFooter(`Making a transcript....`)
+                                      .setFooter({ text: `Making a transcript....`})
 
                                     const ticketembed2 = new EmbedBuilder()
                                       .setColor('#f6f7f8')
@@ -241,7 +241,7 @@ module.exports = class ReadyEvent extends BaseEvent {
 
                                                 }
 
-                                                MainDatabase.findOne({ ServerID: interaction.guildId }, async (err30, data30) => {
+                                                MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err30, data30) => {
                                                   if (err30) throw err30;
                                                   if (data30) {
                                                     const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
@@ -337,7 +337,7 @@ module.exports = class ReadyEvent extends BaseEvent {
 
                                                   }
 
-                                                  MainDatabase.findOne({ ServerID: interaction.guildId }, async (err30, data30) => {
+                                                  MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err30, data30) => {
                                                     if (err30) throw err30;
                                                     if (data30) {
                                                       const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
@@ -453,7 +453,7 @@ module.exports = class ReadyEvent extends BaseEvent {
 
                                             }
 
-                                            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err300, data300) => {
+                                            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err300, data300) => {
                                               if (err300) throw err300;
                                               if (data300) {
                                                 const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
@@ -512,7 +512,7 @@ module.exports = class ReadyEvent extends BaseEvent {
           ClaimTicket.findOne({ TicketIDs: idstring }, async (err, data) => {
             if (err) throw err;
             if (data) {
-              MainDatabase.findOne({ ServerID: interaction.guildId }, async (err1, data1) => {
+              MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err1, data1) => {
                 if (err1) throw err;
                 if (data1) {
                   if (data1.PaidGuild === 'Yes') {
@@ -622,7 +622,7 @@ module.exports = class ReadyEvent extends BaseEvent {
 
                                   }
 
-                                  MainDatabase.findOne({ ServerID: interaction.guildId }, async (err30, data30) => {
+                                  MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err30, data30) => {
                                     if (err30) throw err30;
                                     if (data30) {
                                       const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data1.TicketTrackerChannelID}`)
@@ -694,7 +694,7 @@ module.exports = class ReadyEvent extends BaseEvent {
             .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
           return interaction.reply({ embeds: [NoPerms] })
         }
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
           if (err) throw err;
           if (data) {
             if (data.ModMail === 'Enabled') {
@@ -757,7 +757,7 @@ module.exports = class ReadyEvent extends BaseEvent {
             .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
           return interaction.reply({ embeds: [NoPerms] })
         }
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
           if (err) throw err;
           if (data) {
             if (data.ModMail === 'Enabled') {
@@ -863,7 +863,7 @@ module.exports = class ReadyEvent extends BaseEvent {
           interaction.reply({ embeds: [DisabledInAllServers] })
         }
         if (dd != Xmas95.getDate()) {
-          MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+          MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
             if (err01) throw err01;
             if (data01) {
               if (data01.TicketTrackerChannelID === 'N/A') {
@@ -889,7 +889,7 @@ module.exports = class ReadyEvent extends BaseEvent {
 
                   const user = interaction.user.id;
                   const names = "ticket-" + generator2;
-                  ClaimTicket.findOne({ id: user, ServerID: interaction.guildId }, async (err45, data45) => {
+                  ClaimTicket.findOne({ id: user, ServerID: interaction.guild.id }, async (err45, data45) => {
                     if (err45) throw err;
                     if (data45) {
                       const embed = new EmbedBuilder()
@@ -951,14 +951,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                           const TicketManagerID = newguild.roles.cache.find(roles => roles.id === data01.SecondServerManagerRoleID)
                           newguild.channels.cache.get(`${data01.SecondServerClaimChannel}`).send(`${TicketSupportID}, ${TicketManagerID} \n<@${interaction.user.id}> has open a support ticket! Please run /claim ticketid:${generator} to claim the ticket!`)
 
-                          ClaimTicket.findOne({ ServerID: interaction.guildId }, async (err3, data3) => {
+                          ClaimTicket.findOne({ ServerID: interaction.guild.id }, async (err3, data3) => {
                             if (err3) throw err;
                             if (data3) {
-                              if (data3.ServerID === interaction.guildId) {
+                              if (data3.ServerID === interaction.guild.id) {
                                 data3 = new ClaimTicket({
                                   id: interaction.user.id,
                                   TicketIDs: generator,
-                                  ServerID: interaction.guildId,
+                                  ServerID: interaction.guild.id,
                                   ChannelID: chan.id,
                                   Reason: MSG,
                                   Locked: "No",
@@ -975,7 +975,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                               }
                             }
                           })
-                          MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                          MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
                             if (err20) throw err20;
                             if (data20) {
                               data20.save()
@@ -1077,14 +1077,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                               await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                                 m.pin()
                               })
-                              ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
+                              ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guild.id }, async (err, data) => {
                                 if (err) throw err;
                                 if (data) {
-                                  if (data.ServerID !== interaction.guildId) {
+                                  if (data.ServerID !== interaction.guild.id) {
                                     data = new ClaimTicket({
                                       id: interaction.user.id,
                                       TicketIDs: generator,
-                                      ServerID: interaction.guildId,
+                                      ServerID: interaction.guild.id,
                                       ChannelID: chan.id,
                                       Reason: MSG,
                                       Locked: "No",
@@ -1138,7 +1138,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                   data = new ClaimTicket({
                                     id: interaction.user.id,
                                     TicketIDs: generator,
-                                    ServerID: interaction.guildId,
+                                    ServerID: interaction.guild.id,
                                     ChannelID: chan.id,
                                     Reason: MSG,
                                     Locked: "No",
@@ -1153,7 +1153,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                   const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                   const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                   TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run /claim ticketid:${generator}`)
-                                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
                                     if (err20) throw err20;
                                     if (data20) {
                                       data20.save()
@@ -1262,14 +1262,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                                         await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                                           m.pin()
                                         })
-                                        ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
+                                        ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guild.id }, async (err, data) => {
                                           if (err) throw err;
                                           if (data) {
-                                            if (data.ServerID !== interaction.guildId) {
+                                            if (data.ServerID !== interaction.guild.id) {
                                               data = new ClaimTicket({
                                                 id: interaction.user.id,
                                                 TicketIDs: generator,
-                                                ServerID: interaction.guildId,
+                                                ServerID: interaction.guild.id,
                                                 ChannelID: chan.id,
                                                 Reason: MSG,
                                                 Locked: "No",
@@ -1322,7 +1322,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                             data = new ClaimTicket({
                                               id: interaction.user.id,
                                               TicketIDs: generator,
-                                              ServerID: interaction.guildId,
+                                              ServerID: interaction.guild.id,
                                               ChannelID: chan.id,
                                               Reason: MSG,
                                               Locked: "No",
@@ -1336,7 +1336,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                             const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                             const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                             TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
-                                            MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                                            MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
                                               if (err20) throw err20;
                                               if (data20) {
                                                 data20.save()
@@ -1430,14 +1430,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                                         await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                                           m.pin()
                                         })
-                                        ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
+                                        ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guild.id }, async (err, data) => {
                                           if (err) throw err;
                                           if (data) {
-                                            if (data.ServerID !== interaction.guildId) {
+                                            if (data.ServerID !== interaction.guild.id) {
                                               data = new ClaimTicket({
                                                 id: interaction.user.id,
                                                 TicketIDs: generator,
-                                                ServerID: interaction.guildId,
+                                                ServerID: interaction.guild.id,
                                                 ChannelID: chan.id,
                                                 Reason: MSG,
                                                 Locked: "No",
@@ -1491,7 +1491,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                             data = new ClaimTicket({
                                               id: interaction.user.id,
                                               TicketIDs: generator,
-                                              ServerID: interaction.guildId,
+                                              ServerID: interaction.guild.id,
                                               ChannelID: chan.id,
                                               Reason: MSG,
                                               Locked: "No",
@@ -1505,7 +1505,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                             const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                             const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                             TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run /claim ticketid:${generator}`)
-                                            MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                                            MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
                                               if (err20) throw err20;
                                               if (data20) {
                                                 data20.save()
@@ -1591,14 +1591,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                                     await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                                       m.pin()
                                     })
-                                    ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
+                                    ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guild.id }, async (err, data) => {
                                       if (err) throw err;
                                       if (data) {
-                                        if (data.ServerID !== interaction.guildId) {
+                                        if (data.ServerID !== interaction.guild.id) {
                                           data = new ClaimTicket({
                                             id: interaction.user.id,
                                             TicketIDs: generator,
-                                            ServerID: interaction.guildId,
+                                            ServerID: interaction.guild.id,
                                             ChannelID: chan.id,
                                             Reason: MSG,
                                             Locked: "No",
@@ -1652,7 +1652,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                         data = new ClaimTicket({
                                           id: interaction.user.id,
                                           TicketIDs: generator,
-                                          ServerID: interaction.guildId,
+                                          ServerID: interaction.guild.id,
                                           ChannelID: chan.id,
                                           Reason: MSG,
                                           Locked: "No",
@@ -1666,7 +1666,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                         const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                         const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                         TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
-                                        MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                                        MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
                                           if (err20) throw err20;
                                           if (data20) {
                                             data20.save()

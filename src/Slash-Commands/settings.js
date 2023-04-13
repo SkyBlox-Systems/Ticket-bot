@@ -40,10 +40,17 @@ module.exports.run = async (client, interaction) => {
     .setTitle('Error')
     .setDescription('This command is restricted to guild owner only. Please do not try and use this command because you will not get anywhere.')
 
+  const betatesting = new EmbedBuilder()
+  .setTitle('Error')
+  .setDescription('This command is disabled during the discord.js 14 public testing.')
+
   const teststring = interaction.options.getString('category');
 
   if (teststring === 'view') {
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    if (interaction.user.id != '804663016124973076')
+    return interaction.reply({ embeds: [betatesting]});
+
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
       if (err) throw err;
       if (data) {
         if (data.PaidGuild === 'Yes') {
@@ -137,10 +144,12 @@ module.exports.run = async (client, interaction) => {
   }
 
   if (teststring === 'edit') {
-    if (interaction.user.id != interaction.guild.ownerId)
-      return interaction.reply({ embeds: [ServerOwner] });
+    if (interaction.user.id != '804663016124973076')
+    return interaction.reply({ embeds: [betatesting]});
+    // if (interaction.user.id != interaction.guild.ownerId)
+    //   return interaction.reply({ embeds: [ServerOwner] });
 
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
       if (err01) throw err;
       if (data01) {
 
@@ -275,7 +284,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketTrackerChannelID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketTrackerChannelID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -318,7 +327,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketChannelID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketChannelID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -361,7 +370,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { FeedbackChannelID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { FeedbackChannelID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -404,7 +413,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SupportRoleID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SupportRoleID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -447,7 +456,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { AdminRoleID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { AdminRoleID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -490,7 +499,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ManagerRoleID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { ManagerRoleID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -509,11 +518,11 @@ module.exports.run = async (client, interaction) => {
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
 
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.Transcript === 'Yes') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { Transcript: "No" }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { Transcript: "No" }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -526,7 +535,7 @@ module.exports.run = async (client, interaction) => {
                   })
                 } else {
                   if (data.Transcript === 'No') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { Transcript: "Yes" }, async (err2, data2) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { Transcript: "Yes" }, async (err2, data2) => {
                       if (err2) throw err;
                       if (data2) {
                         data2.save()
@@ -546,11 +555,11 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.EnableTicket === 'Enabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { EnableTicket: 'Disabled' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { EnableTicket: 'Disabled' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -561,7 +570,7 @@ module.exports.run = async (client, interaction) => {
                   })
                 } else {
                   if (data.EnableTicket === 'Disabled') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { EnableTicket: 'Enabled' }, async (err2, data2) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { EnableTicket: 'Enabled' }, async (err2, data2) => {
                       data2.save()
                       const enableddtickets = new EmbedBuilder()
                         .setTitle('Tickets has been enabled on this server.')
@@ -578,11 +587,11 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.ModMail === 'Enabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ModMail: 'Disabled' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { ModMail: 'Disabled' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -591,7 +600,7 @@ module.exports.run = async (client, interaction) => {
                   })
                 } else {
                   if (data.ModMail === 'Disabled') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ModMail: 'Enabled' }, async (err2, data2) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { ModMail: 'Enabled' }, async (err2, data2) => {
 
                       if (err2) throw err;
                       if (data2) {
@@ -611,12 +620,12 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.PaidGuild === 'Yes') {
                   if (data.VoiceTicket === 'Disabled') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { VoiceTicket: 'Enabled' }, async (err2, data2) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { VoiceTicket: 'Enabled' }, async (err2, data2) => {
                       if (err2) throw err;
                       if (data2) {
                         data2.save()
@@ -624,7 +633,7 @@ module.exports.run = async (client, interaction) => {
                       }
                     })
                   } else if (data.VoiceTicket === 'Enabled') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { VoiceTicket: 'Disabled' }, async (err3, data3) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { VoiceTicket: 'Disabled' }, async (err3, data3) => {
                       if (err3) throw err;
                       if (data3) {
                         data3.save()
@@ -644,7 +653,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (data.APIKey === "N/A") {
                 function makeURL(length) {
                   var result = '';
@@ -656,7 +665,7 @@ module.exports.run = async (client, interaction) => {
                   return result;
                 }
                 const generator = makeURL(15)
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator }, async (err06, data06) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { APIKey: generator }, async (err06, data06) => {
                   if (err06) throw err06;
                   if (data06) {
                     data06.save()
@@ -695,7 +704,7 @@ module.exports.run = async (client, interaction) => {
                   }
                   const generator2 = makeURL2(15)
 
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator2 }, async (err07, data07) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { APIKey: generator2 }, async (err07, data07) => {
                     if (err07) throw err07;
                     if (data07) {
                       data07.save()
@@ -717,7 +726,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.PaidGuild === 'Yes') {
@@ -746,7 +755,7 @@ module.exports.run = async (client, interaction) => {
 
                     Collector1.on('collect', () => {
                       interaction.channel.send({ content: 'Updated', ephemeral: true })
-                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketIDLength: m2.first().content }, async (err1, data1) => {
+                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketIDLength: m2.first().content }, async (err1, data1) => {
                         if (err1) throw err;
                         if (data1) {
                           data1.save()
@@ -774,11 +783,11 @@ module.exports.run = async (client, interaction) => {
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
               collected.reply('Disabled')
-            // MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            // MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
             //   if (err) throw err;
             //   if (data) {
             //     if (data.SecondServer === 'Disabled') {
-            //       MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServer: 'Enabled' }, async (err1, data1) => {
+            //       MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServer: 'Enabled' }, async (err1, data1) => {
             //         if (err1) throw err;
             //         if (data1) {
             //           data1.save()
@@ -787,7 +796,7 @@ module.exports.run = async (client, interaction) => {
             //       })
             //     } else {
             //       if (data.SecondServer === 'Enabled') {
-            //         MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServer: 'Disabled' }, async (err1, data1) => {
+            //         MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServer: 'Disabled' }, async (err1, data1) => {
             //           if (err1) throw err;
             //           if (data1) {
             //             data1.save()
@@ -804,11 +813,11 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.UseTicketReactions === 'Yes') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { UseTicketReactions: 'No' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { UseTicketReactions: 'No' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -817,7 +826,7 @@ module.exports.run = async (client, interaction) => {
                   })
                 } else {
                   if (data.UseTicketReactions === 'No') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { UseTicketReactions: 'Yes' }, async (err1, data1) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { UseTicketReactions: 'Yes' }, async (err1, data1) => {
                       if (err1) throw err;
                       if (data1) {
                         data1.save()
@@ -836,11 +845,11 @@ module.exports.run = async (client, interaction) => {
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
             
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.ROBLOX === 'Disabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ROBLOX: 'Enabled' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { ROBLOX: 'Enabled' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -849,7 +858,7 @@ module.exports.run = async (client, interaction) => {
                   })
                 } else {
                   if (data.ROBLOX === 'Enabled') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ROBLOX: 'Disabled'}, async (err1, data1) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { ROBLOX: 'Disabled'}, async (err1, data1) => {
                       if (err1) throw err;
                       if (data1) {
                         data1.save()
@@ -868,11 +877,11 @@ module.exports.run = async (client, interaction) => {
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
 
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.Important === 'Disabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { Important: 'Enabled' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { Important: 'Enabled' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -881,7 +890,7 @@ module.exports.run = async (client, interaction) => {
                   })
                 }
                 if (data.Important === 'Enabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { Important: 'Disabled' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { Important: 'Disabled' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -898,7 +907,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (data.WebsiteCode === "N/A") {
                 function makeURL(length) {
                   var result = '';
@@ -910,7 +919,7 @@ module.exports.run = async (client, interaction) => {
                   return result;
                 }
                 const generator = makeURL(15)
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { WebsiteCode: generator }, async (err06, data06) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { WebsiteCode: generator }, async (err06, data06) => {
                   if (err06) throw err06;
                   if (data06) {
                     data06.save()
@@ -949,7 +958,7 @@ module.exports.run = async (client, interaction) => {
                   }
                   const generator2 = makeURL2(15)
 
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { WebsiteCode: generator2 }, async (err07, data07) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { WebsiteCode: generator2 }, async (err07, data07) => {
                     if (err07) throw err07;
                     if (data07) {
                       data07.save()
@@ -974,9 +983,11 @@ module.exports.run = async (client, interaction) => {
   }
 
   if (teststring === 'auto') {
-    if (interaction.user.id != interaction.guild.ownerId)
-      return interaction.reply({ embeds: [ServerOwner] });
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    // if (interaction.user.id != interaction.guild.ownerId)
+    //   return interaction.reply({ embeds: [ServerOwner] });
+    if (interaction.user.id != '804663016124973076')
+    return interaction.reply({ embeds: [betatesting]});
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
       if (err) throw err;
       if (data) {
         const TicketChannelMain2 = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket" && ch.type == "GUILD_TEXT")
@@ -1007,7 +1018,7 @@ module.exports.run = async (client, interaction) => {
         const Collector34 = AutoSetupEmoji.createReactionCollector({ filter: Filter34, max: 1, time: 2 * 60 * 1000 });
 
         Collector33.on('collect', () => {
-          MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketChannelID: TicketChannelMain2.id, TicketTrackerChannelID: TicketTrackerMain2.id, FeedbackChannelID: FeedbackChannelID2.id, SupportRoleID: SupportRoleMain2.id, ManagerRoleID: ManagerRoleMain2.id }, async (err9, data9) => {
+          MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketChannelID: TicketChannelMain2.id, TicketTrackerChannelID: TicketTrackerMain2.id, FeedbackChannelID: FeedbackChannelID2.id, SupportRoleID: SupportRoleMain2.id, ManagerRoleID: ManagerRoleMain2.id }, async (err9, data9) => {
             if (err9) throw err9;
             if (data9) {
               data9.save()
@@ -1025,9 +1036,11 @@ module.exports.run = async (client, interaction) => {
   }
 
   if (teststring === 'second') {
-    if (interaction.user.id != interaction.guild.ownerId)
-      return interaction.reply({ embeds: [ServerOwner] });
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    if (interaction.user.id != '804663016124973076')
+    return interaction.reply({ embeds: [betatesting]});
+    // if (interaction.user.id != interaction.guild.ownerId)
+    //   return interaction.reply({ embeds: [ServerOwner] });
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
       if (err) throw err;
       if (data) {
         if (data.SecondServer === 'Disabled')
@@ -1156,7 +1169,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -1199,7 +1212,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerSupportRoleID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerSupportRoleID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -1242,7 +1255,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerManagerRoleID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerManagerRoleID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -1285,7 +1298,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerClaimChannel: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerClaimChannel: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -1328,7 +1341,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerLogsChannel: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerLogsChannel: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -1371,7 +1384,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerTranscriptChannel: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerTranscriptChannel: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()

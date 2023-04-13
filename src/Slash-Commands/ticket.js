@@ -79,7 +79,7 @@ module.exports.run = (client, interaction) => {
     interaction.reply({ embeds: [DisabledInAllServers] })
   }
   if (dd != Xmas95.getDate()) {
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
       if (err01) throw err01;
       if (data01) {
         if (data01.TicketTrackerChannelID === 'N/A') {
@@ -105,7 +105,7 @@ module.exports.run = (client, interaction) => {
 
             const user = interaction.user.id;
             const names = "ticket-" + generator2;
-            ClaimTicket.findOne({ id: user, ServerID: interaction.guildId }, async (err45, data45) => {
+            ClaimTicket.findOne({ id: user, ServerID: interaction.guild.id }, async (err45, data45) => {
               if (err45) throw err;
               if (data45) {
                 const embed = new EmbedBuilder()
@@ -167,14 +167,14 @@ module.exports.run = (client, interaction) => {
                     const TicketManagerID = newguild.roles.cache.find(roles => roles.id === data01.SecondServerManagerRoleID)
                     newguild.channels.cache.get(`${data01.SecondServerClaimChannel}`).send(`${TicketSupportID}, ${TicketManagerID} \n<@${interaction.user.id}> has open a support ticket! Please run /claim ticketid:${generator} to claim the ticket!`)
 
-                    ClaimTicket.findOne({ ServerID: interaction.guildId }, async (err3, data3) => {
+                    ClaimTicket.findOne({ ServerID: interaction.guild.id }, async (err3, data3) => {
                       if (err3) throw err;
                       if (data3) {
-                        if (data3.ServerID === interaction.guildId) {
+                        if (data3.ServerID === interaction.guild.id) {
                           data3 = new ClaimTicket({
                             id: interaction.user.id,
                             TicketIDs: generator,
-                            ServerID: interaction.guildId,
+                            ServerID: interaction.guild.id,
                             ChannelID: chan.id,
                             Reason: MSG,
                             Locked: "No",
@@ -191,7 +191,7 @@ module.exports.run = (client, interaction) => {
                         }
                       }
                     })
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
                       if (err20) throw err20;
                       if (data20) {
                         data20.save()
@@ -293,14 +293,14 @@ module.exports.run = (client, interaction) => {
                         await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                           m.pin()
                         })
-                        ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
+                        ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guild.id }, async (err, data) => {
                           if (err) throw err;
                           if (data) {
-                            if (data.ServerID !== interaction.guildId) {
+                            if (data.ServerID !== interaction.guild.id) {
                               data = new ClaimTicket({
                                 id: interaction.user.id,
                                 TicketIDs: generator,
-                                ServerID: interaction.guildId,
+                                ServerID: interaction.guild.id,
                                 ChannelID: chan.id,
                                 Reason: MSG,
                                 Locked: "No",
@@ -354,7 +354,7 @@ module.exports.run = (client, interaction) => {
                             data = new ClaimTicket({
                               id: interaction.user.id,
                               TicketIDs: generator,
-                              ServerID: interaction.guildId,
+                              ServerID: interaction.guild.id,
                               ChannelID: chan.id,
                               Reason: MSG,
                               Locked: "No",
@@ -369,7 +369,7 @@ module.exports.run = (client, interaction) => {
                             const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                             const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                             TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run /claim ticketid:${generator}`)
-                            MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                            MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
                               if (err20) throw err20;
                               if (data20) {
                                 data20.save()
@@ -478,14 +478,14 @@ module.exports.run = (client, interaction) => {
                                   await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                                     m.pin()
                                   })
-                                  ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
+                                  ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guild.id }, async (err, data) => {
                                     if (err) throw err;
                                     if (data) {
-                                      if (data.ServerID !== interaction.guildId) {
+                                      if (data.ServerID !== interaction.guild.id) {
                                         data = new ClaimTicket({
                                           id: interaction.user.id,
                                           TicketIDs: generator,
-                                          ServerID: interaction.guildId,
+                                          ServerID: interaction.guild.id,
                                           ChannelID: chan.id,
                                           Reason: MSG,
                                           Locked: "No",
@@ -538,7 +538,7 @@ module.exports.run = (client, interaction) => {
                                       data = new ClaimTicket({
                                         id: interaction.user.id,
                                         TicketIDs: generator,
-                                        ServerID: interaction.guildId,
+                                        ServerID: interaction.guild.id,
                                         ChannelID: chan.id,
                                         Reason: MSG,
                                         Locked: "No",
@@ -552,7 +552,7 @@ module.exports.run = (client, interaction) => {
                                       const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                       const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                       TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
-                                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
                                         if (err20) throw err20;
                                         if (data20) {
                                           data20.save()
@@ -646,14 +646,14 @@ module.exports.run = (client, interaction) => {
                                   await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                                     m.pin()
                                   })
-                                  ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
+                                  ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guild.id }, async (err, data) => {
                                     if (err) throw err;
                                     if (data) {
-                                      if (data.ServerID !== interaction.guildId) {
+                                      if (data.ServerID !== interaction.guild.id) {
                                         data = new ClaimTicket({
                                           id: interaction.user.id,
                                           TicketIDs: generator,
-                                          ServerID: interaction.guildId,
+                                          ServerID: interaction.guild.id,
                                           ChannelID: chan.id,
                                           Reason: MSG,
                                           Locked: "No",
@@ -707,7 +707,7 @@ module.exports.run = (client, interaction) => {
                                       data = new ClaimTicket({
                                         id: interaction.user.id,
                                         TicketIDs: generator,
-                                        ServerID: interaction.guildId,
+                                        ServerID: interaction.guild.id,
                                         ChannelID: chan.id,
                                         Reason: MSG,
                                         Locked: "No",
@@ -721,7 +721,7 @@ module.exports.run = (client, interaction) => {
                                       const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                       const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                       TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run /claim ticketid:${generator}`)
-                                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
                                         if (err20) throw err20;
                                         if (data20) {
                                           data20.save()
@@ -807,14 +807,14 @@ module.exports.run = (client, interaction) => {
                               await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
                                 m.pin()
                               })
-                              ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guildId }, async (err, data) => {
+                              ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guild.id }, async (err, data) => {
                                 if (err) throw err;
                                 if (data) {
-                                  if (data.ServerID !== interaction.guildId) {
+                                  if (data.ServerID !== interaction.guild.id) {
                                     data = new ClaimTicket({
                                       id: interaction.user.id,
                                       TicketIDs: generator,
-                                      ServerID: interaction.guildId,
+                                      ServerID: interaction.guild.id,
                                       ChannelID: chan.id,
                                       Reason: MSG,
                                       Locked: "No",
@@ -868,7 +868,7 @@ module.exports.run = (client, interaction) => {
                                   data = new ClaimTicket({
                                     id: interaction.user.id,
                                     TicketIDs: generator,
-                                    ServerID: interaction.guildId,
+                                    ServerID: interaction.guild.id,
                                     ChannelID: chan.id,
                                     Reason: MSG,
                                     Locked: "No",
@@ -882,7 +882,7 @@ module.exports.run = (client, interaction) => {
                                   const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                   const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                   TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
-                                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: +1 }, async (err20, data20) => {
+                                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
                                     if (err20) throw err20;
                                     if (data20) {
                                       data20.save()

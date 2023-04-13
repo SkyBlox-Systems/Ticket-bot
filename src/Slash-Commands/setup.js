@@ -16,7 +16,7 @@ module.exports.run = (client, interaction) => {
   const Welcome = new EmbedBuilder()
     .setTitle('Main Setup')
     .setDescription('Welcome to the main setup for ticket bot! Before we get everything ready for you, please read everything underneath:\n\n The bot will make 2 new roles: `ticket manager` and `ticket support`. These two roles have different job and will be told soon\n- A category will be made called `support` in that channel, there will be 3 new channels: `Ticket`, `Staff-room` and `Transcript`.\n- Bot might lag at some point when making the transcript \n- Transcript are random generated\n- Will generate a database to store all of your information into it. \nPlease react with ✅ if you are ready!')
-    .setFooter('Got 2 minutes to react')
+    .setFooter({ text: 'Got 2 minutes to react'})
     .setColor('#f9f9fa')
 
   const ready = new EmbedBuilder()
@@ -49,10 +49,16 @@ module.exports.run = (client, interaction) => {
     .setDescription('We are creating the database. Please stand by while we finish it.')
     .setColor('#f9f9fa')
 
-  const Maincategory = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Support' && ch.type === 'GUILD_CATEGORY')
+    const betatesting = new EmbedBuilder()
+    .setTitle('Error')
+    .setDescription('This command is disabled during the discord.js 14 public testing.')
 
-  if (interaction.user.id != interaction.guild.ownerId)
-    return interaction.reply({ embeds: [ServerOwner] });
+  //const Maincategory = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Support' && ch.type === 'GUILD_CATEGORY')
+
+  if (interaction.user.id != '804663016124973076')
+  return interaction.reply({ embeds: [betatesting]});
+  // if (interaction.user.id != interaction.guild.ownerId)
+  //   return interaction.reply({ embeds: [ServerOwner] });
 
   const WelcomeEmbed = new EmbedBuilder()
     .setTitle('Welcome')
@@ -200,7 +206,7 @@ module.exports.run = (client, interaction) => {
         })
         setTimeout(() => {
 
-          const guildId = interaction.guildId
+          const guildId = interaction.guild.id
 
           interaction.channel.send({ embeds: [CreatingDatabase] })
         }, 4000);
@@ -236,7 +242,7 @@ module.exports.run = (client, interaction) => {
           StaffroomChannel.send({ embeds: [StaffroomChannelMessage] }).then((msg) => msg.pin())
           TicketLogsChannel.send({ embeds: [TicketLogsChannelMessage] }).then((msg) => msg.pin())
 
-          TicketDataMain.findOne({ ServerID: interaction.guildId }, async (err2, data2) => {
+          TicketDataMain.findOne({ ServerID: interaction.guild.id }, async (err2, data2) => {
             if (err2) throw err2;
 
             if (data2) {
@@ -249,7 +255,7 @@ module.exports.run = (client, interaction) => {
               const TicketChannelIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
               const TicketTrackerIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'GUILD_VOICE');
               data2 = new TicketDataMain({
-                ServerID: interaction.guildId,
+                ServerID: interaction.guild.id,
                 OwnerID: interaction.guild.ownerId,
                 TicketChannelID: 'N/A',
                 TicketNumber: '0',
@@ -422,7 +428,7 @@ module.exports.run = (client, interaction) => {
           })
           setTimeout(() => {
 
-            const guildId = interaction.guildId
+            const guildId = interaction.guild.id
 
             interaction.channel.send({ embeds: [CreatingDatabase] })
           }, 4000);
@@ -458,7 +464,7 @@ module.exports.run = (client, interaction) => {
             StaffroomChannel.send({ embeds: [StaffroomChannelMessage] }).then((msg) => msg.pin())
             TicketLogsChannel.send({ embeds: [TicketLogsChannelMessage] }).then((msg) => msg.pin())
 
-            TicketDataMain.findOne({ ServerID: interaction.guildId }, async (err2, data2) => {
+            TicketDataMain.findOne({ ServerID: interaction.guild.id }, async (err2, data2) => {
               if (err2) throw err2;
 
               if (data2) {
@@ -471,7 +477,7 @@ module.exports.run = (client, interaction) => {
                 const TicketChannelIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
                 const TicketTrackerIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'GUILD_VOICE');
                 data2 = new TicketDataMain({
-                  ServerID: interaction.guildId,
+                  ServerID: interaction.guild.id,
                   OwnerID: interaction.guild.ownerId,
                   SecondServer: 'Enabled',
                   SecondServerID: 'N/A',

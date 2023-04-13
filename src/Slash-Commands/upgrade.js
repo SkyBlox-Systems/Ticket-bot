@@ -27,15 +27,15 @@ module.exports.run = async (client, interaction) => {
 
 
 
-    database.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    database.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
         if (err) throw err;
         if (data) {
                 if (data.BotVersion !== BotVersions) {
-                    database.findOne({ ServerID: interaction.guildId }, async (err3, data3) => {
+                    database.findOne({ ServerID: interaction.guild.id }, async (err3, data3) => {
                         if (err3) throw err;
                         if (data3) {
                             data3 = new database({
-                                ServerID: data3.ServerID || interaction.guildId,
+                                ServerID: data3.ServerID || interaction.guild.id,
                                 OwnerID: data3.OwnerID || interaction.guild.ownerId,
                                 TicketChannelID: data3.TicketTrackerChannelID || 'N/A',
                                 TicketNumber: data3.TicketNumber || '0',
@@ -110,7 +110,7 @@ module.exports.run = async (client, interaction) => {
                             } else {
                                 interaction.reply('We are having issues updating your guild. Please contact support via our support server. Do that by heading to our website')
                             }
-                            database.findOneAndRemove({ ServerID: interaction.guildId }, async (err2, data2) => {
+                            database.findOneAndRemove({ ServerID: interaction.guild.id }, async (err2, data2) => {
                                 if (err2) throw err;
                                 if (data2) {
                                 }
@@ -132,11 +132,11 @@ module.exports.run = async (client, interaction) => {
             if (data.SecondServer === 'Enabled') {
                 if (data.BotVersion !== BotVersions) {
 
-                    database.findOne({ ServerID: interaction.guildId }, async (err3, data3) => {
+                    database.findOne({ ServerID: interaction.guild.id }, async (err3, data3) => {
                         if (err3) throw err;
                         if (data3) {
                             data3 = new database({
-                                ServerID: data3.ServerID || interaction.guildId,
+                                ServerID: data3.ServerID || interaction.guild.id,
                                 OwnerID: data3.OwnerID || interaction.guild.ownerId,
                                 SecondServer: data3.SecondServer || 'Disabled',
                                 SecondServerID: data3.SecondServerID || 'N/A',
@@ -183,7 +183,7 @@ module.exports.run = async (client, interaction) => {
                                 interaction.channel.send('We are having issues updating your guild. Please contact support via our support server. Do that by heading to our website')
 
                             }
-                            database.findOneAndRemove({ ServerID: interaction.guildId }, async (err2, data2) => {
+                            database.findOneAndRemove({ ServerID: interaction.guild.id }, async (err2, data2) => {
                                 if (err2) throw err;
                                 if (data2) {
     

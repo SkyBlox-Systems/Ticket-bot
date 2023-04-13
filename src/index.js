@@ -2,7 +2,7 @@
 const { Client, GatewayIntentBits, Partials, Interaction } = require('discord.js');
 const { registerCommands, registerEvents, registerSlashCommands } = require('./utils/registry');
 const config = require('../slappey.json');
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.AutoModerationConfiguration, GatewayIntentBits.AutoModerationExecution, GatewayIntentBits.DirectMessageReactions, GatewayIntentBits.DirectMessageTyping, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildBans, GatewayIntentBits.GuildEmojisAndStickers, GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildInvites, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMessageTyping, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildScheduledEvents, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildWebhooks], partials: [Partials.Channel]})
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.AutoModerationConfiguration, GatewayIntentBits.AutoModerationExecution, GatewayIntentBits.DirectMessageReactions, GatewayIntentBits.DirectMessageTyping, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildBans, GatewayIntentBits.GuildEmojisAndStickers, GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildInvites, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMessageTyping, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildScheduledEvents, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildWebhooks], partials: [Partials.Channel] })
 // const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_WEBHOOKS, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGE_TYPING, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, Intents.FLAGS.DIRECT_MESSAGE_TYPING, Intents.FLAGS.GUILD_SCHEDULED_EVENTS], partials: ['CHANNEL'] });
 const DataBaseMongo = require('./mongo');
 require('./slash-register')();
@@ -13,13 +13,13 @@ const { Permissions } = require('discord.js');
 const { MessageCollector, Collector } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const mongoose = require('mongoose');
-const Stats  = require('discord-live-stats');
+const Stats = require('discord-live-stats');
 const DLU = require("@dbd-soft-ui/logs")
 
-const Poster = new Stats.Client(client, {
-  stats_uri: 'https://shard1.ticketbots.co.uk/',
-  authorizationkey: "ticketbot",
-})
+// const Poster = new Stats.Client(client, {
+//   stats_uri: 'https://shard1.ticketbots.co.uk/',
+//   authorizationkey: "ticketbot",
+// })
 
 
 
@@ -44,7 +44,7 @@ const GiveawayDatabase = require('./schemas/giveaways-user-data');
   await registerEvents(client, '../events');
   await client.login(config.token);
   DataBaseMongo.init();
- // require('./dashboard/server')
+  // require('./dashboard/server')
 })();
 
 
@@ -56,22 +56,14 @@ client.on('ready', () => {
 
 client.on("ready", () => {
   DLU.register(client, {
-      dashboard_url: "https://dashboard.ticketbots.co.uk",
-      key: "richard1234YT!"
+    dashboard_url: "https://dashboard.ticketbots.co.uk",
+    key: "richard1234YT!"
   })
 })
-
-
 
 client.on('guildCreate', guild => {
   const defaultChannel = guild.channels.cache.find(channel => channel.type === 'GUILD_TEXT' && channel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES))
 
-  process.on("unhandledRejection", (reason, p) => {
-    DLU.send(client, {
-        title: "Unhandled Rejection",
-        description: reason
-    })
-})
   const welcome = new EmbedBuilder()
     .setTitle('Setup')
     .setDescription('Hey! Thank you for adding us to our server! We are exicted to be here. Whenever u are ready, please run `/setup` to start!')
@@ -105,8 +97,8 @@ client.on('interactionCreate', interaction => {
   let commandMethod = commands.get(name);
   if (commandMethod) {
     blacklist.findOne({ UserID: interaction.user.id }, async (err, data) => {
-      const check = await db.findOne({ Guild: interaction.guildId })
-      const versionCheck = await MainDatabase.findOne({ ServerID: interaction.guildId })
+      const check = await db.findOne({ Guild: interaction.guild.id })
+      const versionCheck = await MainDatabase.findOne({ ServerID: interaction.guild.id })
       if (err) throw err;
       if (!data) {
         if (name === 'setup') {
@@ -191,88 +183,88 @@ client.on('interactionCreate', interaction => {
   const TicketChannelIdChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'feedback' && ch.type == 'GUILD_TEXT');
 
   if (!interaction.isModalSubmit()) return;
-    if (interaction.customId === "user") {
-      const usertitle = interaction.fields.getTextInputValue("userFeedbackID")
-      const userfeedback = interaction.fields.getTextInputValue("userMessage")
+  if (interaction.customId === "user") {
+    const usertitle = interaction.fields.getTextInputValue("userFeedbackID")
+    const userfeedback = interaction.fields.getTextInputValue("userMessage")
 
-      const userEmbed = new EmbedBuilder()
-        .setTitle('New feedback!')
-        .setDescription(`${interaction.user.id} has sent a user feedback message. Below is the message`)
-        .addField('User', `${usertitle}`)
-        .addField('Message', `${userfeedback}`)
+    const userEmbed = new EmbedBuilder()
+      .setTitle('New feedback!')
+      .setDescription(`${interaction.user.id} has sent a user feedback message. Below is the message`)
+      .addField('User', `${usertitle}`)
+      .addField('Message', `${userfeedback}`)
 
-      TicketChannelIdChannel.send({ embeds: [userEmbed] })
-      interaction.reply('Feedback sent!')
-    }
-    if (interaction.customId === "giveaway") {
-      const GiveawayEmail = interaction.fields.getTextInputValue("Email")
-      const GiveawayWhy = interaction.fields.getTextInputValue("Why")
+    TicketChannelIdChannel.send({ embeds: [userEmbed] })
+    interaction.reply('Feedback sent!')
+  }
+  if (interaction.customId === "giveaway") {
+    const GiveawayEmail = interaction.fields.getTextInputValue("Email")
+    const GiveawayWhy = interaction.fields.getTextInputValue("Why")
 
-      const GiveawayDM = new EmbedBuilder()
-        .setTitle('Giveaway')
-        .setDescription('You have entered into the christmas giveaway! You can not enter again unless told to by admins of the bot.')
+    const GiveawayDM = new EmbedBuilder()
+      .setTitle('Giveaway')
+      .setDescription('You have entered into the christmas giveaway! You can not enter again unless told to by admins of the bot.')
 
-       const usergiveaway = client.users.cache.get(interaction.user.id)
-       usergiveaway.send({ embeds: [GiveawayDM]})
+    const usergiveaway = client.users.cache.get(interaction.user.id)
+    usergiveaway.send({ embeds: [GiveawayDM] })
 
-      GiveawayDatabase.findOne({ UserID: interaction.user.id }, (err, data) => {
-        if (err) throw err;
-        if (data) {
-          // do nothing
-        } else {
-          data = new GiveawayDatabase({
-            UserID: interaction.user.id,
-            Email: GiveawayEmail,
-            Why: GiveawayWhy,
-            Usage: 1
-          })
-          data.save()
-        }
-      })
-    }
-    if (interaction.customId === "reportuser") {
-      const ReportUserIDs = interaction.fields.getTextInputValue("reportUserID")
-      const reportUserMessages = interaction.fields.getTextInputValue("reportUserMessage")
-      const reportUserImagess = interaction.fields.getTextInputValue("reportUserImages")
+    GiveawayDatabase.findOne({ UserID: interaction.user.id }, (err, data) => {
+      if (err) throw err;
+      if (data) {
+        // do nothing
+      } else {
+        data = new GiveawayDatabase({
+          UserID: interaction.user.id,
+          Email: GiveawayEmail,
+          Why: GiveawayWhy,
+          Usage: 1
+        })
+        data.save()
+      }
+    })
+  }
+  if (interaction.customId === "reportuser") {
+    const ReportUserIDs = interaction.fields.getTextInputValue("reportUserID")
+    const reportUserMessages = interaction.fields.getTextInputValue("reportUserMessage")
+    const reportUserImagess = interaction.fields.getTextInputValue("reportUserImages")
 
-      const ReportUserDM = new EmbedBuilder()
-        .setTitle('Report')
-        .setDescription('Thank you for sending a report about a user. One of admins will look in this ASAP. You will get a update soon.')
+    const ReportUserDM = new EmbedBuilder()
+      .setTitle('Report')
+      .setDescription('Thank you for sending a report about a user. One of admins will look in this ASAP. You will get a update soon.')
 
-       const reportuserss = client.users.cache.get(interaction.user.id)
-       reportuserss.send({ embeds: [ReportUserDM]})
+    const reportuserss = client.users.cache.get(interaction.user.id)
+    reportuserss.send({ embeds: [ReportUserDM] })
 
-       const LogChannel = client.channels.cache.get('1065657960719716482')
-       const reportuserchannel = new EmbedBuilder()
-       .setTitle('Report user received')
-       .addField('User ID who sent it in:', `${interaction.user.id}`, true)
-       .addField('User ID who was reported:', `${ReportUserIDs}`, true)
-       .addField('Message:', `${reportUserMessages}`, true)
-       .addField('Images provided:', `${reportUserImagess}`, true)
-       LogChannel.send({ embeds: [reportuserchannel]})
-    }
+    const LogChannel = client.channels.cache.get('1065657960719716482')
+    const reportuserchannel = new EmbedBuilder()
+      .setTitle('Report user received')
+      .addField('User ID who sent it in:', `${interaction.user.id}`, true)
+      .addField('User ID who was reported:', `${ReportUserIDs}`, true)
+      .addField('Message:', `${reportUserMessages}`, true)
+      .addField('Images provided:', `${reportUserImagess}`, true)
+    LogChannel.send({ embeds: [reportuserchannel] })
+  }
 
-    if (interaction.customId === "reportbug") {
-      const ReportUserIDs = interaction.fields.getTextInputValue("reportBugCommand")
-      const reportUserMessages = interaction.fields.getTextInputValue("reportCommandMessage")
-      const reportUserImagess = interaction.fields.getTextInputValue("reportCommandImages")
+  if (interaction.customId === "reportbug") {
+    const ReportUserIDs = interaction.fields.getTextInputValue("reportBugCommand")
+    const reportUserMessages = interaction.fields.getTextInputValue("reportCommandMessage")
+    const reportUserImagess = interaction.fields.getTextInputValue("reportCommandImages")
 
-      const ReportUserDM = new EmbedBuilder()
-        .setTitle('Report')
-        .setDescription('Thank you for sending a report about a command. One of admins will look in this ASAP. You will get a update soon.')
+    const ReportUserDM = new EmbedBuilder()
+      .setTitle('Report')
+      .setDescription('Thank you for sending a report about a command. One of admins will look in this ASAP. You will get a update soon.')
 
-       const reportuserss = client.users.cache.get(interaction.user.id)
-       reportuserss.send({ embeds: [ReportUserDM]})
+    const reportuserss = client.users.cache.get(interaction.user.id)
+    reportuserss.send({ embeds: [ReportUserDM] })
 
-       const LogChannel = client.channels.cache.get('1065657945720893491')
-       const reportuserchannel = new EmbedBuilder()
-       .setTitle('Report command received')
-       .addField('User ID who sent it in:', `${interaction.user.id}`, true)
-       .addField('Command what was reported:', `/${ReportUserIDs}`, true)
-       .addField('Message:', `${reportUserMessages}`, true)
-       .addField('Images provided:', `${reportUserImagess}`, true)
-       LogChannel.send({ embeds: [reportuserchannel]})
-    }
+    const LogChannel = client.channels.cache.get('1065657945720893491')
+    const reportuserchannel = new EmbedBuilder()
+      .setTitle('Report command received')
+      .addField('User ID who sent it in:', `${interaction.user.id}`, true)
+      .addField('Command what was reported:', `/${ReportUserIDs}`, true)
+      .addField('Message:', `${reportUserMessages}`, true)
+      .addField('Images provided:', `${reportUserImagess}`, true)
+    LogChannel.send({ embeds: [reportuserchannel] })
+  }
 });
 
 
@@ -348,3 +340,23 @@ client.on("messageCreate", msg => {
   })
 
 });
+process.on("unhandledRejection", (reason, p) => {
+  DLU.send(client, {
+    title: "Unhandled Rejection",
+    description: reason
+  })
+})
+
+
+
+// process.on("unhandledRejection", (reason, p) => {
+
+
+//   const LogChannel = client.channels.cache.get('1065618246507692123')
+//   const ErrorEmbeds = new EmbedBuilder()
+//     .setTitle('⚠️ ERROR')
+//     .setDescription(`**Unhandled Rejection/Catch: \n\n** Reason: **${reason}** \n Command: **${commands.name}**`)
+
+//   LogChannel.send({ embeds: [ErrorEmbeds] })
+// })
+

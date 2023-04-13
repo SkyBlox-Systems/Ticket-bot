@@ -51,10 +51,10 @@ module.exports.run = (client, interaction) => {
     const idstring = interaction.options.getString('id');
 
     if (categorystring === 'tracker') {
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
             if (err) throw err;
             if (data) {
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: optionalstring }, async (err2, data2) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: optionalstring }, async (err2, data2) => {
                     if (err2) throw err;
                     if (data2) {
                         const updated = new EmbedBuilder()
@@ -71,10 +71,10 @@ module.exports.run = (client, interaction) => {
     }
 
     if (categorystring === 'tickets') {
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
             if (err) throw err;
             if (data) {
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketNumber: idstring }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: idstring }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                         const updated = new EmbedBuilder()
@@ -88,7 +88,7 @@ module.exports.run = (client, interaction) => {
     }
 
     if (categorystring === 'ModMail') {
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
             if (err) throw err;
             if (data) {
                 if (data.ModMail === undefined) {
@@ -122,7 +122,7 @@ module.exports.run = (client, interaction) => {
                     .setTitle('Fixed')
                     .setDescription('We have fixed your database for your guild. ModMail is disabled as default. Anymore issues? please contact us.')
                     interaction.reply({ embeds: [fixed]})
-                    MainDatabase.findOneAndRemove({ ServerID: interaction.guildId }, async (err1, data1) => {
+                    MainDatabase.findOneAndRemove({ ServerID: interaction.guild.id }, async (err1, data1) => {
                         if (err1) throw err;
                         if (data1) {
                             
