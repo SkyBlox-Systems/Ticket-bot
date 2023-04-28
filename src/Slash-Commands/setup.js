@@ -5,7 +5,7 @@ const mongo = require('../mongo2');
 const mongoose = require('mongoose');
 const TicketDataMain = require('../schemas/TicketData')
 const { BotVersions } = require('../../slappey.json')
-const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
 
 
 module.exports.data = new SlashCommandBuilder()
@@ -16,7 +16,7 @@ module.exports.run = (client, interaction) => {
   const Welcome = new EmbedBuilder()
     .setTitle('Main Setup')
     .setDescription('Welcome to the main setup for ticket bot! Before we get everything ready for you, please read everything underneath:\n\n The bot will make 2 new roles: `ticket manager` and `ticket support`. These two roles have different job and will be told soon\n- A category will be made called `support` in that channel, there will be 3 new channels: `Ticket`, `Staff-room` and `Transcript`.\n- Bot might lag at some point when making the transcript \n- Transcript are random generated\n- Will generate a database to store all of your information into it. \nPlease react with ✅ if you are ready!')
-    .setFooter({ text: 'Got 2 minutes to react'})
+    .setFooter({ text: 'Got 2 minutes to react' })
     .setColor('#f9f9fa')
 
   const ready = new EmbedBuilder()
@@ -49,16 +49,11 @@ module.exports.run = (client, interaction) => {
     .setDescription('We are creating the database. Please stand by while we finish it.')
     .setColor('#f9f9fa')
 
-    const betatesting = new EmbedBuilder()
-    .setTitle('Error')
-    .setDescription('This command is disabled during the discord.js 14 public testing.')
 
-  //const Maincategory = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Support' && ch.type === 'GUILD_CATEGORY')
+  const Maincategory = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Support' && ch.type === ChannelType.GuildCategory)
 
-  if (interaction.user.id != '804663016124973076')
-  return interaction.reply({ embeds: [betatesting]});
-  // if (interaction.user.id != interaction.guild.ownerId)
-  //   return interaction.reply({ embeds: [ServerOwner] });
+  if (interaction.user.id != interaction.guild.ownerId)
+    return interaction.reply({ embeds: [ServerOwner] });
 
   const WelcomeEmbed = new EmbedBuilder()
     .setTitle('Welcome')
@@ -112,97 +107,126 @@ module.exports.run = (client, interaction) => {
         })
 
 
-        const Supportcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY")
-
-        interaction.guild.channels.create('Support', { type: 'GUILD_CATEGORY', position: 1 }).then(async (chan) => {
+        interaction.guild.channels.create({ name: 'Support', type: ChannelType.GuildCategory, position: 1 }).then(async (chan) => {
         })
+
+        const Supportcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == ChannelType.GuildCategory)
+
         interaction.guild.channels.create('Ticket', { parent: Supportcat }).then(async (chan) => {
-          chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-            SEND_MESSAGES: true,
-            VIEW_CHANNEL: true,
-          })
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.everyone,
+              allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+            }
+          ])
         })
 
-        interaction.guild.channels.create('Tickets: 0', { type: 'GUILD_VOICE', parent: Supportcat }).then(async (chan) => {
-          chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-            VIEW_CHANNEL: true
-          })
-          chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-            VIEW_CHANNEL: true
-          })
+        interaction.guild.channels.create('Tickets: 0', { type: ChannelType.GuildVoice, parent: Supportcat }).then(async (chan) => {
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.everyone,
+              allow: [PermissionFlagsBits.ViewChannel]
+            }
+          ])
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'),
+              allow: [PermissionFlagsBits.ViewChannel]
+            }
+          ])
         })
         interaction.guild.channels.create('Ticket-staff', { parent: Supportcat }).then(async (chan) => {
-          chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-            SEND_MESSAGES: false,
-            VIEW_CHANNEL: false,
-          })
-          chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
-            SEND_MESSAGES: true,
-            VIEW_CHANNEL: true,
-            MANAGE_CHANNELS: false,
-            ATTACH_FILES: true,
-          })
-          chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-            SEND_MESSAGES: true,
-            VIEW_CHANNEL: true,
-            MANAGE_CHANNELS: true,
-            ATTACH_FILES: true,
-          })
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.everyone,
+              deny: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages]
+            }
+          ])
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'),
+              allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles]
+            }
+          ])
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'),
+              allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles]
+            }
+          ])
         })
         interaction.guild.channels.create('Transcript', { parent: Supportcat }).then(async (chan) => {
-          chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-            SEND_MESSAGES: false,
-            VIEW_CHANNEL: false,
-          })
-          chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
-            SEND_MESSAGES: false,
-            VIEW_CHANNEL: true,
-            MANAGE_CHANNELS: false,
-            ATTACH_FILES: false,
-          })
-          chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-            SEND_MESSAGES: true,
-            VIEW_CHANNEL: true,
-            MANAGE_CHANNELS: true,
-            ATTACH_FILES: true,
-          })
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.everyone,
+              deny: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages]
+            }
+          ])
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'),
+              allow: [PermissionFlagsBits.ViewChannel],
+              deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles]
+            }
+          ])
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'),
+              allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ViewChannel]
+            }
+          ])
         })
         interaction.guild.channels.create('Ticket-logs', { parent: Supportcat }).then(async (chan) => {
-          chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-            SEND_MESSAGES: false,
-            VIEW_CHANNEL: false,
-          })
-          chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
-            SEND_MESSAGES: false,
-            VIEW_CHANNEL: true,
-            MANAGE_CHANNELS: false,
-            ATTACH_FILES: false,
-          })
-          chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-            SEND_MESSAGES: true,
-            VIEW_CHANNEL: true,
-            MANAGE_CHANNELS: true,
-            ATTACH_FILES: true,
-          })
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.everyone,
+              deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+            }
+          ])
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'),
+              allow: [PermissionFlagsBits.ViewChannel],
+              deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles]
+            }
+          ])
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'),
+              allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ViewChannel]
+            }
+          ])
+        
         })
 
-        interaction.guild.channels.create('feedback', { parent: Supportcat }).then(async (chan) => {
-          chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-            SEND_MESSAGES: false,
-            VIEW_CHANNEL: false,
-          })
-          chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
-            SEND_MESSAGES: true,
-            VIEW_CHANNEL: true,
-            MANAGE_CHANNELS: false,
-            ATTACH_FILES: true,
-          })
-          chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-            SEND_MESSAGES: true,
-            VIEW_CHANNEL: true,
-            MANAGE_CHANNELS: true,
-            ATTACH_FILES: true,
-          })
+        interaction.guild.channels.create({ name: 'feedback',  parent: Supportcat }).then(async (chan) => {
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.everyone,
+              deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+            }
+          ])
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'),
+              allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles],
+              deny: [PermissionFlagsBits.ManageChannels]
+            }
+          ])
+    
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'),
+              allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles],
+              deny: [PermissionFlagsBits.ManageChannels]
+            }
+          ])
+          chan.permissionOverwrites.set([
+            {
+              id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'),
+              allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+            }
+          ])
         })
         setTimeout(() => {
 
@@ -213,25 +237,25 @@ module.exports.run = (client, interaction) => {
 
         setTimeout(() => {
           interaction.channel.send({ embeds: [Done] })
-          const TranscriptChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'transcript' && ch.type == 'GUILD_TEXT');
+          const TranscriptChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'transcript' && ch.type == ChannelType.GuildText);
           const TranscriptChannelMessage = new EmbedBuilder()
             .setTitle('Transcript!')
             .setDescription('In this channel, this is where all of the close tickets and transcripts get logged. Only Ticket managers can talk in this channel.')
             .setColor('#f6f7f8')
 
-          const TicketChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
+          const TicketChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == ChannelType.GuildText);
           const TicketChannelMessage = new EmbedBuilder()
             .setTitle('Ticket')
             .setDescription('In this channel, You can only open a ticket. If you try and run the command in any other channel, it will not work. To make a ticket, please use the command `/ticket`.')
             .setColor('#f6f7f8')
 
-          const StaffroomChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == 'GUILD_TEXT');
+          const StaffroomChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == ChannelType.GuildText);
           const StaffroomChannelMessage = new EmbedBuilder()
             .setTitle('Staff room')
             .setDescription('In this channel, This is where the support team hang out. You can chat to the managers and the team about the tickets. Nothing in this channel should be leaked at any time. Commands can be listed here: N/A.')
             .setColor('#f6f7f8')
 
-          const TicketLogsChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-logs' && ch.type == 'GUILD_TEXT');
+          const TicketLogsChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-logs' && ch.type == ChannelType.GuildText);
           const TicketLogsChannelMessage = new EmbedBuilder()
             .setTitle('Staff room')
             .setDescription('In this channel, this is where all of the tickets in this server will be logged. Such as: Close, add, remove, creation etc.')
@@ -252,8 +276,8 @@ module.exports.run = (client, interaction) => {
 
             } else {
 
-              const TicketChannelIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
-              const TicketTrackerIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'GUILD_VOICE');
+              const TicketChannelIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == ChannelType.GuildText);
+              const TicketTrackerIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == ChannelType.GuildVoice);
               data2 = new TicketDataMain({
                 ServerID: interaction.guild.id,
                 OwnerID: interaction.guild.ownerId,
@@ -334,97 +358,123 @@ module.exports.run = (client, interaction) => {
           })
 
 
-          const Supportcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY")
+          const Supportcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == ChannelType.GuildCategory)
 
-          interaction.guild.channels.create('Support', { type: 'GUILD_CATEGORY', position: 1 }).then(async (chan) => {
+          interaction.guild.channels.create({ name: 'Support',  type: 'GUILD_CATEGORY', position: 1 }).then(async (chan) => {
           })
-          interaction.guild.channels.create('Ticket', { parent: Supportcat }).then(async (chan) => {
+          interaction.guild.channels.create({ name: 'Ticket', parent: Supportcat }).then(async (chan) => {
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.everyone,
+                allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel],
+              }
+            ])
             chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
               SEND_MESSAGES: true,
               VIEW_CHANNEL: true,
-            })
-          })
-
-          interaction.guild.channels.create('Tickets: 0', { type: 'GUILD_VOICE', parent: Supportcat }).then(async (chan) => {
-            chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-              VIEW_CHANNEL: true
-            })
-            chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-              VIEW_CHANNEL: true
-            })
-          })
-          interaction.guild.channels.create('Ticket-staff', { parent: Supportcat }).then(async (chan) => {
-            chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-              SEND_MESSAGES: false,
-              VIEW_CHANNEL: false,
-            })
-            chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
-              SEND_MESSAGES: true,
-              VIEW_CHANNEL: true,
-              MANAGE_CHANNELS: false,
-              ATTACH_FILES: true,
-            })
-            chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-              SEND_MESSAGES: true,
-              VIEW_CHANNEL: true,
-              MANAGE_CHANNELS: true,
-              ATTACH_FILES: true,
-            })
-          })
-          interaction.guild.channels.create('Transcript', { parent: Supportcat }).then(async (chan) => {
-            chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-              SEND_MESSAGES: false,
-              VIEW_CHANNEL: false,
-            })
-            chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
-              SEND_MESSAGES: false,
-              VIEW_CHANNEL: true,
-              MANAGE_CHANNELS: false,
-              ATTACH_FILES: false,
-            })
-            chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-              SEND_MESSAGES: true,
-              VIEW_CHANNEL: true,
-              MANAGE_CHANNELS: true,
-              ATTACH_FILES: true,
-            })
-          })
-          interaction.guild.channels.create('Ticket-logs', { parent: Supportcat }).then(async (chan) => {
-            chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-              SEND_MESSAGES: false,
-              VIEW_CHANNEL: false,
-            })
-            chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
-              SEND_MESSAGES: false,
-              VIEW_CHANNEL: true,
-              MANAGE_CHANNELS: false,
-              ATTACH_FILES: false,
-            })
-            chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-              SEND_MESSAGES: true,
-              VIEW_CHANNEL: true,
-              MANAGE_CHANNELS: true,
-              ATTACH_FILES: true,
             })
           })
 
-          interaction.guild.channels.create('feedback', { parent: Supportcat }).then(async (chan) => {
-            chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-              SEND_MESSAGES: false,
-              VIEW_CHANNEL: false,
-            })
-            chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
-              SEND_MESSAGES: true,
-              VIEW_CHANNEL: true,
-              MANAGE_CHANNELS: false,
-              ATTACH_FILES: true,
-            })
-            chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-              SEND_MESSAGES: true,
-              VIEW_CHANNEL: true,
-              MANAGE_CHANNELS: true,
-              ATTACH_FILES: true,
-            })
+          interaction.guild.channels.create({ name: 'Tickets: 0',  type: channel.GuildVoice, parent: Supportcat }).then(async (chan) => {
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.everyone,
+                allow: [PermissionFlagsBits.ViewChannel]
+              }
+            ])
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'),
+                allow: [PermissionFlagsBits.ViewChannel]
+              }
+            ])
+           
+          })
+          interaction.guild.channels.create({ name: 'Ticket-staff',  parent: Supportcat }).then(async (chan) => {
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.everyone,
+                deny: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages]
+              }
+            ])
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'),
+                allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.AttachFiles],
+                deny: [PermissionFlagsBits.ManageChannels]
+              }
+            ])
+
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'),
+                allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels],
+              }
+            ])
+          })
+          interaction.guild.channels.create({ name: 'Transcript',  parent: Supportcat }).then(async (chan) => {
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.everyone,
+                deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel],
+              }
+            ])
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'),
+                deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles],
+                allow: [PermissionFlagsBits.ViewChannel]
+              }
+            ])
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'),
+                allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles]
+              }
+            ])
+          })
+          interaction.guild.channels.create({ name: 'Ticket-logs', parent: Supportcat }).then(async (chan) => {
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.everyone,
+                deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+              }
+            ])
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'),
+                allow: [PermissionFlagsBits.ViewChannel],
+                deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels, permissionOverwrites.AttachFiles]
+              }
+            ])
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'),
+                allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles]
+              }
+            ])
+          })
+
+          interaction.guild.channels.create({ name: 'feedback', parent: Supportcat }).then(async (chan) => {
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.everyone,
+                deny: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages]
+              }
+            ])
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'),
+                allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.AttachFiles],
+                deny: [PermissionFlagsBits.ManageChannels]
+              }
+            ])
+            chan.permissionOverwrites.set([
+              {
+                id: interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'),
+                allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles]
+              }
+            ])
           })
           setTimeout(() => {
 
@@ -435,25 +485,25 @@ module.exports.run = (client, interaction) => {
 
           setTimeout(() => {
             interaction.channel.send({ embeds: [Done] })
-            const TranscriptChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'transcript' && ch.type == 'GUILD_TEXT');
+            const TranscriptChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'transcript' && ch.type == ChannelType.GuildText);
             const TranscriptChannelMessage = new EmbedBuilder()
               .setTitle('Transcript!')
               .setDescription('In this channel, this is where all of the close tickets and transcripts get logged. Only Ticket managers can talk in this channel.')
               .setColor('#f6f7f8')
 
-            const TicketChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
+            const TicketChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == ChannelType.GuildText);
             const TicketChannelMessage = new EmbedBuilder()
               .setTitle('Ticket')
               .setDescription('In this channel, You can only open a ticket. If you try and run the command in any other channel, it will not work. To make a ticket, please use the command `!ticket`, or `/ticket`.')
               .setColor('#f6f7f8')
 
-            const StaffroomChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == 'GUILD_TEXT');
+            const StaffroomChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-staff' && ch.type == ChannelType.GuildText);
             const StaffroomChannelMessage = new EmbedBuilder()
               .setTitle('Staff room')
               .setDescription('In this channel, This is where the support team hang out. You can chat to the managers and the team about the tickets. Nothing in this channel should be leaked at any time. Commands can be listed here: N/A.')
               .setColor('#f6f7f8')
 
-            const TicketLogsChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-logs' && ch.type == 'GUILD_TEXT');
+            const TicketLogsChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket-logs' && ch.type == ChannelType.GuildText);
             const TicketLogsChannelMessage = new EmbedBuilder()
               .setTitle('Staff room')
               .setDescription('In this channel, this is where all of the tickets in this server will be logged. Such as: Close, add, remove, creation etc.')
@@ -474,8 +524,8 @@ module.exports.run = (client, interaction) => {
 
               } else {
 
-                const TicketChannelIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == 'GUILD_TEXT');
-                const TicketTrackerIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == 'GUILD_VOICE');
+                const TicketChannelIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'ticket' && ch.type == ChannelType.GuildText);
+                const TicketTrackerIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'Tickets: 0' && ch.type == ChannelType.GuildVoice);
                 data2 = new TicketDataMain({
                   ServerID: interaction.guild.id,
                   OwnerID: interaction.guild.ownerId,
