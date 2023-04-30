@@ -10,7 +10,7 @@ let commands = require('./slash-register').commands;
 // console.log(commands);
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { Permissions } = require('discord.js');
-const { MessageCollector, Collector } = require('discord.js');
+const { MessageCollector, Collector, ChannelType } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const mongoose = require('mongoose');
 const Stats = require('discord-live-stats');
@@ -62,14 +62,16 @@ client.on("ready", () => {
 })
 
 client.on('guildCreate', guild => {
-  const defaultChannel = guild.channels.cache.find(channel => channel.type === 'GUILD_TEXT' && channel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES))
-
+ // const defaultChannel = guild.channels.cache.find(channel => channel.type === ChannelType.GuildText && channel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES))
+ const defaultChannel = guild.channels.cache.find(channel => channel.type === ChannelType.GuildText)
   const welcome = new EmbedBuilder()
     .setTitle('Setup')
     .setDescription('Hey! Thank you for adding us to our server! We are exicted to be here. Whenever u are ready, please run `/setup` to start!')
-    .addField('Website', `[Click me](https://www.ticketbots.co.uk/)`, true)
-    .addField('Invite bot', `[Click me](https://discord.com/oauth2/authorize?client_id=799231222303293461&scope=bot%20applications.commands&permissions=2147486783)`, true)
-    .addField('Status', '[Click me](https://status.skybloxsystems.com)', true)
+    .addFields([
+      { name: `Website`, value: `[Click me](https://www.ticketbots.co.uk/)`, inline: true },
+      { name: `Invite Bot`, value: `[Click me](https://discord.com/oauth2/authorize?client_id=799231222303293461&scope=bot%20applications.commands&permissions=2147486783)`, inline: true },
+      { name: `Status`, value: `[Click me](https://status.skybloxsystems.com)`, inline: true },
+    ])
     .setImage('https://cdn.discordapp.com/attachments/978357687630856192/1065654939063439360/Welcome.png')
     .setColor('#f6f7f8')
 
@@ -167,9 +169,11 @@ client.on('interactionCreate', interaction => {
         const BlacklistedFromBot = new EmbedBuilder()
           .setTitle('Blacklisted!')
           .setDescription('You have been blacklisted from using Ticket Bot!')
-          .addField('Reason', `${data.Reason}`)
-          .addField('Time', `${data.Time} UTC`)
-          .addField('Admin', `${data.Admin}`)
+          .addFields([
+            { name: `Reason`, value: `${data.Reason}`, inline: false },
+            { name: `Time`, value: `${data.Time} UTC`, inline: false },
+            { name: `Admin`, value: `${data.Admin}`, inline: false}
+          ])
         interaction.reply({ embeds: [BlacklistedFromBot] })
       }
 
@@ -237,10 +241,12 @@ client.on('interactionCreate', interaction => {
     const LogChannel = client.channels.cache.get('1065657960719716482')
     const reportuserchannel = new EmbedBuilder()
       .setTitle('Report user received')
-      .addField('User ID who sent it in:', `${interaction.user.id}`, true)
-      .addField('User ID who was reported:', `${ReportUserIDs}`, true)
-      .addField('Message:', `${reportUserMessages}`, true)
-      .addField('Images provided:', `${reportUserImagess}`, true)
+      .addFields([
+        { name: `User ID who sent it in: `, value: `${interaction.user.id}`, inline: true },
+        { name: `User ID who was reported: `, value: `${ReportUserIDs}`, inline: true },
+        { name: `Message`, value: `${reportUserMessages}`, inline: true },
+        { name: `Images provided`, value: `${reportUserImagess}`, inline: true }
+      ])
     LogChannel.send({ embeds: [reportuserchannel] })
   }
 
@@ -259,10 +265,12 @@ client.on('interactionCreate', interaction => {
     const LogChannel = client.channels.cache.get('1065657945720893491')
     const reportuserchannel = new EmbedBuilder()
       .setTitle('Report command received')
-      .addField('User ID who sent it in:', `${interaction.user.id}`, true)
-      .addField('Command what was reported:', `/${ReportUserIDs}`, true)
-      .addField('Message:', `${reportUserMessages}`, true)
-      .addField('Images provided:', `${reportUserImagess}`, true)
+      .addFields([
+        { name: `User ID who sent it in: `, value: `${interaction.user.id}`, inline: true },
+        { name: `User ID who was reported: `, value: `${ReportUserIDs}`, inline: true },
+        { name: `Message`, value: `${reportUserMessages}`, inline: true },
+        { name: `Images provided`, value: `${reportUserImagess}`, inline: true }
+      ])
     LogChannel.send({ embeds: [reportuserchannel] })
   }
 });
@@ -302,7 +310,9 @@ client.on("messageCreate", msg => {
                 const senddmmessage = new EmbedBuilder()
                   .setTitle(`New reply from ${msg.author.tag}`)
                   .setDescription('Please use the command `/ticketreply` to reply to this message.')
-                  .addField('Ticket reply:', `${m33.first().content}`, true)
+                  .addFields([
+                    { name: `Ticket Reply: `, value: `${m33.first().content}`, inline: true}
+                  ])
                   .setTimestamp()
                   .setFooter({ text: `user id: ${msg.author.id}` });
 

@@ -1,7 +1,7 @@
 const BaseEvent = require('../../utils/structures/BaseEvent');
 const Discord = require('discord.js');
 const { BotVersions } = require('../../../slappey.json')
-const version = '5.0'
+const version = '5.1'
 
 
 module.exports = class ReadyEvent extends BaseEvent {

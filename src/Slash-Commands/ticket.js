@@ -6,7 +6,8 @@ var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' })
 const ClaimTicket = require('../schemas/ticketclaim')
 const MainDatabase = require('../schemas/TicketData')
 const timestamp = require('unix-timestamp');
-const MainTime = Math.round(timestamp.now())
+// const MainTime = Math.round(timestamp.now())
+const MainTime =  Math.floor(Date.now() / 1000);
 
 
 

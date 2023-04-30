@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js')
 const Discord = require('discord.js');
 const database = require('../schemas/TicketData')
 const { BotVersions } = require('../../slappey.json')
-const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, ChannelType } = require('discord.js');
 const axios = require('axios');
 
 
@@ -76,6 +76,7 @@ module.exports.run = async (client, interaction) => {
                                 TypeOfServer: data3.TypeOfServer || 'First',
                                 Important: data3.Important || 'Enabled',
                                 WebsiteCode: data3.WebsiteCode || 'N/A',
+                                Language: data3.Language || 'en',
                                 BotVersion: BotVersions
                             })
                             data3.save()
@@ -84,32 +85,6 @@ module.exports.run = async (client, interaction) => {
                                 .setDescription(`To find the changes, please head here [Change Log](https://docs.ticketbot.co.uk/change-log)`)
                             interaction.reply({ embeds: [updated] })
 
-                            const newchannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == "GUILD_TEXT")
-                            const Supportcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY")
-
-                            if (newchannel === undefined) {
-                                interaction.guild.channels.create('feedback', { parent: Supportcat }).then(async (chan) => {
-                                    chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-                                        SEND_MESSAGES: false,
-                                        VIEW_CHANNEL: false,
-                                    })
-                                    chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
-                                        SEND_MESSAGES: true,
-                                        VIEW_CHANNEL: true,
-                                        MANAGE_CHANNELS: false,
-                                        ATTACH_FILES: true,
-                                    })
-                                    chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-                                        SEND_MESSAGES: true,
-                                        VIEW_CHANNEL: true,
-                                        MANAGE_CHANNELS: true,
-                                        ATTACH_FILES: true,
-                                    })
-                                })
-
-                            } else {
-                                interaction.reply('We are having issues updating your guild. Please contact support via our support server. Do that by heading to our website')
-                            }
                             database.findOneAndRemove({ ServerID: interaction.guild.id }, async (err2, data2) => {
                                 if (err2) throw err;
                                 if (data2) {
@@ -156,7 +131,7 @@ module.exports.run = async (client, interaction) => {
                                 .setDescription(`To find the changes, please head here [Change Log](https://docs.ticketbots.co.uk/change-log)`)
                             interaction.reply({ embeds: [updated] })
     
-                            const newchannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == "GUILD_TEXT")
+                            const newchannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == ChannelType.GuildText)
                             const Supportcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY")
     
                             if (newchannel === undefined) {

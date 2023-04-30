@@ -4,7 +4,7 @@ const { EmbedBuilder } = require('discord.js');
 const ticketclaim = require('../schemas/ticketclaim')
 const MainFile = require('../../slappey.json')
 const ProKeys = require('../schemas/keys')
-const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, componentType } = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 
 
@@ -42,7 +42,7 @@ module.exports.run = async (client, interaction) => {
     await interaction.reply({ content: 'Copy Data', components: [row], ephemeral: true });
 
     const collector = interaction.channel.createMessageComponentCollector({
-        componentType: "SELECT_MENU"
+        componentType: componentType.StringSelectMenuBuilder
     })
     collector.on("collect", async (collected) => {
         const value = collected.values[0]

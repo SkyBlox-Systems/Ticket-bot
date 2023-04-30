@@ -64,7 +64,7 @@ module.exports.data = new SlashCommandBuilder()
             ATTATCH_FILES: true,
             MANAGE_CHANNELS: false,
           })
-          const Logs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
+          const Logs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == ChannelType.GuildText)
           .then(() => Logs.send(`Added ${user.user.tag} to the following ticket <@${interaction.channel.id}>`))
             .then(() => interaction.reply(`Added ${user.user.tag} to this ticket!`));
             } else {

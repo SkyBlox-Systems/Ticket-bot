@@ -13,7 +13,7 @@ const ClaimTicket = require('../schemas/ticketclaim')
 const MainDatabase = require('../schemas/TicketData');
 const { mainModule } = require('process');
 const { response } = require('express');
-const { ButtonStyle } = require('discord.js');
+const { ButtonStyle, ChannelType } = require('discord.js');
 
 
 module.exports.data = new SlashCommandBuilder()
@@ -270,8 +270,8 @@ module.exports.run = (client, interaction) => {
                                           })
                                           interaction.channel.delete()
 
-                                          const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "GUILD_TEXT")
-                                          const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
+                                          const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                                          const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == ChannelType.GuildText)
 
                                           const UserName = client.users.cache.find(user => user.id === data.id)
                                           console.log(UserName)
@@ -366,8 +366,8 @@ module.exports.run = (client, interaction) => {
                                             })
                                             interaction.channel.delete()
 
-                                            const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "GUILD_TEXT")
-                                            const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
+                                            const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                                            const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == ChannelType.GuildText)
 
                                             const UserName = client.users.cache.find(user => user.id === data.id)
                                             console.log(UserName)
@@ -653,8 +653,8 @@ module.exports.run = (client, interaction) => {
                             const voicecallchan = interaction.guild.channels.cache.get(data3.ChannelID)
                             voicecallchan.delete()
 
-                            const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "GUILD_TEXT")
-                            const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
+                            const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                            const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == ChannelType.GuildText)
 
                             const UserName = client.users.cache.find(user => user.id === data.id)
                             console.log(UserName)

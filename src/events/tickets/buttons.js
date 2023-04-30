@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const { BotVersions } = require('../../../slappey.json')
 const MainDatabase = require('../../schemas/TicketData');
 const ClaimTicket = require('../../schemas/ticketclaim');
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, PermissionFlagsBits } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, PermissionFlagsBits, ButtonStyle, ChannelType } = require('discord.js');
 const { Permissions } = require('discord.js');
 const { MessageCollector, Collector } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
@@ -57,12 +57,8 @@ module.exports = class ReadyEvent extends BaseEvent {
           );
 
 
-        const premiumstring = interaction.options.getString('premium');
-        const idstring = interaction.options.getString('id');
-        const normalstring = interaction.options.getString('normal');
 
-
-        if (normalstring === 'close') {
+        
           MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
             if (err) throw err;
             if (data) {
@@ -250,8 +246,8 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                 })
                                                 interaction.channel.delete()
 
-                                                const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "GUILD_TEXT")
-                                                const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
+                                                const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                                                const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == ChannelType.GuildText)
 
                                                 const UserName = client.users.cache.find(user => user.id === data.id)
                                                 console.log(UserName)
@@ -346,8 +342,8 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                   })
                                                   interaction.channel.delete()
 
-                                                  const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "GUILD_TEXT")
-                                                  const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
+                                                  const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                                                  const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == ChannelType.GuildText)
 
                                                   const UserName = client.users.cache.find(user => user.id === data.id)
                                                   console.log(UserName)
@@ -506,186 +502,7 @@ module.exports = class ReadyEvent extends BaseEvent {
             }
           })
 
-        }
-
-        if (premiumstring === 'voice') {
-          ClaimTicket.findOne({ TicketIDs: idstring }, async (err, data) => {
-            if (err) throw err;
-            if (data) {
-              MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err1, data1) => {
-                if (err1) throw err;
-                if (data1) {
-                  if (data1.PaidGuild === 'Yes') {
-                    if (data1.VoiceTicket === 'Enabled') {
-                      if (data.ClaimUserID === '') {
-
-                      } else {
-
-                        if (!interaction.member.roles.cache.some(r => r.id === `${data1.SupportRoleID}`)) {
-                          const NoPerms2 = new EmbedBuilder()
-                            .setTitle('Error')
-                            .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
-
-                          return interaction.reply({ embeds: [NoPerms2] })
-                        }
-
-                        function makeURL(length) {
-                          var result = '';
-                          var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                          var charactersLength = characters.length;
-                          for (var i = 0; i < length; i++) {
-                            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-                          }
-                          return result;
-                        }
-                        const generators = makeURL(20)
-
-
-                        const ticketembed = new EmbedBuilder()
-                          .setColor('#f6f7f8')
-                          .setTimestamp()
-                          .setTitle(`Ticket`)
-                          .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will cancel the command within 10 seconds.`)
-
-                        const closed = new EmbedBuilder()
-                          .setColor('#f6f7f8')
-                          .setTimestamp()
-                          .setTitle(`Ticket`)
-                          .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
-
-                        const Logs = new EmbedBuilder()
-                          .setColor('#f6f7f8')
-                          .setTimestamp()
-                          .setTitle('Ticket-logs')
-                          .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully. \n\n All tickets are removed of our server within 24 hours.`)
-
-                        const notclosed = new EmbedBuilder()
-                          .setColor('#f6f7f8')
-                          .setTimestamp()
-                          .setTitle(`Ticket`)
-                          .setDescription(`Close cancelled.`)
-
-                        const closing = new EmbedBuilder()
-                          .setColor('#f6f7f8')
-                          .setTimestamp()
-                          .setTitle(`Ticket`)
-                          .setDescription(`Your ticket will be closed in 5 seconds`)
-                          .setFooter(`Making a transcript....`)
-
-                        interaction.reply({ embeds: [ticketembed] })
-                          .then((m) => {
-                            interaction.channel.awaitMessages({
-                              filter: response => response.content == "yes",
-                              max: 1,
-                              time: 10000,
-                              errors: ['time']
-                            }).then(() => {
-                              interaction.channel.send({ embeds: [closing] })
-
-                              setTimeout(() => {
-                                ClaimTicket.findOne({ ChannelID: data.ChannelID }, async (err3, data3) => {
-                                  if (err3) throw err;
-                                  if (data3) {
-
-                                    const DMTicketCreatorClosed = new EmbedBuilder()
-                                      .setColor('#f5f5f5')
-                                      .setTimestamp()
-                                      .setTitle(`Ticket`)
-                                      .setDescription(`<@${data3.ClaimUserID}> ${data1.CloseMessage}. Please rate the support below`)
-                                      .addFields([
-                                        { name: 'Reason', value: `${data.Reason}`, inline: true },
-                                        { name: 'Time open', value: `<t:${data.Time}:f`, inline: true },
-                                        { name: 'Priority', value: `${data.Priority}`, inline: true }
-                                      ])
-
-                                    const DMTicketClaimClosed = new EmbedBuilder()
-                                      .setColor('#f5f5f5')
-                                      .setTimestamp()
-                                      .setTitle(`Ticket`)
-                                      .setDescription(`You have closed the following ticket-${data3.ChannelID} for the following user <@${data3.id}>.`)
-
-
-                                    const ticketttcreator = client.users.cache.get(data.id)
-                                    ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
-
-                                    const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
-                                    ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
-                                    setTimeout(() => {
-                                      ClaimTicket.findOneAndDelete({ ChannelID: data.ChannelID }, async (err02, data02) => {
-                                        if (err02) throw err02;
-                                        if (data02) {
-                                          console.log(`${data.id} ticket has been removed from the database`)
-                                        }
-                                      })
-                                    }, 5000);
-
-
-                                  }
-
-                                  MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err30, data30) => {
-                                    if (err30) throw err30;
-                                    if (data30) {
-                                      const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data1.TicketTrackerChannelID}`)
-                                      MainTicketTrackerChannel.setName(`Tickets: ${data30.TicketNumber - 1}`)
-                                    }
-                                  })
-
-                                  const voicecallchan = interaction.guild.channels.cache.get(data3.ChannelID)
-                                  voicecallchan.delete()
-
-                                  const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "GUILD_TEXT")
-                                  const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "GUILD_TEXT")
-
-                                  const UserName = client.users.cache.find(user => user.id === data.id)
-                                  console.log(UserName)
-
-                                  SupportLogs.send({ embeds: [Logs] })
-
-                                  const CloseEmbed = new EmbedBuilder()
-                                    .setTitle('Transcript')
-                                    .setDescription(`${data1.TranscriptMessage} ${interaction.channel.name}`)
-                                    .addFields([
-                                      { name: 'Transcript', value: 'Disabled for voice calls' },
-                                      { name: 'Reason', value: `${data.Reason}` },
-                                      { name: 'Ticket Open', value: `<t:${data.Time}:f>` },
-                                      { name: 'Claim user', value: `<@${data.ClaimUserID}>` }
-                                    ])
-
-
-                                  TranscriptLogs.send({ embeds: [CloseEmbed] })
-
-
-                                })
-
-                              }, 5000);
-                            }).catch(() => {
-                              interaction.channel.send({ embeds: [notclosed] })
-                            })
-                          }).catch(() => {
-                            interaction.channel.send({ embeds: [notclosed] })
-                          })
-
-                      }
-
-                    } else {
-                      if (data1.VoiceTicket === 'Disabled') {
-
-                      }
-                    }
-
-                  } else {
-                    if (data1.PaidGuild === 'No') {
-
-                    }
-                  }
-                  // interaction.reply('Voice ticket has not been calimed by anyone. This ticket can not be closed.')
-
-                }
-              })
-
-            }
-          })
-        }
+  
       }
       if (interaction.customId === 'lock') {
         if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {

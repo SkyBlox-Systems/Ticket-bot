@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const { EmbedBuilder, Guild, MessageCollector, Collector } = require('discord.js');
 var today = new Date();
 var dd = String(today.getDate());
-const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, ButtonStyle, ComponentType, ChannelType } = require('discord.js');
 
 module.exports.data = new SlashCommandBuilder()
   .setName('settings')
@@ -40,15 +40,12 @@ module.exports.run = async (client, interaction) => {
     .setTitle('Error')
     .setDescription('This command is restricted to guild owner only. Please do not try and use this command because you will not get anywhere.')
 
-  const betatesting = new EmbedBuilder()
-  .setTitle('Error')
-  .setDescription('This command is disabled during the discord.js 14 public testing.')
+  
 
   const teststring = interaction.options.getString('category');
 
   if (teststring === 'view') {
-    if (interaction.user.id != '804663016124973076')
-    return interaction.reply({ embeds: [betatesting]});
+
 
     MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
       if (err) throw err;
@@ -57,44 +54,60 @@ module.exports.run = async (client, interaction) => {
           const ListSettingsPaid = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
             .setDescription('List of the bot settings for the guild.')
-            .addField(`ServerID`, `${data.ServerID}`, true)
-            .addField(`TicketChannelID`, `${data.TicketChannelID}`, true)
-            .addField(`TicketNumber`, `${data.TicketNumber}`, true)
-            .addField(`TicketTrackerChannelID`, `${data.TicketTrackerChannelID}`, true)
-            .addField('FeedbackChannelID', `${data.FeedbackChannelID}`, true)
-            .addField(`Use Ticket Reactions`, `${data.UseTicketReactions}`, true)
-            .addField(`Support Role`, `${data.SupportRoleID}`, true)
-            .addField('Manager Role', `${data.ManagerRoleID}`, true)
-            .addField(`Admin Role`, `${data.AdminRoleID}`, true)
-            .addField(`Beta Key`, `${data.BetaKey}`, true)
-            .addField(`Tier`, `${data.Tier}`, true)
-            .addField(`Create Transcripts`, `${data.Transcript}`, true)
-            .addField('API Key', `${data.APIKey}`, true)
-            .addField('Change messages', 'List messages', true)
-            .addField('ModMail', `${data.ModMail}`, true)
-            .addField('Second Server', `${data.SecondServer}`, true)
-            .addField('Important Announcement', `${data.Important}`, true)
-            .addField('Custom Code', `${data.WebsiteCode}`, true)
-            .addField(`Bot Version`, `${data.BotVersion}`, true)
+            .addFields([
+              { name: 'ServerID', value: `${data.ServerID}`, inline: true },
+              { name: `TicketChannelID`, value: `${data.TicketChannelID}`, inline: true },
+              { name: `TicketNumber`, value: `${data.TicketNumber}`, inline: true },
+              { name: `TicketTrackerChannelID`, value: `${data.TicketTrackerChannelID}`, inline: true },
+              { name: 'FeedbackChannelID', value: `${data.FeedbackChannelID}`, inline: true },
+              { name: `Use Ticket Reactions`, value: `${data.UseTicketReactions}`, inline: true },
+              { name: `Support Role`, value: `${data.SupportRoleID}`, inline: true },
+              { name: `Manager Role`, value: `${data.ManagerRoleID}`, inline: true },
+              { name: `Admin Role`, value: `${data.AdminRoleID}`, inline: true },
+              { name: `Beta Key`, value: `${data.BetaKey}`, inline: true },
+              { name: `Tier`, value: `${data.Tier}`, inline: true },
+              { name: `Create Transcripts`, value: `${data.Transcript}`, inline: true },
+              { name: `API Key`, value: `${data.APIKey}`, inline: true },
+              { name: `Change Messages`, value: `List messages`, inline: true },
+              { name: `ModMail`, value: `${data.ModMail}`, inline: true },
+              { name: `Second Guild`, value: `${data.SecondServer}`, inline: true },
+              { name: `Important Announcement`, value: `${data.Important}`, inline: true },
+              { name: `Custom Code`, value: `${data.WebsiteCode}`, inline: true },
+              { name: `Language`, value: `${data.Language}`, inline: true },
+              { name: `Bot Version`, value: `${data.BotVersion}`, inline: true } 
+            ])
+
 
           const ListSettingsPaid2 = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
             .setDescription('List of the bot settings for the guild (premium only).')
-            .addField(`Voice Call Tickets`, `${data.VoiceTicket}`, true)
-            .addField(`Amount of custom bots`, `${data.CustomBots}`, true)
-            .addField(`Premium code`, `${data.PremiumCode}`, true)
-            .addField(`Ticket ID Length`, `${data.TicketIDLength}`, true)
-            .addField(`Custom features`, `Soon`, true)
+            .addFields([
+              { name: `Voice Call Tickets`, value: `${data.VoiceTicket}`, inline: true },
+              { name: `Amount of custom bots`, value: `${data.CustomBots}`, inline: true },
+              { name: `Premium code`, value: `${data.PremiumCode}`, inline: true },
+              { name: `Ticket ID Length`, value: `${data.TicketIDLength}`, value: true},
+              { name: 'Custom features', value: `Soon`, inline: true }
+            ])
 
-          const button1 = new Discord.ButtonBuilder()
-            .setCustomId("previousbtn")
-            .setLabel("Previous")
-            .setStyle("DANGER");
-
-          const button2 = new Discord.ButtonBuilder()
-            .setCustomId("nextbtn")
-            .setLabel("Next")
-            .setStyle("SUCCESS");
+            const firstPageButton = new ButtonBuilder()
+            .setCustomId('first')
+            .setLabel('First')
+            .setStyle(ButtonStyle.Primary);
+          
+          const previousPageButton = new ButtonBuilder()
+            .setCustomId('previous')
+            .setLabel('Previous')
+            .setStyle(ButtonStyle.Danger);
+          
+          const nextPageButton = new ButtonBuilder()
+            .setCustomId('next')
+            .setLabel('Next')
+            .setStyle(ButtonStyle.Success);
+          
+          const lastPageButton = new ButtonBuilder()
+            .setCustomId('last')
+            .setLabel('Last')
+            .setStyle(ButtonStyle.Primary);
 
           const pages = [
             ListSettingsPaid,
@@ -102,41 +115,48 @@ module.exports.run = async (client, interaction) => {
           ]
 
 
-          const buttonList = [button1, button2];
+          const buttons  = [firstPageButton, previousPageButton, nextPageButton, lastPageButton];
+
 
 
 
           const timeout = '120000';
 
 
-          pagination(interaction, pages, buttonList, timeout)
+          paginationEmbed(
+            interaction, // The interaction object
+            pages, // Your array of embeds
+            buttons , // Your array of buttons
+            60000, // (Optional) The timeout for the embed in ms, defaults to 60000 (1 minute)
+        );
           interaction.reply({ content: 'Settings Premium' })
 
         } else {
-          if (data.SecondServer === 'Enabled')
-            return interaction.reply('Can not view the settings as this is a second guild')
           const ListSettings = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
             .setDescription('List of the bot settings for the server.')
-            .addField(`ServerID`, `${data.ServerID}`, true)
-            .addField(`TicketChannelID`, `${data.TicketChannelID}`, true)
-            .addField(`TicketNumber`, `${data.TicketNumber}`, true)
-            .addField(`TicketTrackerChannelID`, `${data.TicketTrackerChannelID}`, true)
-            .addField('FeedbackChannelID', `${data.FeedbackChannelID}`, true)
-            .addField(`Use Ticket Reactions`, `${data.UseTicketReactions}`, true)
-            .addField(`Support Role`, `${data.SupportRoleID}`, true)
-            .addField('Manager Role', `${data.ManagerRoleID}`, true)
-            .addField(`Admin Role`, `${data.AdminRoleID}`, true)
-            .addField(`Beta Key`, `${data.BetaKey}`, true)
-            .addField(`Tier`, `${data.Tier}`, true)
-            .addField(`Create Transcripts`, `${data.Transcript}`, true)
-            .addField('API Key', `${data.APIKey}`, true)
-            .addField('Change messages', 'List messages', true)
-            .addField('ModMail', `${data.ModMail}`, true)
-            .addField('Important Announcement', `${data.Important}`, true)
-            .addField('Custom Code', `${data.WebsiteCode}`, true)
-            .addField(`Bot Version`, `${data.BotVersion}`, true)
-
+            .addFields([
+              { name: 'ServerID', value: `${data.ServerID}`, inline: true },
+              { name: `TicketChannelID`, value: `${data.TicketChannelID}`, inline: true },
+              { name: `TicketNumber`, value: `${data.TicketNumber}`, inline: true },
+              { name: `TicketTrackerChannelID`, value: `${data.TicketTrackerChannelID}`, inline: true },
+              { name: 'FeedbackChannelID', value: `${data.FeedbackChannelID}`, inline: true },
+              { name: `Use Ticket Reactions`, value: `${data.UseTicketReactions}`, inline: true },
+              { name: `Support Role`, value: `${data.SupportRoleID}`, inline: true },
+              { name: `Manager Role`, value: `${data.ManagerRoleID}`, inline: true },
+              { name: `Admin Role`, value: `${data.AdminRoleID}`, inline: true },
+              { name: `Beta Key`, value: `${data.BetaKey}`, inline: true },
+              { name: `Tier`, value: `${data.Tier}`, inline: true },
+              { name: `Create Transcripts`, value: `${data.Transcript}`, inline: true },
+              { name: `API Key`, value: `${data.APIKey}`, inline: true },
+              { name: `Change Messages`, value: `List messages`, inline: true },
+              { name: `ModMail`, value: `${data.ModMail}`, inline: true },
+              { name: `Second Guild`, value: `${data.SecondServer}`, inline: true },
+              { name: `Important Announcement`, value: `${data.Important}`, inline: true },
+              { name: `Custom Code`, value: `${data.WebsiteCode}`, inline: true },
+              { name: `Language`, value: `${data.Language}`, inline: true },
+              { name: `Bot Version`, value: `${data.BotVersion}`, inline: true } 
+            ]);
           interaction.reply({ embeds: [ListSettings] })
         }
       }
@@ -144,10 +164,8 @@ module.exports.run = async (client, interaction) => {
   }
 
   if (teststring === 'edit') {
-    if (interaction.user.id != '804663016124973076')
-    return interaction.reply({ embeds: [betatesting]});
-    // if (interaction.user.id != interaction.guild.ownerId)
-    //   return interaction.reply({ embeds: [ServerOwner] });
+    if (interaction.user.id != interaction.guild.ownerId)
+      return interaction.reply({ embeds: [ServerOwner] });
 
     MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
       if (err01) throw err;
@@ -249,10 +267,11 @@ module.exports.run = async (client, interaction) => {
         await interaction.reply({ content: 'Edit settings', components: [editdropdown], ephemeral: true });
 
         const MainCollector = interaction.channel.createMessageComponentCollector({
-          componentType: "SELECT_MENU"
+          componentType: ComponentType.StringSelectMenuBuilder
         })
         MainCollector.on("collect", async (collected) => {
           const value = collected.values[0]
+         
 
           if (value === 'tracker') {
             editdropdown.components[0].setDisabled(true)
@@ -672,8 +691,10 @@ module.exports.run = async (client, interaction) => {
                     const MainEmbed = new EmbedBuilder()
                       .setTitle('Done')
                       .setDescription('We have generated your API key')
-                      .addField(`API Key`, `${generator}`)
-                      .addField('Use it here', `[Click Me](http://api.ticketbots.co.uk/api/${generator})`)
+                      .addFields([
+                        { name: `API Key`, value: `${generator}`, inline: false },
+                        { name: `Use it here`, value: `[Click Me]((http://api.ticketbots.co.uk/api/${generator})`, inline: false }
+                      ])
                     collected.reply(({ embeds: [MainEmbed], ephemeral: true }))
                   }
                 })
@@ -681,7 +702,9 @@ module.exports.run = async (client, interaction) => {
                 const AlreadyFoundAPIKey = new EmbedBuilder()
                   .setTitle('Error')
                   .setDescription(`You already have a API key linked to this server. If you want a new one, please react with a ✅. If you want to keep the current one, please react with ❌`)
-                  .addField(`API Key`, `${data.APIKey}`)
+                  .addFields([
+                    { name: `API Key`, value: `${data.APIKey}`, inline: false }
+                  ])
 
                 const reactionerror = await collected.reply(({ embeds: [AlreadyFoundAPIKey], fetchReply: true }))
                 reactionerror.react('✅')
@@ -711,8 +734,10 @@ module.exports.run = async (client, interaction) => {
                       const MainEmbed2 = new EmbedBuilder()
                         .setTitle('Done')
                         .setDescription('We have generated your API key')
-                        .addField(`API Key`, `${generator2}`)
-                        .addField('Use it here', `[Click Me](https://api.ticketbot.co.uk/api/${generator2})`)
+                        .addFields([
+                          { name: `API Key`, value: `${generator2}`, inline: false },
+                          { name: `Use it here`, value: `[Click Me](https://api.ticketbot.co.uk/api/${generator2})`, inline: false },
+                        ])
                       interaction.channel.send(({ embeds: [MainEmbed2], ephemeral: true }))
                     }
                   })
@@ -926,8 +951,10 @@ module.exports.run = async (client, interaction) => {
                     const MainEmbed = new EmbedBuilder()
                       .setTitle('Done')
                       .setDescription('We have generated your code')
-                      .addField(`Code`, `${generator}`)
-                      .addField('Note', `This is still a WIP system. This code does nothing right now.`)
+                      .addFields([
+                        { name: `Code`, value: `${generator}`, inline: false },
+                        { name: `Note`, value: `This is still a WIP system. This code does nothing right now.`, inline: false },
+                      ])
                     collected.reply(({ embeds: [MainEmbed], ephemeral: true }))
                   }
                 })
@@ -935,7 +962,9 @@ module.exports.run = async (client, interaction) => {
                 const AlreadyFoundAPIKey = new EmbedBuilder()
                   .setTitle('Error')
                   .setDescription(`You already have a code linked to this server. If you want a new one, please react with a ✅. If you want to keep the current one, please react with ❌`)
-                  .addField(`Code`, `${data.WebsiteCode}`)
+                  .addFields([
+                    { name: `Code`, value: `${data.WebsiteCode}`, inline: false },
+                  ])
 
                 const reactionerror = await collected.reply(({ embeds: [AlreadyFoundAPIKey], fetchReply: true }))
                 reactionerror.react('✅')
@@ -965,8 +994,11 @@ module.exports.run = async (client, interaction) => {
                       const MainEmbed2 = new EmbedBuilder()
                       .setTitle('Done')
                       .setDescription('We have generated your code')
-                      .addField(`Code`, `${generator}`)
-                      .addField('Note', `This is still a WIP system. This code does nothing right now.`)
+                      .addFields([
+                        { name: `Code`, value: `${generator}`, inline: false },
+                        { name: `Note`, value: `This is still a WIP system. This code does nothing right now.`, inline: false }
+                      ])
+
                       interaction.channel.send(({ embeds: [MainEmbed2], ephemeral: true }))
                     }
                   })
@@ -983,16 +1015,14 @@ module.exports.run = async (client, interaction) => {
   }
 
   if (teststring === 'auto') {
-    // if (interaction.user.id != interaction.guild.ownerId)
-    //   return interaction.reply({ embeds: [ServerOwner] });
-    if (interaction.user.id != '804663016124973076')
-    return interaction.reply({ embeds: [betatesting]});
+    if (interaction.user.id != interaction.guild.ownerId)
+      return interaction.reply({ embeds: [ServerOwner] });
     MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
       if (err) throw err;
       if (data) {
-        const TicketChannelMain2 = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket" && ch.type == "GUILD_TEXT")
-        const FeedbackChannelID2 = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == "GUILD_TEXT")
-        const TicketTrackerMain2 = interaction.guild.channels.cache.find(ch2 => ch2.name.toLowerCase() == `tickets: ${data.TicketNumber}` && ch2.type == "GUILD_VOICE")
+        const TicketChannelMain2 = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket" && ch.type == ChannelType.GuildText)
+        const FeedbackChannelID2 = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == ChannelType.GuildText)
+        const TicketTrackerMain2 = interaction.guild.channels.cache.find(ch2 => ch2.name.toLowerCase() == `tickets: ${data.TicketNumber}` && ch2.type == ChannelType.GuildVoice)
         const SupportRoleMain2 = interaction.guild.roles.cache.find((r) => r.name === 'ticket support');
         const ManagerRoleMain2 = interaction.guild.roles.cache.find((r2) => r2.name === 'ticket manager');
 
@@ -1002,11 +1032,14 @@ module.exports.run = async (client, interaction) => {
         const AutoSetup = new EmbedBuilder()
           .setTitle('Settings')
           .setDescription('This is only suggested to be used if this is your first time using the bot on the server The following thing will be added to settings. React with ✅ to do the setup or react with ❌ to cancel')
-          .addField('TicketChannelID', `${TicketChannelMain2.id}`)
-          .addField('TicketTrackerChannelID', `${TicketTrackerMain2.id}`)
-          .addField('FeedbackChannelID', `${FeedbackChannelID2.id}`)
-          .addField('Support Role', `${SupportRoleMain2}`)
-          .addField('Manager Role', `${ManagerRoleMain2}`)
+          .addFields([
+            { name: `TicketChannelID`, value: `${TicketChannelMain2.id}`, inline: true },
+            { name: `TicketTrackerChannelID`, value: `${TicketTrackerMain2.id}`, inline: false },
+            { name: `FeedbackChannelID`, value: `${FeedbackChannelID2.id}`, inline: false },
+            { name: `Support Role`, value: `${SupportRoleMain2}`, inline: false },
+            { name: `Manager Role`, value: `${ManagerRoleMain2}`, inline: false }
+          ])
+
 
         const AutoSetupEmoji = await interaction.reply({ embeds: [AutoSetup], fetchReply: true })
         AutoSetupEmoji.react('✅')
@@ -1036,10 +1069,8 @@ module.exports.run = async (client, interaction) => {
   }
 
   if (teststring === 'second') {
-    if (interaction.user.id != '804663016124973076')
-    return interaction.reply({ embeds: [betatesting]});
-    // if (interaction.user.id != interaction.guild.ownerId)
-    //   return interaction.reply({ embeds: [ServerOwner] });
+    if (interaction.user.id != interaction.guild.ownerId)
+      return interaction.reply({ embeds: [ServerOwner] });
     MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
       if (err) throw err;
       if (data) {
@@ -1096,7 +1127,7 @@ module.exports.run = async (client, interaction) => {
         await interaction.reply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true });
 
         const MainCollector = interaction.channel.createMessageComponentCollector({
-          componentType: "SELECT_MENU"
+          componentType: componentType.StringSelectMenuBuilder
         })
         MainCollector.on("collect", async (collected) => {
           const value = collected.values[0]
@@ -1108,14 +1139,16 @@ module.exports.run = async (client, interaction) => {
               const MainEmbed = new EmbedBuilder()
                 .setTitle('View second guild')
                 .setDescription('List of the bot settings for the guild')
-                .addField('Second guild', `${data.SecondServer}`, true)
-                .addField('Guild ID', `${data.SecondServerID}`, true)
-                .addField('Support Role ID', `${data.SecondServerSupportRoleID}`, true)
-                .addField('Admin Role ID', `${data.SecondServerAdminRoleID}`, true)
-                .addField('Manager Role ID', `${data.SecondServerManagerRoleID}`, true)
-                .addField('Claim ticket channel ID', `${data.SecondServerClaimChannel}`, true)
-                .addField('Logs channel ID', `${data.SecondServerLogsChannel}`, true)
-                .addField('Transcript channel ID', `${data.SecondServerTranscriptChannel}`, true)
+                .addFields([
+                  { name: `Second guild`, value: `${data.SecondServer}`, inline: true },
+                  { name: `Guild ID`, value: `${data.SecondServerID}`, inline: true },
+                  { name: `Support Role ID,`, value: `${data.SecondServerSupportRoleID}`, inline: true },
+                  { name: `Admin Role ID`, value: `${data.SecondServerAdminRoleID}`, inline: true },
+                  { name: `Manager Role ID`, value: `${data.SecondServerManagerRoleID}`, inline: true },
+                  { name: `Claim ticket channel ID`, value: `${data.SecondServerClaimChannel}`, inline: true },
+                  { name: `Logs channel ID`, value: `${data.SecondServerLogsChannel}`, inline: true },
+                  { name: `Transcript channel ID`, value: `${data.SecondServerTranscriptChannel}`, inline: true}
+                ])
 
                collected.reply({ embeds: [MainEmbed], ephemeral: true })
 
@@ -1124,14 +1157,16 @@ module.exports.run = async (client, interaction) => {
                 const MainEmbed = new EmbedBuilder()
                   .setTitle('View first guild')
                   .setDescription('List of the bot settings for the guild')
-                  .addField('first guild', `${data.SecondServer}`, true)
-                  .addField('Guild ID', `${data.SecondServerID}`, true)
-                  .addField('Support Role ID', `${data.SecondServerSupportRoleID}`, true)
-                  .addField('Admin Role ID', `${data.SecondServerAdminRoleID}`, true)
-                  .addField('Manager Role ID', `${data.SecondServerManagerRoleID}`, true)
-                  .addField('Claim ticket channel ID', `${data.SecondServerClaimChannel}`, true)
-                  .addField('Logs channel ID', `${data.SecondServerLogsChannel}`, true)
-                  .addField('Transcript channel ID', `${data.SecondServerTranscriptChannel}`, true)
+                  .addFields([
+                    { name: `First guild`, value: `${data.SecondServer}`, inline: true },
+                    { name: `Guild ID`, value: `${data.SecondServerID}`, inline: true },
+                    { name: `Support Role ID`, value: `${data.SecondServerSupportRoleID}`, inline: true },
+                    { name: `Admin Role ID`, value: `${data.SecondServerAdminRoleID}`, inline: true },
+                    { name: `Manager Role ID`, value: `${data.SecondServerManagerRoleID}`, inline: true },
+                    { name: `Claim ticket channel ID`, value: `${data.SecondServerClaimChannel}`, inline: true },
+                    { name: `Logs channel ID`, value: `${data.SecondServerLogsChannel}`, inline: true },
+                    { name: `Transcript channel ID`, value: `${data.SecondServerTranscriptChannel}`, inline: true }
+                  ])
 
                 collected.reply({ embeds: [MainEmbed], ephemeral: true })
 

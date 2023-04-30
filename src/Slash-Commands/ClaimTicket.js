@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
 const ClaimTicket = require('../schemas/ticketclaim');
 const { findOneAndUpdate } = require('../schemas/ticketclaim');
-const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { EmbedBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const MainDatabase = require('../schemas/TicketData');
 
@@ -118,6 +118,7 @@ module.exports.run = (client, interaction) => {
                                         data2.save()
 
 
+                                        console.log('test')
                                         const TicketClaimed = new EmbedBuilder()
                                             .setTitle('Ticket Claimed!')
                                             .setDescription(`<#${data2.ChannelID}> has been claimed by <@${interaction.user.id}> You should off be given the permission to send the message in the ticket!`)
@@ -199,7 +200,7 @@ module.exports.run = (client, interaction) => {
 
                                             const VCTicketClaim = interaction.guild.channels.cache.get(data2.ChannelID)
 
-                                            if (VCTicketClaim.type === 'GUILD_TEXT') {
+                                            if (VCTicketClaim.type === ChannelType.GuildText) {
 
                                                 const TicketClaimedDM = new EmbedBuilder()
                                                     .setTitle('Ticket Claimed!')
@@ -222,7 +223,7 @@ module.exports.run = (client, interaction) => {
                                                 ])
                                             }
 
-                                            if (VCTicketClaim.type === 'GUILD_VOICE') {
+                                            if (VCTicketClaim.type === ChannelType.GuildVoice) {
                                                 const dmUserID = data2.id;
 
 
