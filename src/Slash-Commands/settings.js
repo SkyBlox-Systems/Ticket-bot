@@ -39,8 +39,10 @@ module.exports.run = async (client, interaction) => {
   const ServerOwner = new EmbedBuilder()
     .setTitle('Error')
     .setDescription('This command is restricted to guild owner only. Please do not try and use this command because you will not get anywhere.')
-
   
+    const betatesting = new EmbedBuilder()
+    .setTitle('Error')
+    .setDescription('This command is disabled during the discord.js 14 public testing. The command will be re-enabled <t:1681511400:R>')
 
   const teststring = interaction.options.getString('category');
 
@@ -108,6 +110,15 @@ module.exports.run = async (client, interaction) => {
             .setCustomId('last')
             .setLabel('Last')
             .setStyle(ButtonStyle.Primary);
+          const button1 = new Discord.ButtonBuilder()
+            .setCustomId("previousbtn")
+            .setLabel("Previous")
+            .setStyle(ButtonStyle.Danger);
+
+          const button2 = new Discord.ButtonBuilder()
+            .setCustomId("nextbtn")
+            .setLabel("Next")
+            .setStyle(ButtonStyle.Success);
 
           const pages = [
             ListSettingsPaid,
