@@ -1,7 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const pagination = require('discordjs-button-pagination');
+// const pagination = require('discordjs-button-pagination');
+
 const Discord = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 const ProKeys = require('../schemas/keys');
 const { ObjectId } = require('mongodb');
@@ -17,13 +18,13 @@ module.exports.data = new SlashCommandBuilder()
 
 module.exports.run = async (client, interaction) => {
 
-    const notOwner = new MessageEmbed()
+    const notOwner = new EmbedBuilder()
         .setTitle('Owner only command!')
     if (interaction.user.id != interaction.guild.ownerId) {
         interaction.reply({ embeds: [notOwner] })
     }
 
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
         if (err) throw err;
         if (data) {
             if (data.PaidGuild === 'Yes') {
@@ -36,7 +37,7 @@ module.exports.run = async (client, interaction) => {
 
                         data1.Pro.forEach(async (element, i) => {
                             if (element === MSG) {
-                                const foundcode = new MessageEmbed()
+                                const foundcode = new EmbedBuilder()
                                     .setTitle('Premium')
                                     .setDescription(`The code **${MSG}** is a vaild existing code. Would you like to claim premium on this server?`)
                                 const PremiumEmoji = await interaction.reply({ embeds: [foundcode], fetchReply: true })
@@ -50,7 +51,7 @@ module.exports.run = async (client, interaction) => {
 
                                 Collector1.on('collect', () => {
                                     const needed = data1.Pro[0].i
-                                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: MSG }, async (err2, data2) => {
+                                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: MSG }, async (err2, data2) => {
                                         if (err2) throw err;
                                         if (data2) {
                                             data2.save()

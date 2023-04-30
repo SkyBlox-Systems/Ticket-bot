@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
 const blacklist = require('../schemas/Blacklist-schema')
 const { Message } = require('discord.js');
-const {MessageEmbed} = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 
 module.exports.data = new SlashCommandBuilder()
@@ -23,7 +23,7 @@ module.exports.run = (client, interaction) => {
     const idsend = interaction.options.getString('id')
 
     if (interaction.user.id !== '406164395643633665') {
-        const NotOwner = new MessageEmbed()
+        const NotOwner = new EmbedBuilder()
             .setColor('RANDOM')
             .setTimestamp()
             .setTitle('Owner')
@@ -37,12 +37,14 @@ module.exports.run = (client, interaction) => {
         if (err) throw err;
         if (data) {
 
-            const Already = new MessageEmbed()
+            const Already = new EmbedBuilder()
                 .setTitle('Blacklist')
                 .setDescription(`**${idsend}** has already been blacklisted! Reason is provided below`)
-                .addField('Reason', `${data.Reason}`)
-                .addField('Time', `${data.Time} UTC`)
-                .addField('Admin', `${interaction.user.tag}`)
+                .addFields([
+                    { name: 'Reason', value: `${data.Reason}` },
+                    { name: 'Time', value: `${data.Time} UTC` },
+                    { name: 'Admin', value: `${interaction.user.tag}` }
+                ])
                 .setColor('#f6f7f8')
 
 
@@ -57,12 +59,14 @@ module.exports.run = (client, interaction) => {
             data.save()
                 .catch(err => console.log(err))
 
-            const Added = new MessageEmbed()
+            const Added = new EmbedBuilder()
                 .setTitle('Blacklist')
                 .setDescription(`${idsend} has been added to blacklist.`)
-                .addField('Reason', `${reasonsend}`)
-                .addField('Time', `${currentDateAndTime} UTC`)
-                .addField('Admin', `${interaction.user.tag}`)
+                .addFields([
+                    { name: 'Reason', value: `${reasonsend}` },
+                    { name: 'Time', value: `${currentDateAndTime} UTC` },
+                    { name: 'Admin', value: `${interaction.user.tag}` }
+                ])
                 .setColor('#f6f7f8')
 
             interaction.reply({ embeds: [Added] })

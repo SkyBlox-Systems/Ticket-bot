@@ -1,7 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const pagination = require('discordjs-button-pagination');
+// const pagination = require('discordjs-button-pagination');
+
 const Discord = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const ticketclaim = require('../schemas/ticketclaim')
 const MainDatabase = require('../schemas/TicketData')
 
@@ -15,19 +16,19 @@ module.exports.data = new SlashCommandBuilder()
 
     module.exports.run = (client, interaction) => {
 
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
             if (err01) throw err;
             if (data01) {
                 if (data01.ModMail === 'Enabled') {
                     const messageforuser =  interaction.options.getString('message');
-                    ticketclaim.findOne({ ServerID: interaction.guildId, ChannelID: interaction.channel.id }, async (err, data) => {
+                    ticketclaim.findOne({ ServerID: interaction.guild.id, ChannelID: interaction.channel.id }, async (err, data) => {
                         if (err) throw err;
                         if (data) {
                            
             
                             interaction.reply(`The message has been sent to ${data.id}`)
             
-                            const sendtouser = new MessageEmbed()
+                            const sendtouser = new EmbedBuilder()
                             .setTitle(`A reply from ${interaction.member.user.tag}`)
                             .setDescription(`This staff member from this server ${interaction.guild.name} has replied to your ticket. Below is the ticket. For you to reply, please type out ${data.TicketIDs} in our DMs, and we further from there.`)
                             .addField('Ticket Reply:', `${messageforuser}`, true)

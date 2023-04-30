@@ -1,7 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const pagination = require('discordjs-button-pagination');
+// const pagination = require('discordjs-button-pagination');
+
 const Discord = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const ticketclaim = require('../schemas/ticketclaim')
 const MainFile = require('../../slappey.json')
 const MainDatabase = require('../schemas/TicketData')
@@ -27,7 +28,7 @@ module.exports.data = new SlashCommandBuilder()
             .setRequired(true));
 
 module.exports.run = (client, interaction) => {
-    const ServerOwner = new MessageEmbed()
+    const ServerOwner = new EmbedBuilder()
         .setTitle('Error')
         .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
         .setColor('#f9f9fa')
@@ -41,7 +42,7 @@ module.exports.run = (client, interaction) => {
     const newguild = client.guilds.cache.get(MSG);
 
     if (categorys === 'licence') {
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
             if (err) throw err;
             if (data) {
                 if (data.PaidGuild === 'Yes') {
@@ -49,7 +50,7 @@ module.exports.run = (client, interaction) => {
                         interaction.reply('The ID you put in is not a vaild guild ID or the bot is not in the server.')
                     } else {
                         if (newguild !== undefined) {
-                            if (MSG === interaction.guildId) {
+                            if (MSG === interaction.guild.id) {
                                 interaction.reply('You can not transfer the licence to that guild. The guild is this current guild ID.')
                             } else {
                                 MainDatabase.findOne({ ServerID: MSG }, async (err1, data1) => {
@@ -58,7 +59,7 @@ module.exports.run = (client, interaction) => {
                                         if (data1.PaidGuild === 'Yes') {
                                             interaction.reply('This guild already have premium.')
                                         } else {
-                                            const licenceembed = new MessageEmbed()
+                                            const licenceembed = new EmbedBuilder()
                                                 .setTitle('⚠ Warning ⚠')
                                                 .setDescription(`You are about to transfer your premium to this server **${newguild.name} / ${MSG}**. Are you sure you want to do this?`)
                                             const licenceemoji = await interaction.reply({ embeds: [licenceembed], fetchReply: true })
@@ -75,7 +76,7 @@ module.exports.run = (client, interaction) => {
                                                     if (err2) throw err;
                                                     if (data2) {
                                                         data2.save()
-                                                        MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { PaidGuild: 'No', Tier: 'Free', PremiumCode: 'N/A' }, async (err3, data3) => {
+                                                        MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'No', Tier: 'Free', PremiumCode: 'N/A' }, async (err3, data3) => {
                                                             if (err3) throw err;
                                                             if (data3) {
                                                                 data3.save()
@@ -106,7 +107,7 @@ module.exports.run = (client, interaction) => {
     }
 
     if (categorys === 'everything') {
-        MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
             if (err) throw err;
             if (data) {
                 if (newguild === undefined) {
@@ -114,7 +115,7 @@ module.exports.run = (client, interaction) => {
                 } else {
                     if (newguild !== undefined) {
                         if (newguild.ownerId === interaction.guild.ownerId) {
-                            const WarningTransfer = new MessageEmbed()
+                            const WarningTransfer = new EmbedBuilder()
                             .setTitle('⚠ Warning ⚠')
                             .setDescription(`You are about to transfer your guild data to this guild **${newguild.name} / ${MSG}**. Are you sure you want to do this? **YOU WILL LOSE EVERYTHING!**`)
 
@@ -132,7 +133,7 @@ module.exports.run = (client, interaction) => {
                                 if (err1) throw err;
                                 if (data1) {
                                     data1.save()
-                                    MainDatabase.findOneAndRemove({ ServerID: interaction.guildId}, async (err2, data2) => {
+                                    MainDatabase.findOneAndRemove({ ServerID: interaction.guild.id}, async (err2, data2) => {
                                         if (err2) throw err;
                                         if (data2) {
                                             interaction.channel.send('The data has been trasnfered over.')

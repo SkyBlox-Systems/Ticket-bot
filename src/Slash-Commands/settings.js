@@ -1,12 +1,13 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const pagination = require('discordjs-button-pagination');
+// const pagination = require('discordjs-button-pagination');
+
 const Discord = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 const mongoose = require('mongoose');
-const { MessageEmbed, Guild, MessageCollector, Collector } = require('discord.js');
+const { EmbedBuilder, Guild, MessageCollector, Collector } = require('discord.js');
 var today = new Date();
 var dd = String(today.getDate());
-const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, ButtonStyle, ComponentType, ChannelType } = require('discord.js');
 
 module.exports.data = new SlashCommandBuilder()
   .setName('settings')
@@ -35,58 +36,89 @@ module.exports.data = new SlashCommandBuilder()
 
 module.exports.run = async (client, interaction) => {
 
-  const ServerOwner = new MessageEmbed()
+  const ServerOwner = new EmbedBuilder()
     .setTitle('Error')
     .setDescription('This command is restricted to guild owner only. Please do not try and use this command because you will not get anywhere.')
+  
+    const betatesting = new EmbedBuilder()
+    .setTitle('Error')
+    .setDescription('This command is disabled during the discord.js 14 public testing. The command will be re-enabled <t:1681511400:R>')
 
   const teststring = interaction.options.getString('category');
 
   if (teststring === 'view') {
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+
+
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
       if (err) throw err;
       if (data) {
         if (data.PaidGuild === 'Yes') {
-          const ListSettingsPaid = new MessageEmbed()
+          const ListSettingsPaid = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
             .setDescription('List of the bot settings for the guild.')
-            .addField(`ServerID`, `${data.ServerID}`, true)
-            .addField(`TicketChannelID`, `${data.TicketChannelID}`, true)
-            .addField(`TicketNumber`, `${data.TicketNumber}`, true)
-            .addField(`TicketTrackerChannelID`, `${data.TicketTrackerChannelID}`, true)
-            .addField('FeedbackChannelID', `${data.FeedbackChannelID}`, true)
-            .addField(`Use Ticket Reactions`, `${data.UseTicketReactions}`, true)
-            .addField(`Support Role`, `${data.SupportRoleID}`, true)
-            .addField('Manager Role', `${data.ManagerRoleID}`, true)
-            .addField(`Admin Role`, `${data.AdminRoleID}`, true)
-            .addField(`Beta Key`, `${data.BetaKey}`, true)
-            .addField(`Tier`, `${data.Tier}`, true)
-            .addField(`Create Transcripts`, `${data.Transcript}`, true)
-            .addField('API Key', `${data.APIKey}`, true)
-            .addField('Change messages', 'List messages', true)
-            .addField('ModMail', `${data.ModMail}`, true)
-            .addField('Second Server', `${data.SecondServer}`, true)
-            .addField('Important Announcement', `${data.Important}`, true)
-            .addField('Custom Code', `${data.WebsiteCode}`, true)
-            .addField(`Bot Version`, `${data.BotVersion}`, true)
+            .addFields([
+              { name: 'ServerID', value: `${data.ServerID}`, inline: true },
+              { name: `TicketChannelID`, value: `${data.TicketChannelID}`, inline: true },
+              { name: `TicketNumber`, value: `${data.TicketNumber}`, inline: true },
+              { name: `TicketTrackerChannelID`, value: `${data.TicketTrackerChannelID}`, inline: true },
+              { name: 'FeedbackChannelID', value: `${data.FeedbackChannelID}`, inline: true },
+              { name: `Use Ticket Reactions`, value: `${data.UseTicketReactions}`, inline: true },
+              { name: `Support Role`, value: `${data.SupportRoleID}`, inline: true },
+              { name: `Manager Role`, value: `${data.ManagerRoleID}`, inline: true },
+              { name: `Admin Role`, value: `${data.AdminRoleID}`, inline: true },
+              { name: `Beta Key`, value: `${data.BetaKey}`, inline: true },
+              { name: `Tier`, value: `${data.Tier}`, inline: true },
+              { name: `Create Transcripts`, value: `${data.Transcript}`, inline: true },
+              { name: `API Key`, value: `${data.APIKey}`, inline: true },
+              { name: `Change Messages`, value: `List messages`, inline: true },
+              { name: `ModMail`, value: `${data.ModMail}`, inline: true },
+              { name: `Second Guild`, value: `${data.SecondServer}`, inline: true },
+              { name: `Important Announcement`, value: `${data.Important}`, inline: true },
+              { name: `Custom Code`, value: `${data.WebsiteCode}`, inline: true },
+              { name: `Language`, value: `${data.Language}`, inline: true },
+              { name: `Bot Version`, value: `${data.BotVersion}`, inline: true } 
+            ])
 
-          const ListSettingsPaid2 = new MessageEmbed()
+
+          const ListSettingsPaid2 = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
             .setDescription('List of the bot settings for the guild (premium only).')
-            .addField(`Voice Call Tickets`, `${data.VoiceTicket}`, true)
-            .addField(`Amount of custom bots`, `${data.CustomBots}`, true)
-            .addField(`Premium code`, `${data.PremiumCode}`, true)
-            .addField(`Ticket ID Length`, `${data.TicketIDLength}`, true)
-            .addField(`Custom features`, `Soon`, true)
+            .addFields([
+              { name: `Voice Call Tickets`, value: `${data.VoiceTicket}`, inline: true },
+              { name: `Amount of custom bots`, value: `${data.CustomBots}`, inline: true },
+              { name: `Premium code`, value: `${data.PremiumCode}`, inline: true },
+              { name: `Ticket ID Length`, value: `${data.TicketIDLength}`, value: true},
+              { name: 'Custom features', value: `Soon`, inline: true }
+            ])
 
-          const button1 = new Discord.MessageButton()
+            const firstPageButton = new ButtonBuilder()
+            .setCustomId('first')
+            .setLabel('First')
+            .setStyle(ButtonStyle.Primary);
+          
+          const previousPageButton = new ButtonBuilder()
+            .setCustomId('previous')
+            .setLabel('Previous')
+            .setStyle(ButtonStyle.Danger);
+          
+          const nextPageButton = new ButtonBuilder()
+            .setCustomId('next')
+            .setLabel('Next')
+            .setStyle(ButtonStyle.Success);
+          
+          const lastPageButton = new ButtonBuilder()
+            .setCustomId('last')
+            .setLabel('Last')
+            .setStyle(ButtonStyle.Primary);
+          const button1 = new Discord.ButtonBuilder()
             .setCustomId("previousbtn")
             .setLabel("Previous")
-            .setStyle("DANGER");
+            .setStyle(ButtonStyle.Danger);
 
-          const button2 = new Discord.MessageButton()
+          const button2 = new Discord.ButtonBuilder()
             .setCustomId("nextbtn")
             .setLabel("Next")
-            .setStyle("SUCCESS");
+            .setStyle(ButtonStyle.Success);
 
           const pages = [
             ListSettingsPaid,
@@ -94,41 +126,48 @@ module.exports.run = async (client, interaction) => {
           ]
 
 
-          const buttonList = [button1, button2];
+          const buttons  = [firstPageButton, previousPageButton, nextPageButton, lastPageButton];
+
 
 
 
           const timeout = '120000';
 
 
-          pagination(interaction, pages, buttonList, timeout)
+          paginationEmbed(
+            interaction, // The interaction object
+            pages, // Your array of embeds
+            buttons , // Your array of buttons
+            60000, // (Optional) The timeout for the embed in ms, defaults to 60000 (1 minute)
+        );
           interaction.reply({ content: 'Settings Premium' })
 
         } else {
-          if (data.SecondServer === 'Enabled')
-            return interaction.reply('Can not view the settings as this is a second guild')
-          const ListSettings = new MessageEmbed()
+          const ListSettings = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
             .setDescription('List of the bot settings for the server.')
-            .addField(`ServerID`, `${data.ServerID}`, true)
-            .addField(`TicketChannelID`, `${data.TicketChannelID}`, true)
-            .addField(`TicketNumber`, `${data.TicketNumber}`, true)
-            .addField(`TicketTrackerChannelID`, `${data.TicketTrackerChannelID}`, true)
-            .addField('FeedbackChannelID', `${data.FeedbackChannelID}`, true)
-            .addField(`Use Ticket Reactions`, `${data.UseTicketReactions}`, true)
-            .addField(`Support Role`, `${data.SupportRoleID}`, true)
-            .addField('Manager Role', `${data.ManagerRoleID}`, true)
-            .addField(`Admin Role`, `${data.AdminRoleID}`, true)
-            .addField(`Beta Key`, `${data.BetaKey}`, true)
-            .addField(`Tier`, `${data.Tier}`, true)
-            .addField(`Create Transcripts`, `${data.Transcript}`, true)
-            .addField('API Key', `${data.APIKey}`, true)
-            .addField('Change messages', 'List messages', true)
-            .addField('ModMail', `${data.ModMail}`, true)
-            .addField('Important Announcement', `${data.Important}`, true)
-            .addField('Custom Code', `${data.WebsiteCode}`, true)
-            .addField(`Bot Version`, `${data.BotVersion}`, true)
-
+            .addFields([
+              { name: 'ServerID', value: `${data.ServerID}`, inline: true },
+              { name: `TicketChannelID`, value: `${data.TicketChannelID}`, inline: true },
+              { name: `TicketNumber`, value: `${data.TicketNumber}`, inline: true },
+              { name: `TicketTrackerChannelID`, value: `${data.TicketTrackerChannelID}`, inline: true },
+              { name: 'FeedbackChannelID', value: `${data.FeedbackChannelID}`, inline: true },
+              { name: `Use Ticket Reactions`, value: `${data.UseTicketReactions}`, inline: true },
+              { name: `Support Role`, value: `${data.SupportRoleID}`, inline: true },
+              { name: `Manager Role`, value: `${data.ManagerRoleID}`, inline: true },
+              { name: `Admin Role`, value: `${data.AdminRoleID}`, inline: true },
+              { name: `Beta Key`, value: `${data.BetaKey}`, inline: true },
+              { name: `Tier`, value: `${data.Tier}`, inline: true },
+              { name: `Create Transcripts`, value: `${data.Transcript}`, inline: true },
+              { name: `API Key`, value: `${data.APIKey}`, inline: true },
+              { name: `Change Messages`, value: `List messages`, inline: true },
+              { name: `ModMail`, value: `${data.ModMail}`, inline: true },
+              { name: `Second Guild`, value: `${data.SecondServer}`, inline: true },
+              { name: `Important Announcement`, value: `${data.Important}`, inline: true },
+              { name: `Custom Code`, value: `${data.WebsiteCode}`, inline: true },
+              { name: `Language`, value: `${data.Language}`, inline: true },
+              { name: `Bot Version`, value: `${data.BotVersion}`, inline: true } 
+            ]);
           interaction.reply({ embeds: [ListSettings] })
         }
       }
@@ -139,13 +178,13 @@ module.exports.run = async (client, interaction) => {
     if (interaction.user.id != interaction.guild.ownerId)
       return interaction.reply({ embeds: [ServerOwner] });
 
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
       if (err01) throw err;
       if (data01) {
 
-        const editdropdown = new MessageActionRow()
+        const editdropdown = new ActionRowBuilder()
           .addComponents(
-            new MessageSelectMenu()
+            new StringSelectMenuBuilder()
               .setCustomId('edit')
               .setPlaceholder('Nothing selected')
               .addOptions([
@@ -239,17 +278,18 @@ module.exports.run = async (client, interaction) => {
         await interaction.reply({ content: 'Edit settings', components: [editdropdown], ephemeral: true });
 
         const MainCollector = interaction.channel.createMessageComponentCollector({
-          componentType: "SELECT_MENU"
+          componentType: ComponentType.StringSelectMenuBuilder
         })
         MainCollector.on("collect", async (collected) => {
           const value = collected.values[0]
+         
 
           if (value === 'tracker') {
             editdropdown.components[0].setDisabled(true)
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -259,7 +299,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -274,7 +314,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketTrackerChannelID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketTrackerChannelID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -292,7 +332,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -302,7 +342,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -317,7 +357,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketChannelID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketChannelID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -335,7 +375,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -345,7 +385,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -360,7 +400,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { FeedbackChannelID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { FeedbackChannelID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -378,7 +418,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -388,7 +428,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -403,7 +443,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SupportRoleID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SupportRoleID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -421,7 +461,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -431,7 +471,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -446,7 +486,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { AdminRoleID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { AdminRoleID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -464,7 +504,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -474,7 +514,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -489,7 +529,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ManagerRoleID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { ManagerRoleID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -508,15 +548,15 @@ module.exports.run = async (client, interaction) => {
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
 
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.Transcript === 'Yes') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { Transcript: "No" }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { Transcript: "No" }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
-                      const disabledtranscript = new MessageEmbed()
+                      const disabledtranscript = new EmbedBuilder()
                         .setTitle('Transcript has been disabled on this server.')
 
                       collected.reply({ embeds: [disabledtranscript] })
@@ -525,11 +565,11 @@ module.exports.run = async (client, interaction) => {
                   })
                 } else {
                   if (data.Transcript === 'No') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { Transcript: "Yes" }, async (err2, data2) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { Transcript: "Yes" }, async (err2, data2) => {
                       if (err2) throw err;
                       if (data2) {
                         data2.save()
-                        const enabledtranscript = new MessageEmbed()
+                        const enabledtranscript = new EmbedBuilder()
                           .setTitle('Transcript has been enabled on this server.')
                         collected.reply({ embeds: [enabledtranscript] })
                       }
@@ -545,24 +585,24 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.EnableTicket === 'Enabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { EnableTicket: 'Disabled' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { EnableTicket: 'Disabled' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
-                      const disabledtickets = new MessageEmbed()
+                      const disabledtickets = new EmbedBuilder()
                         .setTitle('Tickets has been disabled on this server.')
                       collected.reply({ embeds: [disabledtickets] })
                     }
                   })
                 } else {
                   if (data.EnableTicket === 'Disabled') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { EnableTicket: 'Enabled' }, async (err2, data2) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { EnableTicket: 'Enabled' }, async (err2, data2) => {
                       data2.save()
-                      const enableddtickets = new MessageEmbed()
+                      const enableddtickets = new EmbedBuilder()
                         .setTitle('Tickets has been enabled on this server.')
                       collected.reply({ embeds: [enableddtickets] })
                     })
@@ -577,11 +617,11 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.ModMail === 'Enabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ModMail: 'Disabled' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { ModMail: 'Disabled' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -590,7 +630,7 @@ module.exports.run = async (client, interaction) => {
                   })
                 } else {
                   if (data.ModMail === 'Disabled') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ModMail: 'Enabled' }, async (err2, data2) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { ModMail: 'Enabled' }, async (err2, data2) => {
 
                       if (err2) throw err;
                       if (data2) {
@@ -610,12 +650,12 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.PaidGuild === 'Yes') {
                   if (data.VoiceTicket === 'Disabled') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { VoiceTicket: 'Enabled' }, async (err2, data2) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { VoiceTicket: 'Enabled' }, async (err2, data2) => {
                       if (err2) throw err;
                       if (data2) {
                         data2.save()
@@ -623,7 +663,7 @@ module.exports.run = async (client, interaction) => {
                       }
                     })
                   } else if (data.VoiceTicket === 'Enabled') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { VoiceTicket: 'Disabled' }, async (err3, data3) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { VoiceTicket: 'Disabled' }, async (err3, data3) => {
                       if (err3) throw err;
                       if (data3) {
                         data3.save()
@@ -643,7 +683,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (data.APIKey === "N/A") {
                 function makeURL(length) {
                   var result = '';
@@ -655,23 +695,27 @@ module.exports.run = async (client, interaction) => {
                   return result;
                 }
                 const generator = makeURL(15)
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator }, async (err06, data06) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { APIKey: generator }, async (err06, data06) => {
                   if (err06) throw err06;
                   if (data06) {
                     data06.save()
-                    const MainEmbed = new MessageEmbed()
+                    const MainEmbed = new EmbedBuilder()
                       .setTitle('Done')
                       .setDescription('We have generated your API key')
-                      .addField(`API Key`, `${generator}`)
-                      .addField('Use it here', `[Click Me](http://api.ticketbots.co.uk/api/${generator})`)
+                      .addFields([
+                        { name: `API Key`, value: `${generator}`, inline: false },
+                        { name: `Use it here`, value: `[Click Me]((http://api.ticketbots.co.uk/api/${generator})`, inline: false }
+                      ])
                     collected.reply(({ embeds: [MainEmbed], ephemeral: true }))
                   }
                 })
               } else {
-                const AlreadyFoundAPIKey = new MessageEmbed()
+                const AlreadyFoundAPIKey = new EmbedBuilder()
                   .setTitle('Error')
                   .setDescription(`You already have a API key linked to this server. If you want a new one, please react with a ✅. If you want to keep the current one, please react with ❌`)
-                  .addField(`API Key`, `${data.APIKey}`)
+                  .addFields([
+                    { name: `API Key`, value: `${data.APIKey}`, inline: false }
+                  ])
 
                 const reactionerror = await collected.reply(({ embeds: [AlreadyFoundAPIKey], fetchReply: true }))
                 reactionerror.react('✅')
@@ -694,15 +738,17 @@ module.exports.run = async (client, interaction) => {
                   }
                   const generator2 = makeURL2(15)
 
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { APIKey: generator2 }, async (err07, data07) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { APIKey: generator2 }, async (err07, data07) => {
                     if (err07) throw err07;
                     if (data07) {
                       data07.save()
-                      const MainEmbed2 = new MessageEmbed()
+                      const MainEmbed2 = new EmbedBuilder()
                         .setTitle('Done')
                         .setDescription('We have generated your API key')
-                        .addField(`API Key`, `${generator2}`)
-                        .addField('Use it here', `[Click Me](https://api.ticketbot.co.uk/api/${generator2})`)
+                        .addFields([
+                          { name: `API Key`, value: `${generator2}`, inline: false },
+                          { name: `Use it here`, value: `[Click Me](https://api.ticketbot.co.uk/api/${generator2})`, inline: false },
+                        ])
                       interaction.channel.send(({ embeds: [MainEmbed2], ephemeral: true }))
                     }
                   })
@@ -716,11 +762,11 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.PaidGuild === 'Yes') {
-                  const EditMessage = new MessageEmbed()
+                  const EditMessage = new EmbedBuilder()
                     .setTitle('Edit')
                     .setDescription('Please type out the id you want to set?')
                   collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -730,7 +776,7 @@ module.exports.run = async (client, interaction) => {
                   Collector.on('collect', m1 => {
                   })
                   Collector.on('end', async (m2) => {
-                    const YouSureToUpdate = new MessageEmbed()
+                    const YouSureToUpdate = new EmbedBuilder()
                       .setTitle('You sure?')
                       .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -745,7 +791,7 @@ module.exports.run = async (client, interaction) => {
 
                     Collector1.on('collect', () => {
                       interaction.channel.send({ content: 'Updated', ephemeral: true })
-                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketIDLength: m2.first().content }, async (err1, data1) => {
+                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketIDLength: m2.first().content }, async (err1, data1) => {
                         if (err1) throw err;
                         if (data1) {
                           data1.save()
@@ -773,11 +819,11 @@ module.exports.run = async (client, interaction) => {
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
               collected.reply('Disabled')
-            // MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            // MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
             //   if (err) throw err;
             //   if (data) {
             //     if (data.SecondServer === 'Disabled') {
-            //       MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServer: 'Enabled' }, async (err1, data1) => {
+            //       MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServer: 'Enabled' }, async (err1, data1) => {
             //         if (err1) throw err;
             //         if (data1) {
             //           data1.save()
@@ -786,7 +832,7 @@ module.exports.run = async (client, interaction) => {
             //       })
             //     } else {
             //       if (data.SecondServer === 'Enabled') {
-            //         MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServer: 'Disabled' }, async (err1, data1) => {
+            //         MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServer: 'Disabled' }, async (err1, data1) => {
             //           if (err1) throw err;
             //           if (data1) {
             //             data1.save()
@@ -803,11 +849,11 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.UseTicketReactions === 'Yes') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { UseTicketReactions: 'No' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { UseTicketReactions: 'No' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -816,7 +862,7 @@ module.exports.run = async (client, interaction) => {
                   })
                 } else {
                   if (data.UseTicketReactions === 'No') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { UseTicketReactions: 'Yes' }, async (err1, data1) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { UseTicketReactions: 'Yes' }, async (err1, data1) => {
                       if (err1) throw err;
                       if (data1) {
                         data1.save()
@@ -835,11 +881,11 @@ module.exports.run = async (client, interaction) => {
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
             
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.ROBLOX === 'Disabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ROBLOX: 'Enabled' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { ROBLOX: 'Enabled' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -848,7 +894,7 @@ module.exports.run = async (client, interaction) => {
                   })
                 } else {
                   if (data.ROBLOX === 'Enabled') {
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { ROBLOX: 'Disabled'}, async (err1, data1) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { ROBLOX: 'Disabled'}, async (err1, data1) => {
                       if (err1) throw err;
                       if (data1) {
                         data1.save()
@@ -867,11 +913,11 @@ module.exports.run = async (client, interaction) => {
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
 
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (err) throw err;
               if (data) {
                 if (data.Important === 'Disabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { Important: 'Enabled' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { Important: 'Enabled' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -880,7 +926,7 @@ module.exports.run = async (client, interaction) => {
                   })
                 }
                 if (data.Important === 'Enabled') {
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { Important: 'Disabled' }, async (err1, data1) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { Important: 'Disabled' }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
                       data1.save()
@@ -897,7 +943,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-            MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
               if (data.WebsiteCode === "N/A") {
                 function makeURL(length) {
                   var result = '';
@@ -909,23 +955,27 @@ module.exports.run = async (client, interaction) => {
                   return result;
                 }
                 const generator = makeURL(15)
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { WebsiteCode: generator }, async (err06, data06) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { WebsiteCode: generator }, async (err06, data06) => {
                   if (err06) throw err06;
                   if (data06) {
                     data06.save()
-                    const MainEmbed = new MessageEmbed()
+                    const MainEmbed = new EmbedBuilder()
                       .setTitle('Done')
                       .setDescription('We have generated your code')
-                      .addField(`Code`, `${generator}`)
-                      .addField('Note', `This is still a WIP system. This code does nothing right now.`)
+                      .addFields([
+                        { name: `Code`, value: `${generator}`, inline: false },
+                        { name: `Note`, value: `This is still a WIP system. This code does nothing right now.`, inline: false },
+                      ])
                     collected.reply(({ embeds: [MainEmbed], ephemeral: true }))
                   }
                 })
               } else {
-                const AlreadyFoundAPIKey = new MessageEmbed()
+                const AlreadyFoundAPIKey = new EmbedBuilder()
                   .setTitle('Error')
                   .setDescription(`You already have a code linked to this server. If you want a new one, please react with a ✅. If you want to keep the current one, please react with ❌`)
-                  .addField(`Code`, `${data.WebsiteCode}`)
+                  .addFields([
+                    { name: `Code`, value: `${data.WebsiteCode}`, inline: false },
+                  ])
 
                 const reactionerror = await collected.reply(({ embeds: [AlreadyFoundAPIKey], fetchReply: true }))
                 reactionerror.react('✅')
@@ -948,15 +998,18 @@ module.exports.run = async (client, interaction) => {
                   }
                   const generator2 = makeURL2(15)
 
-                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { WebsiteCode: generator2 }, async (err07, data07) => {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { WebsiteCode: generator2 }, async (err07, data07) => {
                     if (err07) throw err07;
                     if (data07) {
                       data07.save()
-                      const MainEmbed2 = new MessageEmbed()
+                      const MainEmbed2 = new EmbedBuilder()
                       .setTitle('Done')
                       .setDescription('We have generated your code')
-                      .addField(`Code`, `${generator}`)
-                      .addField('Note', `This is still a WIP system. This code does nothing right now.`)
+                      .addFields([
+                        { name: `Code`, value: `${generator}`, inline: false },
+                        { name: `Note`, value: `This is still a WIP system. This code does nothing right now.`, inline: false }
+                      ])
+
                       interaction.channel.send(({ embeds: [MainEmbed2], ephemeral: true }))
                     }
                   })
@@ -975,26 +1028,29 @@ module.exports.run = async (client, interaction) => {
   if (teststring === 'auto') {
     if (interaction.user.id != interaction.guild.ownerId)
       return interaction.reply({ embeds: [ServerOwner] });
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
       if (err) throw err;
       if (data) {
-        const TicketChannelMain2 = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket" && ch.type == "GUILD_TEXT")
-        const FeedbackChannelID2 = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == "GUILD_TEXT")
-        const TicketTrackerMain2 = interaction.guild.channels.cache.find(ch2 => ch2.name.toLowerCase() == `tickets: ${data.TicketNumber}` && ch2.type == "GUILD_VOICE")
+        const TicketChannelMain2 = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket" && ch.type == ChannelType.GuildText)
+        const FeedbackChannelID2 = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == ChannelType.GuildText)
+        const TicketTrackerMain2 = interaction.guild.channels.cache.find(ch2 => ch2.name.toLowerCase() == `tickets: ${data.TicketNumber}` && ch2.type == ChannelType.GuildVoice)
         const SupportRoleMain2 = interaction.guild.roles.cache.find((r) => r.name === 'ticket support');
         const ManagerRoleMain2 = interaction.guild.roles.cache.find((r2) => r2.name === 'ticket manager');
 
 
 
 
-        const AutoSetup = new MessageEmbed()
+        const AutoSetup = new EmbedBuilder()
           .setTitle('Settings')
           .setDescription('This is only suggested to be used if this is your first time using the bot on the server The following thing will be added to settings. React with ✅ to do the setup or react with ❌ to cancel')
-          .addField('TicketChannelID', `${TicketChannelMain2.id}`)
-          .addField('TicketTrackerChannelID', `${TicketTrackerMain2.id}`)
-          .addField('FeedbackChannelID', `${FeedbackChannelID2.id}`)
-          .addField('Support Role', `${SupportRoleMain2}`)
-          .addField('Manager Role', `${ManagerRoleMain2}`)
+          .addFields([
+            { name: `TicketChannelID`, value: `${TicketChannelMain2.id}`, inline: true },
+            { name: `TicketTrackerChannelID`, value: `${TicketTrackerMain2.id}`, inline: false },
+            { name: `FeedbackChannelID`, value: `${FeedbackChannelID2.id}`, inline: false },
+            { name: `Support Role`, value: `${SupportRoleMain2}`, inline: false },
+            { name: `Manager Role`, value: `${ManagerRoleMain2}`, inline: false }
+          ])
+
 
         const AutoSetupEmoji = await interaction.reply({ embeds: [AutoSetup], fetchReply: true })
         AutoSetupEmoji.react('✅')
@@ -1006,7 +1062,7 @@ module.exports.run = async (client, interaction) => {
         const Collector34 = AutoSetupEmoji.createReactionCollector({ filter: Filter34, max: 1, time: 2 * 60 * 1000 });
 
         Collector33.on('collect', () => {
-          MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { TicketChannelID: TicketChannelMain2.id, TicketTrackerChannelID: TicketTrackerMain2.id, FeedbackChannelID: FeedbackChannelID2.id, SupportRoleID: SupportRoleMain2.id, ManagerRoleID: ManagerRoleMain2.id }, async (err9, data9) => {
+          MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketChannelID: TicketChannelMain2.id, TicketTrackerChannelID: TicketTrackerMain2.id, FeedbackChannelID: FeedbackChannelID2.id, SupportRoleID: SupportRoleMain2.id, ManagerRoleID: ManagerRoleMain2.id }, async (err9, data9) => {
             if (err9) throw err9;
             if (data9) {
               data9.save()
@@ -1026,14 +1082,14 @@ module.exports.run = async (client, interaction) => {
   if (teststring === 'second') {
     if (interaction.user.id != interaction.guild.ownerId)
       return interaction.reply({ embeds: [ServerOwner] });
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
       if (err) throw err;
       if (data) {
         if (data.SecondServer === 'Disabled')
           return interaction.reply('This command can not be used as the feature is disabled within this guild.')
-        const editdropdown = new MessageActionRow()
+        const editdropdown = new ActionRowBuilder()
           .addComponents(
-            new MessageSelectMenu()
+            new StringSelectMenuBuilder()
               .setCustomId('edit')
               .setPlaceholder('Nothing selected')
               .addOptions([
@@ -1082,7 +1138,7 @@ module.exports.run = async (client, interaction) => {
         await interaction.reply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true });
 
         const MainCollector = interaction.channel.createMessageComponentCollector({
-          componentType: "SELECT_MENU"
+          componentType: componentType.StringSelectMenuBuilder
         })
         MainCollector.on("collect", async (collected) => {
           const value = collected.values[0]
@@ -1091,33 +1147,37 @@ module.exports.run = async (client, interaction) => {
             editdropdown.components[0].setDisabled(true)
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (data.TypeOfServer == 'First') {
-              const MainEmbed = new MessageEmbed()
+              const MainEmbed = new EmbedBuilder()
                 .setTitle('View second guild')
                 .setDescription('List of the bot settings for the guild')
-                .addField('Second guild', `${data.SecondServer}`, true)
-                .addField('Guild ID', `${data.SecondServerID}`, true)
-                .addField('Support Role ID', `${data.SecondServerSupportRoleID}`, true)
-                .addField('Admin Role ID', `${data.SecondServerAdminRoleID}`, true)
-                .addField('Manager Role ID', `${data.SecondServerManagerRoleID}`, true)
-                .addField('Claim ticket channel ID', `${data.SecondServerClaimChannel}`, true)
-                .addField('Logs channel ID', `${data.SecondServerLogsChannel}`, true)
-                .addField('Transcript channel ID', `${data.SecondServerTranscriptChannel}`, true)
+                .addFields([
+                  { name: `Second guild`, value: `${data.SecondServer}`, inline: true },
+                  { name: `Guild ID`, value: `${data.SecondServerID}`, inline: true },
+                  { name: `Support Role ID,`, value: `${data.SecondServerSupportRoleID}`, inline: true },
+                  { name: `Admin Role ID`, value: `${data.SecondServerAdminRoleID}`, inline: true },
+                  { name: `Manager Role ID`, value: `${data.SecondServerManagerRoleID}`, inline: true },
+                  { name: `Claim ticket channel ID`, value: `${data.SecondServerClaimChannel}`, inline: true },
+                  { name: `Logs channel ID`, value: `${data.SecondServerLogsChannel}`, inline: true },
+                  { name: `Transcript channel ID`, value: `${data.SecondServerTranscriptChannel}`, inline: true}
+                ])
 
                collected.reply({ embeds: [MainEmbed], ephemeral: true })
 
             } else {
               if (data.TypeOfServer === 'Second') {
-                const MainEmbed = new MessageEmbed()
+                const MainEmbed = new EmbedBuilder()
                   .setTitle('View first guild')
                   .setDescription('List of the bot settings for the guild')
-                  .addField('first guild', `${data.SecondServer}`, true)
-                  .addField('Guild ID', `${data.SecondServerID}`, true)
-                  .addField('Support Role ID', `${data.SecondServerSupportRoleID}`, true)
-                  .addField('Admin Role ID', `${data.SecondServerAdminRoleID}`, true)
-                  .addField('Manager Role ID', `${data.SecondServerManagerRoleID}`, true)
-                  .addField('Claim ticket channel ID', `${data.SecondServerClaimChannel}`, true)
-                  .addField('Logs channel ID', `${data.SecondServerLogsChannel}`, true)
-                  .addField('Transcript channel ID', `${data.SecondServerTranscriptChannel}`, true)
+                  .addFields([
+                    { name: `First guild`, value: `${data.SecondServer}`, inline: true },
+                    { name: `Guild ID`, value: `${data.SecondServerID}`, inline: true },
+                    { name: `Support Role ID`, value: `${data.SecondServerSupportRoleID}`, inline: true },
+                    { name: `Admin Role ID`, value: `${data.SecondServerAdminRoleID}`, inline: true },
+                    { name: `Manager Role ID`, value: `${data.SecondServerManagerRoleID}`, inline: true },
+                    { name: `Claim ticket channel ID`, value: `${data.SecondServerClaimChannel}`, inline: true },
+                    { name: `Logs channel ID`, value: `${data.SecondServerLogsChannel}`, inline: true },
+                    { name: `Transcript channel ID`, value: `${data.SecondServerTranscriptChannel}`, inline: true }
+                  ])
 
                 collected.reply({ embeds: [MainEmbed], ephemeral: true })
 
@@ -1130,7 +1190,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1140,7 +1200,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -1155,7 +1215,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -1173,7 +1233,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1183,7 +1243,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -1198,7 +1258,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerSupportRoleID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerSupportRoleID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -1216,7 +1276,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1226,7 +1286,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -1241,7 +1301,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerManagerRoleID: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerManagerRoleID: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -1259,7 +1319,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1269,7 +1329,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -1284,7 +1344,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerClaimChannel: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerClaimChannel: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -1302,7 +1362,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1312,7 +1372,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -1327,7 +1387,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerLogsChannel: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerLogsChannel: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()
@@ -1345,7 +1405,7 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return interaction.reply({ embeds: [ServerOwner] });
-            const EditMessage = new MessageEmbed()
+            const EditMessage = new EmbedBuilder()
               .setTitle('Edit')
               .setDescription('Please type out the id you want to set?')
             collected.reply({ embeds: [EditMessage], ephemeral: true })
@@ -1355,7 +1415,7 @@ module.exports.run = async (client, interaction) => {
             Collector.on('collect', m1 => {
             })
             Collector.on('end', async (m2) => {
-              const YouSureToUpdate = new MessageEmbed()
+              const YouSureToUpdate = new EmbedBuilder()
                 .setTitle('You sure?')
                 .setDescription(`You sure that you want to change it to ${m2.first().content}?`)
 
@@ -1370,7 +1430,7 @@ module.exports.run = async (client, interaction) => {
 
               Collector1.on('collect', () => {
                 interaction.channel.send({ content: 'Updated', ephemeral: true })
-                MainDatabase.findOneAndUpdate({ ServerID: interaction.guildId }, { SecondServerTranscriptChannel: m2.first().content }, async (err1, data1) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServerTranscriptChannel: m2.first().content }, async (err1, data1) => {
                   if (err1) throw err;
                   if (data1) {
                     data1.save()

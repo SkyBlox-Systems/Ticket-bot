@@ -1,13 +1,14 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const pagination = require('discordjs-button-pagination');
+// const pagination = require('discordjs-button-pagination');
+
 const Discord = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 const mongoose = require('mongoose');
-const { MessageEmbed, Guild, MessageCollector, Collector } = require('discord.js');
+const { EmbedBuilder, Guild, MessageCollector, Collector } = require('discord.js');
 var today = new Date();
 var dd = String(today.getDate());
-const { MessageActionRow, MessageSelectMenu } = require('discord.js');
-const { Modal, TextInputComponent } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { ModalBuilder, TextInputBuilder, ButtonStyle } = require('discord.js');
 
 
 module.exports.data = new SlashCommandBuilder()
@@ -29,66 +30,66 @@ module.exports.data = new SlashCommandBuilder()
 module.exports.run = async (client, interaction) => {
     const categorys = interaction.options.getString('category')
     if (categorys === 'user') {
-        const usermodal = new Modal()
+        const userModalBuilder = new ModalBuilder()
             .setTitle('Report user')
             .setCustomId("reportuser")
             .addComponents(
-                new MessageActionRow({
+                new ActionRowBuilder({
                     components: [
-                        new TextInputComponent()
+                        new TextInputBuilder()
                             .setCustomId("reportUserID")
                             .setPlaceholder("Type it in here")
                             .setLabel("Put user ID in here you would like to report.")
-                            .setStyle('SHORT')
+                            .setStyle(ButtonStyle.Primary)
                     ]
                 }),
-                new MessageActionRow({
+                new ActionRowBuilder({
                     components: [
-                        new TextInputComponent()
+                        new TextInputBuilder()
                             .setCustomId("reportUserMessage")
                             .setPlaceholder("Type it in here")
                             .setLabel("Please type out what the user has done.")
-                            .setStyle('PARAGRAPH')
+                            .setStyle(ButtonStyle.Primary)
                     ]
                 }),
-                new MessageActionRow({
+                new ActionRowBuilder({
                     components: [
-                        new TextInputComponent()
+                        new TextInputBuilder()
                             .setCustomId("reportUserImages")
                             .setPlaceholder("Type it in here")
                             .setLabel("Please provide discord URL images.")
-                            .setStyle('PARAGRAPH')
+                            .setStyle(ButtonStyle.Primary)
                     ]
                 }),
             )
-       await interaction.showModal(usermodal)
+       await interaction.showModal(userModalBuilder)
     }
     if (categorys === 'bug') {
-        const usermodal = new Modal()
+        const userModalBuilder = new ModalBuilderBuilder()
             .setTitle('Report bug')
             .setCustomId("reportbug")
             .addComponents(
-                new MessageActionRow({
+                new ActionRowBuilder({
                     components: [
-                        new TextInputComponent()
+                        new TextInputBuilder()
                             .setCustomId("reportBugCommand")
                             .setPlaceholder("Type it in here")
                             .setLabel("What command is it happening in?")
-                            .setStyle('SHORT')
+                            .setStyle(ButtonStyle.Primary)
                     ]
                 }),
-                new MessageActionRow({
+                new ActionRowBuilder({
                     components: [
-                        new TextInputComponent()
+                        new TextInputBuilder()
                             .setCustomId("reportCommandMessage")
                             .setPlaceholder("Type it in here")
                             .setLabel("Please type out what is happening.")
                             .setStyle('PARAGRAPH')
                     ]
                 }),
-                new MessageActionRow({
+                new ActionRowBuilder({
                     components: [
-                        new TextInputComponent()
+                        new TextInputBuilder()
                             .setCustomId("reportCommandImages")
                             .setPlaceholder("Type it in here")
                             .setLabel("Please provide discord URL images.")

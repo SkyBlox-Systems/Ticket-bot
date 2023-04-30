@@ -1,17 +1,25 @@
 
-const { Client, Intents, Interaction } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, Interaction } = require('discord.js');
 const { registerCommands, registerEvents, registerSlashCommands } = require('./utils/registry');
 const config = require('../slappey.json');
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_WEBHOOKS, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGE_TYPING, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, Intents.FLAGS.DIRECT_MESSAGE_TYPING, Intents.FLAGS.GUILD_SCHEDULED_EVENTS], partials: ['CHANNEL'] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.AutoModerationConfiguration, GatewayIntentBits.AutoModerationExecution, GatewayIntentBits.DirectMessageReactions, GatewayIntentBits.DirectMessageTyping, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildBans, GatewayIntentBits.GuildEmojisAndStickers, GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildInvites, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMessageTyping, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildScheduledEvents, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildWebhooks], partials: [Partials.Channel] })
+// const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_WEBHOOKS, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGE_TYPING, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, Intents.FLAGS.DIRECT_MESSAGE_TYPING, Intents.FLAGS.GUILD_SCHEDULED_EVENTS], partials: ['CHANNEL'] });
 const DataBaseMongo = require('./mongo');
 require('./slash-register')();
 let commands = require('./slash-register').commands;
 // console.log(commands);
-const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { Permissions } = require('discord.js');
-const { MessageCollector, Collector } = require('discord.js');
+const { MessageCollector, Collector, ChannelType } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const mongoose = require('mongoose');
+const Stats = require('discord-live-stats');
+const DLU = require("@dbd-soft-ui/logs")
+
+// const Poster = new Stats.Client(client, {
+//   stats_uri: 'https://shard1.ticketbots.co.uk/',
+//   authorizationkey: "ticketbot",
+// })
 
 
 
@@ -36,8 +44,9 @@ const GiveawayDatabase = require('./schemas/giveaways-user-data');
   await registerEvents(client, '../events');
   await client.login(config.token);
   DataBaseMongo.init();
- // require('./dashboard/server')
+  // require('./dashboard/server')
 })();
+
 
 
 
@@ -45,19 +54,24 @@ client.on('ready', () => {
   let commands = client.application.commands;
 })
 
-
-
+client.on("ready", () => {
+  DLU.register(client, {
+    dashboard_url: "https://dashboard.ticketbots.co.uk",
+    key: "richard1234YT!"
+  })
+})
 
 client.on('guildCreate', guild => {
-  const defaultChannel = guild.channels.cache.find(channel => channel.type === 'GUILD_TEXT' && channel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES))
-
-
-  const welcome = new MessageEmbed()
+ // const defaultChannel = guild.channels.cache.find(channel => channel.type === ChannelType.GuildText && channel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES))
+ const defaultChannel = guild.channels.cache.find(channel => channel.type === ChannelType.GuildText)
+  const welcome = new EmbedBuilder()
     .setTitle('Setup')
     .setDescription('Hey! Thank you for adding us to our server! We are exicted to be here. Whenever u are ready, please run `/setup` to start!')
-    .addField('Website', `[Click me](https://www.ticketbots.co.uk/)`, true)
-    .addField('Invite bot', `[Click me](https://discord.com/oauth2/authorize?client_id=799231222303293461&scope=bot%20applications.commands&permissions=2147486783)`, true)
-    .addField('Status', '[Click me](https://status.skybloxsystems.com)', true)
+    .addFields([
+      { name: `Website`, value: `[Click me](https://www.ticketbots.co.uk/)`, inline: true },
+      { name: `Invite Bot`, value: `[Click me](https://discord.com/oauth2/authorize?client_id=799231222303293461&scope=bot%20applications.commands&permissions=2147486783)`, inline: true },
+      { name: `Status`, value: `[Click me](https://status.skybloxsystems.com)`, inline: true },
+    ])
     .setImage('https://cdn.discordapp.com/attachments/978357687630856192/1065654939063439360/Welcome.png')
     .setColor('#f6f7f8')
 
@@ -85,8 +99,8 @@ client.on('interactionCreate', interaction => {
   let commandMethod = commands.get(name);
   if (commandMethod) {
     blacklist.findOne({ UserID: interaction.user.id }, async (err, data) => {
-      const check = await db.findOne({ Guild: interaction.guildId })
-      const versionCheck = await MainDatabase.findOne({ ServerID: interaction.guildId })
+      const check = await db.findOne({ Guild: interaction.guild.id })
+      const versionCheck = await MainDatabase.findOne({ ServerID: interaction.guild.id })
       if (err) throw err;
       if (!data) {
         if (name === 'setup') {
@@ -96,7 +110,7 @@ client.on('interactionCreate', interaction => {
             commandMethod(client, interaction)
           } else {
             if (versionCheck === null) {
-              const notdata = new MessageEmbed()
+              const notdata = new EmbedBuilder()
                 .setTitle('No data')
                 .setDescription('It seems like there is no server settings stored within the database. Please run `/setup`.')
 
@@ -104,13 +118,13 @@ client.on('interactionCreate', interaction => {
 
             } else {
               if (versionCheck.BotVersion !== config.BotVersions) {
-                const UpdateBot = new MessageEmbed()
+                const UpdateBot = new EmbedBuilder()
                   .setTitle('Update bot')
                   .setDescription(`You are currently running v${versionCheck.BotVersion} of the bot. Please update it to v${config.BotVersions}. Run the command /upgrade to update the bot.`)
                 await interaction.reply({ embeds: [UpdateBot] })
               } else {
                 if (check) {
-                  const DisabledCommand = new MessageEmbed()
+                  const DisabledCommand = new EmbedBuilder()
                     .setTitle('Disabled')
                     .setDescription(`The following command **/${interaction.commandName}** has been disabled in the server by an administrator`)
                     .setColor('#f6f7f8')
@@ -118,7 +132,7 @@ client.on('interactionCreate', interaction => {
                   if (versionCheck.Important === 'Enabled') {
                     commandMethod(client, interaction)
                     // commandMethod(client, interaction)
-                    // const ImportantAnnouncement = new MessageEmbed()
+                    // const ImportantAnnouncement = new EmbedBuilder()
                     //   .setTitle('Imporant announcement from bot owner')
                     //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
                     //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
@@ -134,7 +148,7 @@ client.on('interactionCreate', interaction => {
                   if (versionCheck.Important === 'Enabled') {
                     commandMethod(client, interaction)
                     //  commandMethod(client, interaction)
-                    // const ImportantAnnouncement = new MessageEmbed()
+                    // const ImportantAnnouncement = new EmbedBuilder()
                     //   .setTitle('Imporant announcement from bot owner')
                     //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
                     //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
@@ -152,12 +166,14 @@ client.on('interactionCreate', interaction => {
           }
         }
       } else {
-        const BlacklistedFromBot = new MessageEmbed()
+        const BlacklistedFromBot = new EmbedBuilder()
           .setTitle('Blacklisted!')
           .setDescription('You have been blacklisted from using Ticket Bot!')
-          .addField('Reason', `${data.Reason}`)
-          .addField('Time', `${data.Time} UTC`)
-          .addField('Admin', `${data.Admin}`)
+          .addFields([
+            { name: `Reason`, value: `${data.Reason}`, inline: false },
+            { name: `Time`, value: `${data.Time} UTC`, inline: false },
+            { name: `Admin`, value: `${data.Admin}`, inline: false}
+          ])
         interaction.reply({ embeds: [BlacklistedFromBot] })
       }
 
@@ -171,88 +187,92 @@ client.on('interactionCreate', interaction => {
   const TicketChannelIdChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'feedback' && ch.type == 'GUILD_TEXT');
 
   if (!interaction.isModalSubmit()) return;
-    if (interaction.customId === "user") {
-      const usertitle = interaction.fields.getTextInputValue("userFeedbackID")
-      const userfeedback = interaction.fields.getTextInputValue("userMessage")
+  if (interaction.customId === "user") {
+    const usertitle = interaction.fields.getTextInputValue("userFeedbackID")
+    const userfeedback = interaction.fields.getTextInputValue("userMessage")
 
-      const userEmbed = new MessageEmbed()
-        .setTitle('New feedback!')
-        .setDescription(`${interaction.user.id} has sent a user feedback message. Below is the message`)
-        .addField('User', `${usertitle}`)
-        .addField('Message', `${userfeedback}`)
+    const userEmbed = new EmbedBuilder()
+      .setTitle('New feedback!')
+      .setDescription(`${interaction.user.id} has sent a user feedback message. Below is the message`)
+      .addField('User', `${usertitle}`)
+      .addField('Message', `${userfeedback}`)
 
-      TicketChannelIdChannel.send({ embeds: [userEmbed] })
-      interaction.reply('Feedback sent!')
-    }
-    if (interaction.customId === "giveaway") {
-      const GiveawayEmail = interaction.fields.getTextInputValue("Email")
-      const GiveawayWhy = interaction.fields.getTextInputValue("Why")
+    TicketChannelIdChannel.send({ embeds: [userEmbed] })
+    interaction.reply('Feedback sent!')
+  }
+  if (interaction.customId === "giveaway") {
+    const GiveawayEmail = interaction.fields.getTextInputValue("Email")
+    const GiveawayWhy = interaction.fields.getTextInputValue("Why")
 
-      const GiveawayDM = new MessageEmbed()
-        .setTitle('Giveaway')
-        .setDescription('You have entered into the christmas giveaway! You can not enter again unless told to by admins of the bot.')
+    const GiveawayDM = new EmbedBuilder()
+      .setTitle('Giveaway')
+      .setDescription('You have entered into the christmas giveaway! You can not enter again unless told to by admins of the bot.')
 
-       const usergiveaway = client.users.cache.get(interaction.user.id)
-       usergiveaway.send({ embeds: [GiveawayDM]})
+    const usergiveaway = client.users.cache.get(interaction.user.id)
+    usergiveaway.send({ embeds: [GiveawayDM] })
 
-      GiveawayDatabase.findOne({ UserID: interaction.user.id }, (err, data) => {
-        if (err) throw err;
-        if (data) {
-          // do nothing
-        } else {
-          data = new GiveawayDatabase({
-            UserID: interaction.user.id,
-            Email: GiveawayEmail,
-            Why: GiveawayWhy,
-            Usage: 1
-          })
-          data.save()
-        }
-      })
-    }
-    if (interaction.customId === "reportuser") {
-      const ReportUserIDs = interaction.fields.getTextInputValue("reportUserID")
-      const reportUserMessages = interaction.fields.getTextInputValue("reportUserMessage")
-      const reportUserImagess = interaction.fields.getTextInputValue("reportUserImages")
+    GiveawayDatabase.findOne({ UserID: interaction.user.id }, (err, data) => {
+      if (err) throw err;
+      if (data) {
+        // do nothing
+      } else {
+        data = new GiveawayDatabase({
+          UserID: interaction.user.id,
+          Email: GiveawayEmail,
+          Why: GiveawayWhy,
+          Usage: 1
+        })
+        data.save()
+      }
+    })
+  }
+  if (interaction.customId === "reportuser") {
+    const ReportUserIDs = interaction.fields.getTextInputValue("reportUserID")
+    const reportUserMessages = interaction.fields.getTextInputValue("reportUserMessage")
+    const reportUserImagess = interaction.fields.getTextInputValue("reportUserImages")
 
-      const ReportUserDM = new MessageEmbed()
-        .setTitle('Report')
-        .setDescription('Thank you for sending a report about a user. One of admins will look in this ASAP. You will get a update soon.')
+    const ReportUserDM = new EmbedBuilder()
+      .setTitle('Report')
+      .setDescription('Thank you for sending a report about a user. One of admins will look in this ASAP. You will get a update soon.')
 
-       const reportuserss = client.users.cache.get(interaction.user.id)
-       reportuserss.send({ embeds: [ReportUserDM]})
+    const reportuserss = client.users.cache.get(interaction.user.id)
+    reportuserss.send({ embeds: [ReportUserDM] })
 
-       const LogChannel = client.channels.cache.get('1065644970209456209')
-       const reportuserchannel = new MessageEmbed()
-       .setTitle('Report user received')
-       .addField('User ID who sent it in:', `${interaction.user.id}`, true)
-       .addField('User ID who was reported:', `${ReportUserIDs}`, true)
-       .addField('Message:', `${reportUserMessages}`, true)
-       .addField('Images provided:', `${reportUserImagess}`, true)
-       LogChannel.send({ embeds: [reportuserchannel]})
-    }
+    const LogChannel = client.channels.cache.get('1065657960719716482')
+    const reportuserchannel = new EmbedBuilder()
+      .setTitle('Report user received')
+      .addFields([
+        { name: `User ID who sent it in: `, value: `${interaction.user.id}`, inline: true },
+        { name: `User ID who was reported: `, value: `${ReportUserIDs}`, inline: true },
+        { name: `Message`, value: `${reportUserMessages}`, inline: true },
+        { name: `Images provided`, value: `${reportUserImagess}`, inline: true }
+      ])
+    LogChannel.send({ embeds: [reportuserchannel] })
+  }
 
-    if (interaction.customId === "reportbug") {
-      const ReportUserIDs = interaction.fields.getTextInputValue("reportBugCommand")
-      const reportUserMessages = interaction.fields.getTextInputValue("reportCommandMessage")
-      const reportUserImagess = interaction.fields.getTextInputValue("reportCommandImages")
+  if (interaction.customId === "reportbug") {
+    const ReportUserIDs = interaction.fields.getTextInputValue("reportBugCommand")
+    const reportUserMessages = interaction.fields.getTextInputValue("reportCommandMessage")
+    const reportUserImagess = interaction.fields.getTextInputValue("reportCommandImages")
 
-      const ReportUserDM = new MessageEmbed()
-        .setTitle('Report')
-        .setDescription('Thank you for sending a report about a command. One of admins will look in this ASAP. You will get a update soon.')
+    const ReportUserDM = new EmbedBuilder()
+      .setTitle('Report')
+      .setDescription('Thank you for sending a report about a command. One of admins will look in this ASAP. You will get a update soon.')
 
-       const reportuserss = client.users.cache.get(interaction.user.id)
-       reportuserss.send({ embeds: [ReportUserDM]})
+    const reportuserss = client.users.cache.get(interaction.user.id)
+    reportuserss.send({ embeds: [ReportUserDM] })
 
-       const LogChannel = client.channels.cache.get('1065644970209456209')
-       const reportuserchannel = new MessageEmbed()
-       .setTitle('Report command received')
-       .addField('User ID who sent it in:', `${interaction.user.id}`, true)
-       .addField('Command what was reported:', `/${ReportUserIDs}`, true)
-       .addField('Message:', `${reportUserMessages}`, true)
-       .addField('Images provided:', `${reportUserImagess}`, true)
-       LogChannel.send({ embeds: [reportuserchannel]})
-    }
+    const LogChannel = client.channels.cache.get('1065657945720893491')
+    const reportuserchannel = new EmbedBuilder()
+      .setTitle('Report command received')
+      .addFields([
+        { name: `User ID who sent it in: `, value: `${interaction.user.id}`, inline: true },
+        { name: `User ID who was reported: `, value: `${ReportUserIDs}`, inline: true },
+        { name: `Message`, value: `${reportUserMessages}`, inline: true },
+        { name: `Images provided`, value: `${reportUserImagess}`, inline: true }
+      ])
+    LogChannel.send({ embeds: [reportuserchannel] })
+  }
 });
 
 
@@ -287,10 +307,12 @@ client.on("messageCreate", msg => {
               })
 
               Collector40.on('end', m33 => {
-                const senddmmessage = new MessageEmbed()
+                const senddmmessage = new EmbedBuilder()
                   .setTitle(`New reply from ${msg.author.tag}`)
                   .setDescription('Please use the command `/ticketreply` to reply to this message.')
-                  .addField('Ticket reply:', `${m33.first().content}`, true)
+                  .addFields([
+                    { name: `Ticket Reply: `, value: `${m33.first().content}`, inline: true}
+                  ])
                   .setTimestamp()
                   .setFooter({ text: `user id: ${msg.author.id}` });
 
@@ -314,7 +336,7 @@ client.on("messageCreate", msg => {
           // })
 
           // Collector40.on('end', m33 => {
-          //   const senddmmessage = new MessageEmbed()
+          //   const senddmmessage = new EmbedBuilder()
           //   .setTitle(`New reply from ${msg.author.id}`)
           //   .addField('Ticket reply:', `${m33.first().content}`, true)
 
@@ -328,3 +350,23 @@ client.on("messageCreate", msg => {
   })
 
 });
+process.on("unhandledRejection", (reason, p) => {
+  DLU.send(client, {
+    title: "Unhandled Rejection",
+    description: reason
+  })
+})
+
+
+
+// process.on("unhandledRejection", (reason, p) => {
+
+
+//   const LogChannel = client.channels.cache.get('1065618246507692123')
+//   const ErrorEmbeds = new EmbedBuilder()
+//     .setTitle('⚠️ ERROR')
+//     .setDescription(`**Unhandled Rejection/Catch: \n\n** Reason: **${reason}** \n Command: **${commands.name}**`)
+
+//   LogChannel.send({ embeds: [ErrorEmbeds] })
+// })
+

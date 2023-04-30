@@ -1,6 +1,6 @@
 const BaseEvent = require('../../utils/structures/BaseEvent');
 const blacklist = require('../../schemas/Blacklist-schema');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const mongoose = require('mongoose');
 const db = require('../../schemas/commands')
 const MainDatabase = require('../../schemas/TicketData')
@@ -51,7 +51,7 @@ module.exports = class MessageEvent extends BaseEvent {
                 }, 5000);
               } else {
                 if (versionCheck.BotVersion !== BotVersions) {
-                  const UpdateBot = new MessageEmbed()
+                  const UpdateBot = new EmbedBuilder()
                     .setTitle('Update bot')
                     .setDescription(`You are currently running v${versionCheck.BotVersion} of the bot. Please update it to v${BotVersions}. Run the command /upgrade to update the bot.`)
                   await message.channel.send({ embeds: [UpdateBot] })
@@ -59,7 +59,7 @@ module.exports = class MessageEvent extends BaseEvent {
 
                 } else {
                   if (check) {
-                    const DisabledCommand = new MessageEmbed()
+                    const DisabledCommand = new EmbedBuilder()
                       .setTitle('Disabled')
                       .setDescription(`The following command **${client.prefix}${command.name}** has been disabled in the server by an administrator`)
                       .setColor('#f6f7f8')
@@ -83,7 +83,7 @@ module.exports = class MessageEvent extends BaseEvent {
             }
 
           } else {
-            const BlacklistedFromBot = new MessageEmbed()
+            const BlacklistedFromBot = new EmbedBuilder()
               .setTitle('Blacklisted!')
               .setDescription('You have been blacklisted from using Ticket Bot!')
               .addField('Reason', `${data.Reason}`)

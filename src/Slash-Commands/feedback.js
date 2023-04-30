@@ -1,9 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const MainFile = require('../../slappey.json')
-const { MessageActionRow, Modal, TextInputComponent } = require('discord.js');
+const { ActionRowBuilder, ModalBuilder, TextInputBuilder, ButtonStyle } = require('discord.js');
 
 
 module.exports.data = new SlashCommandBuilder()
@@ -29,42 +28,42 @@ module.exports.run = async (client, interaction) => {
     const TicketChannelIdChannel = await interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'feedback' && ch.type == 'GUILD_TEXT');
 
     if (categorys === 'user') {
-        const usermodal = new Modal()
+        const userModalBuilder = new ModalBuilder()
             .setTitle('User Feedback')
             .setCustomId("user")
             .addComponents(
-                new MessageActionRow({
+                new ActionRowBuilder({
                     components: [
-                        new TextInputComponent()
+                        new TextInputBuilder()
                             .setCustomId("userFeedbackID")
                             .setPlaceholder("Type it in here")
                             .setLabel("User ID you would like to feedback on")
-                            .setStyle('SHORT')
+                            .setStyle(ButtonStyle.Primary)
                     ]
                 }),
-                new MessageActionRow({
+                new ActionRowBuilder({
                     components: [
-                        new TextInputComponent()
+                        new TextInputBuilder()
                             .setCustomId("userMessage")
                             .setPlaceholder("Type it in here")
                             .setLabel("Please type the feedback on that user")
-                            .setStyle('PARAGRAPH')
+                            .setStyle(ButtonStyle.Primary)
                     ]
                 }),
             )
-        await interaction.showModal(usermodal)
+        await interaction.showModal(userModalBuilder)
 
     }
 
     if (categorys === 'support') {
         interaction.reply('Disabled in v4.0 testing')
-        // const usermodal = new Modal()
+        // const userModalBuilder = new ModalBuilderBuilder()
         //     .setTitle('Support Feedback')
         //     .setCustomId("support")
         //     .addComponents(
-        //         new MessageActionRow({
+        //         new ActionRowBuilder({
         //             components: [
-        //                 new TextInputComponent()
+        //                 new TextInputBuilder()
         //                     .setCustomId("supportMessage")
         //                     .setPlaceholder("Type it in here")
         //                     .setLabel("Please type the feedback on that support")
@@ -72,6 +71,6 @@ module.exports.run = async (client, interaction) => {
         //             ]
         //         }),
         //     )
-        // await interaction.showModal(usermodal)
+        // await interaction.showModal(userModalBuilder)
     }
 }

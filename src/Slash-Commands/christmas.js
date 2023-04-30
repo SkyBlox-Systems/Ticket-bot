@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const axios = require('axios');
 
 
@@ -14,7 +14,7 @@ module.exports.data = new SlashCommandBuilder()
         .get('https://afchristmas.anvil.app/_/api/get_days')
         .then((res) => {
           console.log(res.data["Days to Christmas"])
-          const ChristamsCountdown = new MessageEmbed()
+          const ChristamsCountdown = new EmbedBuilder()
           .setTitle('🎄 Countdown 🎄')
           .setColor('#f5f5f5')
           .setTimestamp()

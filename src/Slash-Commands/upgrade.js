@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js')
+const { EmbedBuilder } = require('discord.js')
 const Discord = require('discord.js');
 const database = require('../schemas/TicketData')
 const { BotVersions } = require('../../slappey.json')
-const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, ChannelType } = require('discord.js');
 const axios = require('axios');
 
 
@@ -18,7 +18,7 @@ module.exports.run = async (client, interaction) => {
 
     // const msg =  interaction.channel.send(`upgrade..`);
 
-    const ServerOwner = new MessageEmbed()
+    const ServerOwner = new EmbedBuilder()
         .setTitle('Error')
         .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
 
@@ -27,15 +27,15 @@ module.exports.run = async (client, interaction) => {
 
 
 
-    database.findOne({ ServerID: interaction.guildId }, async (err, data) => {
+    database.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
         if (err) throw err;
         if (data) {
                 if (data.BotVersion !== BotVersions) {
-                    database.findOne({ ServerID: interaction.guildId }, async (err3, data3) => {
+                    database.findOne({ ServerID: interaction.guild.id }, async (err3, data3) => {
                         if (err3) throw err;
                         if (data3) {
                             data3 = new database({
-                                ServerID: data3.ServerID || interaction.guildId,
+                                ServerID: data3.ServerID || interaction.guild.id,
                                 OwnerID: data3.OwnerID || interaction.guild.ownerId,
                                 TicketChannelID: data3.TicketTrackerChannelID || 'N/A',
                                 TicketNumber: data3.TicketNumber || '0',
@@ -76,41 +76,16 @@ module.exports.run = async (client, interaction) => {
                                 TypeOfServer: data3.TypeOfServer || 'First',
                                 Important: data3.Important || 'Enabled',
                                 WebsiteCode: data3.WebsiteCode || 'N/A',
+                                Language: data3.Language || 'en',
                                 BotVersion: BotVersions
                             })
                             data3.save()
-                            const updated = new MessageEmbed()
+                            const updated = new EmbedBuilder()
                                 .setTitle('The bot has now been updated')
                                 .setDescription(`To find the changes, please head here [Change Log](https://docs.ticketbot.co.uk/change-log)`)
                             interaction.reply({ embeds: [updated] })
 
-                            const newchannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == "GUILD_TEXT")
-                            const Supportcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY")
-
-                            if (newchannel === undefined) {
-                                interaction.guild.channels.create('feedback', { parent: Supportcat }).then(async (chan) => {
-                                    chan.permissionOverwrites.create(interaction.guild.roles.everyone, {
-                                        SEND_MESSAGES: false,
-                                        VIEW_CHANNEL: false,
-                                    })
-                                    chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket support'), {
-                                        SEND_MESSAGES: true,
-                                        VIEW_CHANNEL: true,
-                                        MANAGE_CHANNELS: false,
-                                        ATTACH_FILES: true,
-                                    })
-                                    chan.permissionOverwrites.create(interaction.guild.roles.cache.find(roles => roles.name === 'ticket manager'), {
-                                        SEND_MESSAGES: true,
-                                        VIEW_CHANNEL: true,
-                                        MANAGE_CHANNELS: true,
-                                        ATTACH_FILES: true,
-                                    })
-                                })
-
-                            } else {
-                                interaction.reply('We are having issues updating your guild. Please contact support via our support server. Do that by heading to our website')
-                            }
-                            database.findOneAndRemove({ ServerID: interaction.guildId }, async (err2, data2) => {
+                            database.findOneAndRemove({ ServerID: interaction.guild.id }, async (err2, data2) => {
                                 if (err2) throw err;
                                 if (data2) {
                                 }
@@ -121,7 +96,7 @@ module.exports.run = async (client, interaction) => {
                     })
                 } else {
                     if (data.BotVersion === BotVersions) {
-                        const alreadyupdated = new MessageEmbed()
+                        const alreadyupdated = new EmbedBuilder()
                             .setTitle(`Bot in this guild is already on the latest version (**v${BotVersions}**).`)
 
                         interaction.reply({ embeds: [alreadyupdated] })
@@ -132,11 +107,11 @@ module.exports.run = async (client, interaction) => {
             if (data.SecondServer === 'Enabled') {
                 if (data.BotVersion !== BotVersions) {
 
-                    database.findOne({ ServerID: interaction.guildId }, async (err3, data3) => {
+                    database.findOne({ ServerID: interaction.guild.id }, async (err3, data3) => {
                         if (err3) throw err;
                         if (data3) {
                             data3 = new database({
-                                ServerID: data3.ServerID || interaction.guildId,
+                                ServerID: data3.ServerID || interaction.guild.id,
                                 OwnerID: data3.OwnerID || interaction.guild.ownerId,
                                 SecondServer: data3.SecondServer || 'Disabled',
                                 SecondServerID: data3.SecondServerID || 'N/A',
@@ -151,12 +126,12 @@ module.exports.run = async (client, interaction) => {
                                 BotVersion: BotVersions
                             })
                             data3.save()
-                            const updated = new MessageEmbed()
+                            const updated = new EmbedBuilder()
                                 .setTitle('The bot has now been updated')
                                 .setDescription(`To find the changes, please head here [Change Log](https://docs.ticketbots.co.uk/change-log)`)
                             interaction.reply({ embeds: [updated] })
     
-                            const newchannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == "GUILD_TEXT")
+                            const newchannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "feedback" && ch.type == ChannelType.GuildText)
                             const Supportcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == "GUILD_CATEGORY")
     
                             if (newchannel === undefined) {
@@ -183,7 +158,7 @@ module.exports.run = async (client, interaction) => {
                                 interaction.channel.send('We are having issues updating your guild. Please contact support via our support server. Do that by heading to our website')
 
                             }
-                            database.findOneAndRemove({ ServerID: interaction.guildId }, async (err2, data2) => {
+                            database.findOneAndRemove({ ServerID: interaction.guild.id }, async (err2, data2) => {
                                 if (err2) throw err;
                                 if (data2) {
     
@@ -193,7 +168,7 @@ module.exports.run = async (client, interaction) => {
                     })
                 } else {
                     if (data.BotVersion === BotVersions) {
-                        const alreadyupdated = new MessageEmbed()
+                        const alreadyupdated = new EmbedBuilder()
                             .setTitle(`Bot in this guild is already on the latest version (**v${BotVersions}**).`)
     
                         interaction.reply({ embeds: [alreadyupdated] })

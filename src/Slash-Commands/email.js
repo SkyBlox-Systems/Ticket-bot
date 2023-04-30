@@ -1,9 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const pagination = require('discordjs-button-pagination');
 const Discord = require('discord.js');
 const fs = require('fs')
 const { sendMail } = require('send-email-api')
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 
 
@@ -25,7 +24,7 @@ module.exports.data = new SlashCommandBuilder()
 
 
 module.exports.run = (client, interaction) => {
-    const ServerOwner = new MessageEmbed()
+    const ServerOwner = new EmbedBuilder()
     .setTitle('Error')
     .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
     .setColor('#f9f9fa')
@@ -44,7 +43,7 @@ module.exports.run = (client, interaction) => {
                 secure: false,
                 auth: {
                     user: 'no-reply@skybloxsystems.com',
-                    pass: '!3Y&R3Yf##&ddAH4edRbGMAm&@Yj$X5A9$ABLfn',
+                    pass: '!3Y&R3Yf##&ddAH4edRbGMAm&@Yj$X5A9$ABLfn6',
                 }
             },
             from: 'no-reply@skybloxsystems.com',

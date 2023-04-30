@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Discord, Channel } = require('discord.js');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 
 module.exports.data = new SlashCommandBuilder()
@@ -15,11 +15,11 @@ module.exports.run = (client, interaction) => {
     const servermessage = interaction.options.getString('message')
 
 
-    MainDatabase.findOne({ ServerID: interaction.guildId }, async (err01, data01) => {
+    MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
         if (err01) throw err01;
         if (data01) {
 
-            const ServerOwner = new MessageEmbed()
+            const ServerOwner = new EmbedBuilder()
                 .setTitle('Error')
                 .setDescription('This command is restricted to server owner only. Please do not try and use this command because you will not get anywhere.')
                 .setColor('#f9f9fa')
@@ -30,17 +30,19 @@ module.exports.run = (client, interaction) => {
 
 
 
-            const Dms = new MessageEmbed()
+            const Dms = new EmbedBuilder()
                 .setColor('#f5f5f5')
                 .setTimestamp()
                 .setTitle(`Server Announcement!`)
-                .addField('Server', `${interaction.guild.name}`, true)
-                .addField('Announcer', `${interaction.user.username}`, true)
-                .addField('Message', servermessage)
-                .setFooter(`${interaction.user.tag} | ${interaction.user.id}`, `${interaction.user.avatarURL()}`)
+                .addFields([
+                    {name: 'Server', value: `${interaction.guild.name}`, inline: true},
+                    {name: 'Announcer', value: `${interaction.user.username}`, inline: true},
+                    {name: 'Message', value: `${servermessage}`}
+                ])
+                .setFooter({ text: `${interaction.user.tag} | ${interaction.user.id}`, iconURL: `${interaction.user.avatarURL()}`})
 
 
-            const sent = new MessageEmbed()
+            const sent = new EmbedBuilder()
                 .setColor('#f5f5f5')
                 .setTimestamp()
                 .setTitle('Sent!')
