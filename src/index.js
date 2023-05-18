@@ -2,7 +2,7 @@
 const { Client, GatewayIntentBits, Partials, Interaction } = require('discord.js');
 const { registerCommands, registerEvents, registerSlashCommands } = require('./utils/registry');
 const config = require('../slappey.json');
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.AutoModerationConfiguration, GatewayIntentBits.AutoModerationExecution, GatewayIntentBits.DirectMessageReactions, GatewayIntentBits.DirectMessageTyping, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildBans, GatewayIntentBits.GuildEmojisAndStickers, GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildInvites, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMessageTyping, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildScheduledEvents, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildWebhooks], partials: [Partials.Channel] })
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.AutoModerationConfiguration, GatewayIntentBits.AutoModerationExecution, GatewayIntentBits.DirectMessageReactions, GatewayIntentBits.DirectMessageTyping, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildEmojisAndStickers, GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildInvites, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMessageTyping, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration,  GatewayIntentBits.GuildScheduledEvents, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildWebhooks], partials: [Partials.Channel] })
 // const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_WEBHOOKS, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGE_TYPING, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, Intents.FLAGS.DIRECT_MESSAGE_TYPING, Intents.FLAGS.GUILD_SCHEDULED_EVENTS], partials: ['CHANNEL'] });
 const DataBaseMongo = require('./mongo');
 require('./slash-register')();
@@ -15,11 +15,6 @@ var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' })
 const mongoose = require('mongoose');
 const Stats = require('discord-live-stats');
 const DLU = require("@dbd-soft-ui/logs")
-
-// const Poster = new Stats.Client(client, {
-//   stats_uri: 'https://shard1.ticketbots.co.uk/',
-//   authorizationkey: "ticketbot",
-// })
 
 
 
@@ -44,7 +39,6 @@ const GiveawayDatabase = require('./schemas/giveaways-user-data');
   await registerEvents(client, '../events');
   await client.login(config.token);
   DataBaseMongo.init();
-  // require('./dashboard/server')
 })();
 
 
@@ -54,12 +48,6 @@ client.on('ready', () => {
   let commands = client.application.commands;
 })
 
-client.on("ready", () => {
-  DLU.register(client, {
-    dashboard_url: "https://dashboard.ticketbots.co.uk",
-    key: "richard1234YT!"
-  })
-})
 
 client.on('guildCreate', guild => {
  // const defaultChannel = guild.channels.cache.find(channel => channel.type === ChannelType.GuildText && channel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES))
@@ -237,17 +225,6 @@ client.on('interactionCreate', interaction => {
 
     const reportuserss = client.users.cache.get(interaction.user.id)
     reportuserss.send({ embeds: [ReportUserDM] })
-
-    const LogChannel = client.channels.cache.get('1065657960719716482')
-    const reportuserchannel = new EmbedBuilder()
-      .setTitle('Report user received')
-      .addFields([
-        { name: `User ID who sent it in: `, value: `${interaction.user.id}`, inline: true },
-        { name: `User ID who was reported: `, value: `${ReportUserIDs}`, inline: true },
-        { name: `Message`, value: `${reportUserMessages}`, inline: true },
-        { name: `Images provided`, value: `${reportUserImagess}`, inline: true }
-      ])
-    LogChannel.send({ embeds: [reportuserchannel] })
   }
 
   if (interaction.customId === "reportbug") {
@@ -263,15 +240,6 @@ client.on('interactionCreate', interaction => {
     reportuserss.send({ embeds: [ReportUserDM] })
 
     const LogChannel = client.channels.cache.get('1065657945720893491')
-    const reportuserchannel = new EmbedBuilder()
-      .setTitle('Report command received')
-      .addFields([
-        { name: `User ID who sent it in: `, value: `${interaction.user.id}`, inline: true },
-        { name: `User ID who was reported: `, value: `${ReportUserIDs}`, inline: true },
-        { name: `Message`, value: `${reportUserMessages}`, inline: true },
-        { name: `Images provided`, value: `${reportUserImagess}`, inline: true }
-      ])
-    LogChannel.send({ embeds: [reportuserchannel] })
   }
 });
 

@@ -1,6 +1,7 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { token } = require('../slappey.json');
+const { BotOwnerID } = require('../slappey.json');
 const fs = require('fs');
 const commands = [];
 const commandList = new Map();
@@ -11,7 +12,7 @@ module.exports = () => {
 	const commandFiles = fs.readdirSync('./src/Slash-Commands').filter(file => file.endsWith('.js'));
 
 	// Place your client and guild ids here
-	const clientId = '804663016124973076';
+	const clientId = BotOwnerID;
 
 	for (const file of commandFiles) {
 		const command = require(`./Slash-Commands/${file}`);

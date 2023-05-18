@@ -4,6 +4,7 @@ const blacklist = require('../schemas/Blacklist-schema')
 const { Message } = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
 const currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
+const configg = require('../../slappey.json')
 
 module.exports.data = new SlashCommandBuilder()
     .setName('blacklist')
@@ -22,7 +23,7 @@ module.exports.run = (client, interaction) => {
     const reasonsend = interaction.options.getString('reason')
     const idsend = interaction.options.getString('id')
 
-    if (interaction.user.id !== '406164395643633665') {
+    if (interaction.user.id !== configg.BotOwnerID) {
         const NotOwner = new EmbedBuilder()
             .setColor('RANDOM')
             .setTimestamp()

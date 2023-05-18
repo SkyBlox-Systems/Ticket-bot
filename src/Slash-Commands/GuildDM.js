@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
 const Discord = require('discord.js');
+const configg = require('../../slappey.json')
 
 module.exports.data = new SlashCommandBuilder()
     .setName('guild-dm')
@@ -13,7 +14,7 @@ module.exports.data = new SlashCommandBuilder()
 
 module.exports.run = (client, interaction) => {
 
-    if (interaction.user.id !== '406164395643633665') {
+    if (interaction.user.id !== configg.BotOwnerID) {
         const NotOwner = new EmbedBuilder()
             .setColor('RANDOM')
             .setTimestamp()

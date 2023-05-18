@@ -11,8 +11,11 @@ const axios = require('axios');
 const timestamp = require('unix-timestamp');
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
-    apiKey: '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',
+    apiKey: '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',
 })
+
+const openai = new OpenAIApi(configuration);
+
 
 
 module.exports.data = new SlashCommandBuilder()
@@ -41,7 +44,9 @@ module.exports.run = async (client, interaction) => {
         })
 
         const embed = new EmbedBuilder()
+        .setTitle('Chat GPT response')
         .setDescription(`\`\`\`${completion.data.choices[0].text}\`\`\``)
+        .setFooter({ text: 'This  is generated using openAI API'})
 
          interaction.editReply({ embeds: [embed] })
     } catch(e) {

@@ -6,6 +6,7 @@ const { EmbedBuilder } = require('discord.js');
 const MainDatabase = require('../schemas/TicketData')
 const ProKeys = require('../schemas/keys');
 const { ObjectId } = require('mongodb');
+const configg = require('../../slappey.json')
 
 module.exports.data = new SlashCommandBuilder()
     .setName('premium')
@@ -31,7 +32,7 @@ module.exports.run = async (client, interaction) => {
                 interaction.reply('This guild already has premium.')
             } else {
                 const MSG = interaction.options.getString('redeem');
-                ProKeys.findOne({ OwnerID: '406164395643633665' }, async (err1, data1) => {
+                ProKeys.findOne({ OwnerID: configg.BotOwnerID }, async (err1, data1) => {
                     if (err1) throw err;
                     if (data1) {
 
@@ -55,7 +56,7 @@ module.exports.run = async (client, interaction) => {
                                         if (err2) throw err;
                                         if (data2) {
                                             data2.save()
-                                            ProKeys.findOneAndUpdate({ OwnerID: '406164395643633665'}, {$pull: { Pro: MSG}}, async (err3, data3) => {
+                                            ProKeys.findOneAndUpdate({ OwnerID: configg.BotOwnerID}, {$pull: { Pro: MSG}}, async (err3, data3) => {
                                                 if (err3) throw err;
                                                 if (data3) {
                                                     interaction.channel.send('This guild is now a premium server! The code can no longer be used.')

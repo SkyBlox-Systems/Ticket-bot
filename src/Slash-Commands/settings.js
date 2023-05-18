@@ -7,7 +7,9 @@ const mongoose = require('mongoose');
 const { EmbedBuilder, Guild, MessageCollector, Collector } = require('discord.js');
 var today = new Date();
 var dd = String(today.getDate());
-const { ActionRowBuilder, StringSelectMenuBuilder, ButtonStyle, ComponentType, ChannelType } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, ButtonStyle, ComponentType, ChannelType, ButtonBuilder } = require('discord.js');
+const paginationEmbed = require('discordjs-v14-pagination');
+
 
 module.exports.data = new SlashCommandBuilder()
   .setName('settings')
@@ -39,10 +41,8 @@ module.exports.run = async (client, interaction) => {
   const ServerOwner = new EmbedBuilder()
     .setTitle('Error')
     .setDescription('This command is restricted to guild owner only. Please do not try and use this command because you will not get anywhere.')
+
   
-    const betatesting = new EmbedBuilder()
-    .setTitle('Error')
-    .setDescription('This command is disabled during the discord.js 14 public testing. The command will be re-enabled <t:1681511400:R>')
 
   const teststring = interaction.options.getString('category');
 
@@ -55,7 +55,7 @@ module.exports.run = async (client, interaction) => {
         if (data.PaidGuild === 'Yes') {
           const ListSettingsPaid = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
-            .setDescription('List of the bot settings for the guild.')
+            .setDescription(`List of the bot settings for the guild`)
             .addFields([
               { name: 'ServerID', value: `${data.ServerID}`, inline: true },
               { name: `TicketChannelID`, value: `${data.TicketChannelID}`, inline: true },
@@ -80,21 +80,22 @@ module.exports.run = async (client, interaction) => {
             ])
 
 
+
           const ListSettingsPaid2 = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
-            .setDescription('List of the bot settings for the guild (premium only).')
+            .setDescription(`List of the bot settings for the guild (premium only)`)
             .addFields([
               { name: `Voice Call Tickets`, value: `${data.VoiceTicket}`, inline: true },
               { name: `Amount of custom bots`, value: `${data.CustomBots}`, inline: true },
               { name: `Premium code`, value: `${data.PremiumCode}`, inline: true },
-              { name: `Ticket ID Length`, value: `${data.TicketIDLength}`, value: true},
+              { name: `Ticket ID Length`, value: `${data.TicketIDLength}`, inline: true},
               { name: 'Custom features', value: `Soon`, inline: true }
             ])
-
             const firstPageButton = new ButtonBuilder()
             .setCustomId('first')
             .setLabel('First')
             .setStyle(ButtonStyle.Primary);
+
           
           const previousPageButton = new ButtonBuilder()
             .setCustomId('previous')
@@ -110,28 +111,14 @@ module.exports.run = async (client, interaction) => {
             .setCustomId('last')
             .setLabel('Last')
             .setStyle(ButtonStyle.Primary);
-          const button1 = new Discord.ButtonBuilder()
-            .setCustomId("previousbtn")
-            .setLabel("Previous")
-            .setStyle(ButtonStyle.Danger);
-
-          const button2 = new Discord.ButtonBuilder()
-            .setCustomId("nextbtn")
-            .setLabel("Next")
-            .setStyle(ButtonStyle.Success);
+            
 
           const pages = [
             ListSettingsPaid,
             ListSettingsPaid2
           ]
-
-
           const buttons  = [firstPageButton, previousPageButton, nextPageButton, lastPageButton];
 
-
-
-
-          const timeout = '120000';
 
 
           paginationEmbed(
@@ -140,12 +127,10 @@ module.exports.run = async (client, interaction) => {
             buttons , // Your array of buttons
             60000, // (Optional) The timeout for the embed in ms, defaults to 60000 (1 minute)
         );
-          interaction.reply({ content: 'Settings Premium' })
-
         } else {
           const ListSettings = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} bot settings`)
-            .setDescription('List of the bot settings for the server.')
+            .setDescription(`List of the bot settings for the guild`)
             .addFields([
               { name: 'ServerID', value: `${data.ServerID}`, inline: true },
               { name: `TicketChannelID`, value: `${data.TicketChannelID}`, inline: true },
@@ -275,7 +260,7 @@ module.exports.run = async (client, interaction) => {
                 }
               ]),
           );
-        await interaction.reply({ content: 'Edit settings', components: [editdropdown], ephemeral: true });
+        await interaction.reply({ content: `Edit settings \n You can also now edit your guild settings here https://dashboard.ticketbots.co.uk/settings/${interaction.guild.id}/`, components: [editdropdown], ephemeral: true });
 
         const MainCollector = interaction.channel.createMessageComponentCollector({
           componentType: ComponentType.StringSelectMenuBuilder
