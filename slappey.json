@@ -2,8 +2,9 @@
   "name": "ticket-bot13",
   "language": "javascript",
   "manager": "npm",
-  "token": "ODA0NjYzMDE2MTI0OTczMDc2.GjYWmR.hktkC9Qhskp8VQ7WHPm8Fpw5xy52pfL7NnBE3Q",
+  "token": "ODA0NjYzMDE2MTI0OTczMDc2.G5N6a7.jShBI33Eob97KIE0C1W7WkFZ7kU5mbQlsSLS1k",
   "prefix": "!",
   "BotOwnerID": "406164395643633665",
-  "BotVersions": "5.1"
+  "BotVersions": "5.2",
+  "TranslateID": "AIzaSyA7ePbWzCp9PC890-nP5uGU4Kf41r0yYV4"
 }

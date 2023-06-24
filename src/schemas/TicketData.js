@@ -7,6 +7,7 @@ const TicketData = mongoose.Schema({
   OwnerID: String,
   TicketChannelID: String,
   TicketNumber: Number,
+  ClosedTickets: Number,
   TicketTrackerChannelID: String,
   FeedbackChannelID: String,
   BotPrefix: String,
@@ -45,6 +46,7 @@ const TicketData = mongoose.Schema({
   Important: String,
   WebsiteCode: String,
   Language: String,
+  Threads: String,
   BotVersion: String
 })
 

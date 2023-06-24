@@ -9,6 +9,9 @@ const ProKeys = require('../schemas/keys')
 const { ActionRowBuilder, StringSelectMenuBuilder, PermissionFlagsBits } = require('discord.js');
 const axios = require('axios');
 const timestamp = require('unix-timestamp');
+timestamp.round = true
+const { Translate } = require('@google-cloud/translate').v2;
+const { TranslateID } = require('../../slappey.json')
 
 
 module.exports.data = new SlashCommandBuilder()
@@ -16,8 +19,5 @@ module.exports.data = new SlashCommandBuilder()
     .setDescription('test Command')
 
 module.exports.run = async (client, interaction) => {
-    const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
-
-    console.log(TicketClainCommandSend)
-
+    console.log(client.users.cache.get("406164395643633665").username)
 }

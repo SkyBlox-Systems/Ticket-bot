@@ -16,6 +16,7 @@ const mongoose = require('mongoose');
 const Stats = require('discord-live-stats');
 const DLU = require("@dbd-soft-ui/logs")
 
+
 // const Poster = new Stats.Client(client, {
 //   stats_uri: 'https://shard1.ticketbots.co.uk/',
 //   authorizationkey: "ticketbot",
@@ -62,8 +63,8 @@ client.on("ready", () => {
 })
 
 client.on('guildCreate', guild => {
- // const defaultChannel = guild.channels.cache.find(channel => channel.type === ChannelType.GuildText && channel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES))
- const defaultChannel = guild.channels.cache.find(channel => channel.type === ChannelType.GuildText)
+  // const defaultChannel = guild.channels.cache.find(channel => channel.type === ChannelType.GuildText && channel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES))
+  const defaultChannel = guild.channels.cache.find(channel => channel.type === ChannelType.GuildText)
   const welcome = new EmbedBuilder()
     .setTitle('Setup')
     .setDescription('Hey! Thank you for adding us to our server! We are exicted to be here. Whenever u are ready, please run `/setup` to start!')
@@ -109,59 +110,138 @@ client.on('interactionCreate', interaction => {
           if (name === 'upgrade') {
             commandMethod(client, interaction)
           } else {
-            if (versionCheck === null) {
-              const notdata = new EmbedBuilder()
-                .setTitle('No data')
-                .setDescription('It seems like there is no server settings stored within the database. Please run `/setup`.')
+            if (mongoose.connection.readyState === 1) {
+              
+              if (versionCheck === null) {
+                const notdata = new EmbedBuilder()
+                  .setTitle('No data')
+                  .setDescription('It seems like there is no server settings stored within the database. Please run `/setup`.')
 
-              interaction.reply({ embeds: [notdata] })
+                interaction.reply({ embeds: [notdata] })
 
-            } else {
-              if (versionCheck.BotVersion !== config.BotVersions) {
-                const UpdateBot = new EmbedBuilder()
-                  .setTitle('Update bot')
-                  .setDescription(`You are currently running v${versionCheck.BotVersion} of the bot. Please update it to v${config.BotVersions}. Run the command /upgrade to update the bot.`)
-                await interaction.reply({ embeds: [UpdateBot] })
               } else {
-                if (check) {
-                  const DisabledCommand = new EmbedBuilder()
-                    .setTitle('Disabled')
-                    .setDescription(`The following command **/${interaction.commandName}** has been disabled in the server by an administrator`)
-                    .setColor('#f6f7f8')
-                  if (check.Cmds.includes(interaction.commandName)) return interaction.reply({ embeds: [DisabledCommand] })
-                  if (versionCheck.Important === 'Enabled') {
-                    commandMethod(client, interaction)
-                    // commandMethod(client, interaction)
-                    // const ImportantAnnouncement = new EmbedBuilder()
-                    //   .setTitle('Imporant announcement from bot owner')
-                    //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
-                    //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
+                if (versionCheck.BotVersion !== config.BotVersions) {
 
-                    // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
-                    // setTimeout(() => {
-                    //   commandMethod(client, interaction)
-                    // }, 2000);
-                  } else {
-                    commandMethod(client, interaction)
-                  }
+                  MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err4, data4) => {
+                    if (err4) throw err;
+                    if (data4) {
+                      data4 = new MainDatabase({
+                        ServerID: data4.ServerID || interaction.guild.id,
+                        OwnerID: data4.OwnerID || interaction.guild.ownerId,
+                        TicketChannelID: data4.TicketTrackerChannelID || 'N/A',
+                        TicketNumber: data4.TicketNumber || '0',
+                        ClosedTickets: data4.ClosedTickets || '0',
+                        TicketTrackerChannelID: data4.TicketChannelID || 'N/A',
+                        FeedbackChannelID: data4.FeedbackChannelID || 'N/A',
+                        BotPrefix: data4.BotPrefix || '!',
+                        SupportRoleID: data4.SupportRoleID || 'N/A',
+                        ManagerRoleID: data4.ManagerRoleID || 'N/A',
+                        AdminRoleID: data4.AdminRoleID || 'N/A',
+                        BetaKey: data4.BetaKey || 'N/A',
+                        PaidGuild: data4.PaidGuild || 'No',
+                        Tier: data4.Tier || 'Free',
+                        PremiumCode: data4.PremiumCode || 'N/A',
+                        Transcript: data4.Transcript || 'Yes',
+                        UseTicketReactions: data4.UseTicketReactions || 'Yes',
+                        UseDashboard: data4.UseDashboard || 'Yes',
+                        APIKey: data4.APIKey || 'N/A',
+                        TicketMessage: data4.TicketMessage || 'Thank you for contacting Support! Please wait for a customer support to claim your ticket.',
+                        CloseMessage: data4.CloseMessage || 'has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you.',
+                        ClaimTicketMessage: data4.ClaimTicketMessage || 'has open a ticket and needs support.',
+                        OpenTicket: data4.OpenTicket || 'I have open a ticket for you!',
+                        DisabledCommands: data4.DisabledCommands || 'NA',
+                        TranscriptMessage: data4.TranscriptMessage || 'Transcript for',
+                        EnableTicket: data4.EnableTicket || 'Enabled',
+                        ModMail: data4.ModMail || 'Disabled',
+                        VoiceTicket: data4.VoiceTicket || 'Disabled',
+                        CustomBots: data4.CustomBots || '0',
+                        TicketIDLength: data4.TicketIDLength || '5',
+                        SecondServer: data4.SecondServer || 'Disabled',
+                        SecondServerID: data4.SecondServerID || 'N/A',
+                        SecondServerSupportRoleID: data4.SecondServerSupportRoleID || 'N/A',
+                        SecondServerAdminRoleID: data4.SecondServerAdminRoleID || 'N/A',
+                        SecondServerManagerRoleID: data4.SecondServerManagerRoleID || 'N/A',
+                        SecondServerClaimChannel: data4.SecondServerClaimChannel || 'N/A',
+                        SecondServerLogsChannel: data4.SecondServerLogsChannel || 'N/A',
+                        SecondServerTranscriptChannel: data4.SecondServerTranscriptChannel || 'N/A',
+                        ROBLOX: data4.ROBLOX || 'Disabled',
+                        TypeOfServer: data4.TypeOfServer || 'First',
+                        Important: data4.Important || 'Enabled',
+                        WebsiteCode: data4.WebsiteCode || 'N/A',
+                        Language: data4.Language || 'en',
+                        Threads: data4.Threads || 'Disabled',
+                        BotVersion: config.BotVersions
+                      })
+                      data4.save()
+
+                      const updated = new EmbedBuilder()
+                        .setTitle('The bot has now been updated')
+                        .setDescription(`To find the changes, please head here [Change Log](https://docs.ticketbot.co.uk/change-log). Please Re-Run the command.`)
+                      interaction.reply({ embeds: [updated] })
+
+                      MainDatabase.findOneAndRemove({ ServerID: interaction.guild.id }, async (err2, data2) => {
+                        if (err2) throw err;
+                        if (data2) {
+                        }
+
+                      })
+                    } else {
+                      interaction.reply('We are having issues updating your guild. Please contact support via our support server. Do that by heading to our website')
+                    }
+                  })
+
+
+                  // New Update system
                 } else {
-                  if (versionCheck.Important === 'Enabled') {
-                    commandMethod(client, interaction)
-                    //  commandMethod(client, interaction)
-                    // const ImportantAnnouncement = new EmbedBuilder()
-                    //   .setTitle('Imporant announcement from bot owner')
-                    //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
-                    //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
+                  if (check) {
+                    const DisabledCommand = new EmbedBuilder()
+                      .setTitle('Disabled')
+                      .setDescription(`The following command **/${interaction.commandName}** has been disabled in the server by an administrator`)
+                      .setColor('#f6f7f8')
+                    if (check.Cmds.includes(interaction.commandName)) return interaction.reply({ embeds: [DisabledCommand] })
+                    if (versionCheck.Important === 'Enabled') {
+                      commandMethod(client, interaction)
+                      // commandMethod(client, interaction)
+                      // const ImportantAnnouncement = new EmbedBuilder()
+                      //   .setTitle('Imporant announcement from bot owner')
+                      //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
+                      //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
 
-                    // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
-                    // setTimeout(() => {
-                    //   commandMethod(client, interaction)
-                    // }, 2000);
+                      // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
+                      // setTimeout(() => {
+                      //   commandMethod(client, interaction)
+                      // }, 2000);
+                    } else {
+                      commandMethod(client, interaction)
+                    }
                   } else {
-                    commandMethod(client, interaction)
+                    if (versionCheck.Important === 'Enabled') {
+                      commandMethod(client, interaction)
+                      //  commandMethod(client, interaction)
+                      // const ImportantAnnouncement = new EmbedBuilder()
+                      //   .setTitle('Imporant announcement from bot owner')
+                      //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
+                      //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
+
+                      // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
+                      // setTimeout(() => {
+                      //   commandMethod(client, interaction)
+                      // }, 2000);
+                    } else {
+                      commandMethod(client, interaction)
+                    }
                   }
                 }
               }
+            } else {
+            
+                console.log('error')
+                const DatabaseError = new EmbedBuilder()
+                .setTitle('Database Error')
+                .setDescription('The bot is having issues connecting to the database at the moment. Please check our [status page](https://status.skybloxsystems.com) or email support @ support@skybloxsystems.com')
+
+                interaction.reply({ embeds: [DatabaseError]})
+      
             }
           }
         }
@@ -172,7 +252,7 @@ client.on('interactionCreate', interaction => {
           .addFields([
             { name: `Reason`, value: `${data.Reason}`, inline: false },
             { name: `Time`, value: `${data.Time} UTC`, inline: false },
-            { name: `Admin`, value: `${data.Admin}`, inline: false}
+            { name: `Admin`, value: `${data.Admin}`, inline: false }
           ])
         interaction.reply({ embeds: [BlacklistedFromBot] })
       }
@@ -311,7 +391,7 @@ client.on("messageCreate", msg => {
                   .setTitle(`New reply from ${msg.author.tag}`)
                   .setDescription('Please use the command `/ticketreply` to reply to this message.')
                   .addFields([
-                    { name: `Ticket Reply: `, value: `${m33.first().content}`, inline: true}
+                    { name: `Ticket Reply: `, value: `${m33.first().content}`, inline: true }
                   ])
                   .setTimestamp()
                   .setFooter({ text: `user id: ${msg.author.id}` });

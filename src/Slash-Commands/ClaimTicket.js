@@ -5,6 +5,8 @@ const { findOneAndUpdate } = require('../schemas/ticketclaim');
 const { EmbedBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const MainDatabase = require('../schemas/TicketData');
+const timestamp = require('unix-timestamp');
+timestamp.round = true
 
 module.exports.data = new SlashCommandBuilder()
     .setName('claim')
@@ -48,7 +50,7 @@ module.exports.run = (client, interaction) => {
                     if (data) {
                         const user1 = data.id
 
-                        data = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id }, async (err2, data2) => {
+                        data = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id, ClaimTime: timestamp.now() }, async (err2, data2) => {
                             if (err2) throw err2;
                             if (data2) {
                                 data2.save()
@@ -112,7 +114,7 @@ module.exports.run = (client, interaction) => {
                             if (data) {
                                 const user1 = data.id
 
-                                data = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id }, async (err2, data2) => {
+                                data = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id, ClaimTime: timestamp.now() }, async (err2, data2) => {
                                     if (err2) throw err2;
                                     if (data2) {
                                         data2.save()
@@ -177,7 +179,7 @@ module.exports.run = (client, interaction) => {
                                 if (err03) throw err;
                                 if (data03) {
                                     const user1 = data03.id
-                                    data03 = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id }, async (err2, data2) => {
+                                    data03 = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id, ClaimTime: timestamp.now() }, async (err2, data2) => {
                                         if (err2) throw err2;
                                         if (data2) {
                                             data2.save()

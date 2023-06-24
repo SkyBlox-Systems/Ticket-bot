@@ -31,7 +31,7 @@ module.exports.run = (client, interaction) => {
     .setTitle('New DM!')
     .setDescription(`You have received an message from this server **${interaction.guild.name}**.`)
     .addFields([
-        {name: 'User who sent it', value: `${interaction.user.tag}`},
+        {name: 'User who sent it', value: `${interaction.user.username}`},
         {name: 'Message', value: `${MessageString}`}
     ])
 

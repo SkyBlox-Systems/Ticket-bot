@@ -31,7 +31,9 @@ module.exports.data = new SlashCommandBuilder()
                             const sendtouser = new EmbedBuilder()
                             .setTitle(`A reply from ${interaction.member.user.tag}`)
                             .setDescription(`This staff member from this server ${interaction.guild.name} has replied to your ticket. Below is the ticket. For you to reply, please type out ${data.TicketIDs} in our DMs, and we further from there.`)
-                            .addField('Ticket Reply:', `${messageforuser}`, true)
+                            .addFields([
+                                { name: 'Ticket Reply:', value: `${messageforuser}`, inline: true }
+                            ])
                             .setTimestamp()
                             .setFooter({ text: `user id: ${interaction.member.user.id}`});
 

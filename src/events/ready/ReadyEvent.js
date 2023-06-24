@@ -2,6 +2,8 @@ const BaseEvent = require('../../utils/structures/BaseEvent');
 const Discord = require('discord.js');
 const { BotVersions } = require('../../../slappey.json')
 const version = '5.1'
+const mongoose = require('mongoose');
+
 
 
 module.exports = class ReadyEvent extends BaseEvent {
@@ -11,6 +13,9 @@ module.exports = class ReadyEvent extends BaseEvent {
   async run(client) {
 
     console.log(`[SkyBlox Systems] - ${client.user.tag}` + ' has logged in.');
+    setTimeout(() => {
+          console.log(mongoose.connection.readyState);
+    }, 3000);
     if (BotVersions === version) {
       console.log('[SkyBlox Systems] - Bot is up to date')
     } else {

@@ -7,7 +7,7 @@ const DSU = require("@dbd-soft-ui/shards")
 
 const shards = new ShardingManager("./src/index.js", {
     token: config.token,
-    totalShards: 3,
+    totalShards: 1,
     timeout: -1,
     respawn: true
 })

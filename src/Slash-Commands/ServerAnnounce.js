@@ -39,7 +39,7 @@ module.exports.run = (client, interaction) => {
                     {name: 'Announcer', value: `${interaction.user.username}`, inline: true},
                     {name: 'Message', value: `${servermessage}`}
                 ])
-                .setFooter({ text: `${interaction.user.tag} | ${interaction.user.id}`, iconURL: `${interaction.user.avatarURL()}`})
+                .setFooter({ text: `${interaction.user.username} | ${interaction.user.id}`, iconURL: `${interaction.user.avatarURL()}`})
 
 
             const sent = new EmbedBuilder()

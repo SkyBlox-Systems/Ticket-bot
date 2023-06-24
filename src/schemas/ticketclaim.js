@@ -12,6 +12,7 @@ const TicketClaimMain = mongoose.Schema({
   AddedUser: Array,
   Type: String,
   ClaimUserID: String,
+  ClaimTime: String,
   Priority: String
 })
 

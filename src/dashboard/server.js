@@ -19,6 +19,6 @@ const client = new Stats.Server(app, {
 
 client.on('error', console.log)
 
-app.listen(105, () => {
+app.listen(106, () => {
   console.log("Application started, listening on port 3000!");
 });
