@@ -3,7 +3,8 @@ const Discord = require('discord.js');
 const blacklist = require('../schemas/Blacklist-schema')
 const { Message } = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
-const currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
+const timestamp = require('unix-timestamp');
+timestamp.round = true
 
 module.exports.data = new SlashCommandBuilder()
     .setName('blacklist')
@@ -21,6 +22,7 @@ module.exports.data = new SlashCommandBuilder()
 module.exports.run = (client, interaction) => {
     const reasonsend = interaction.options.getString('reason')
     const idsend = interaction.options.getString('id')
+    const userr = client.users.cache.get(idsend)
 
     if (interaction.user.id !== '406164395643633665') {
         const NotOwner = new EmbedBuilder()
@@ -39,11 +41,11 @@ module.exports.run = (client, interaction) => {
 
             const Already = new EmbedBuilder()
                 .setTitle('Blacklist')
-                .setDescription(`**${idsend}** has already been blacklisted! Reason is provided below`)
+                .setDescription(`**${userr.username}** has already been blacklisted! Reason is provided below`)
                 .addFields([
                     { name: 'Reason', value: `${data.Reason}` },
-                    { name: 'Time', value: `${data.Time} UTC` },
-                    { name: 'Admin', value: `${interaction.user.tag}` }
+                    { name: 'Time', value: `<t:${timestamp.now()}:f>` },
+                    { name: 'Admin', value: `${interaction.user.username}` }
                 ])
                 .setColor('#f6f7f8')
 
@@ -53,23 +55,34 @@ module.exports.run = (client, interaction) => {
             data = new blacklist({
                 UserID: idsend,
                 Reason: reasonsend,
-                Time: currentDateAndTime,
-                Admin: interaction.user.tag,
+                Time: timestamp.now(),
+                Admin: interaction.user.username,
             })
             data.save()
                 .catch(err => console.log(err))
 
             const Added = new EmbedBuilder()
                 .setTitle('Blacklist')
-                .setDescription(`${idsend} has been added to blacklist.`)
+                .setDescription(`${userr.username} has been added to blacklist.`)
                 .addFields([
                     { name: 'Reason', value: `${reasonsend}` },
-                    { name: 'Time', value: `${currentDateAndTime} UTC` },
-                    { name: 'Admin', value: `${interaction.user.tag}` }
+                    { name: 'Time', value: `<t:${timestamp.now()}:f>` },
+                    { name: 'Admin', value: `${interaction.user.username}` }
                 ])
-                .setColor('#f6f7f8')
+
+            const dmsend = client.users.cache.get(idsend)
+            const DmUserss = new EmbedBuilder()
+                .setTitle('Blacklist')
+                .setDescription(`You have been blacklisted from using Ticket Bot.`)
+                .addFields([
+                    { name: 'Reason', value: `${reasonsend}` },
+                    { name: 'Time', value: `<t:${timestamp.now()}:f>` },
+                    { name: 'Admin', value: `${interaction.user.username}` }
+                ])
+                .setFooter({ text: 'Please email support support@skybloxsystems.com' })
 
             interaction.reply({ embeds: [Added] })
+           await dmsend.send({ embeds: [DmUserss] })
         }
 
     })

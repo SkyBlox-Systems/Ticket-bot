@@ -1,13 +1,13 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const Channel  = require('discord.js');
+const Channel = require('discord.js');
 const Discord = require('discord.js');
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const ClaimTicket = require('../schemas/ticketclaim')
 const MainDatabase = require('../schemas/TicketData')
 const timestamp = require('unix-timestamp');
-// const MainTime = Math.round(timestamp.now())
-const MainTime =  Math.floor(Date.now() / 1000);
+timestamp.round = true
+
 
 
 
@@ -131,7 +131,7 @@ module.exports.run = (client, interaction) => {
                     return interaction.reply('No support manager role ID has been setup on the other guild')
                   const newguild = client.guilds.cache.get(data01.SecondServerID)
 
-                  newguild.channels.create({ name: names}).then(async (chan) => {
+                  newguild.channels.create({ name: names }).then(async (chan) => {
                     chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been opened as from: ${currentDateAndTime} UTC.`)
                     chan.permissionOverwrites.set([
                       {
@@ -179,10 +179,11 @@ module.exports.run = (client, interaction) => {
                             ChannelID: chan.id,
                             Reason: MSG,
                             Locked: "No",
-                            Time: currentDateAndTime,
+                            Time: timestamp.now(),
                             AddedUser: Array,
                             Type: 'Channel',
                             ClaimUserID: "",
+                            ClaimTime: "00000",
                             Priority: PriorityList
                           })
                           data3.save()
@@ -192,7 +193,7 @@ module.exports.run = (client, interaction) => {
                         }
                       }
                     })
-                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1, ClosedTickets: +1 }, async (err20, data20) => {
                       if (err20) throw err20;
                       if (data20) {
                         data20.save()
@@ -253,7 +254,7 @@ module.exports.run = (client, interaction) => {
                             { name: 'Infomation', value: `<@${interaction.user.id}> ${data01.OpenTicket}`, inline: true },
                             { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
                             { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                            { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
                           ])
 
                         await interaction.reply({ embeds: [open], ephemeral: true });
@@ -266,7 +267,7 @@ module.exports.run = (client, interaction) => {
                           .addFields([
                             { name: 'TicketID', value: `${generator}`, inline: true },
                             { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                            { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
                           ])
                           .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
 
@@ -288,7 +289,7 @@ module.exports.run = (client, interaction) => {
                             { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
                             { name: 'Ticket  ID', value: `${generator}`, inline: true },
                             { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                            { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                            { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                           ])
 
                         await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
@@ -305,10 +306,11 @@ module.exports.run = (client, interaction) => {
                                 ChannelID: chan.id,
                                 Reason: MSG,
                                 Locked: "No",
-                                Time: MainTime,
+                                Time: timestamp.now(),
                                 AddedUser: Array,
                                 Type: 'Channel',
                                 ClaimUserID: "",
+                                ClaimTime: "00000",
                                 Priority: PriorityList
                               })
                               data.save()
@@ -359,10 +361,11 @@ module.exports.run = (client, interaction) => {
                               ChannelID: chan.id,
                               Reason: MSG,
                               Locked: "No",
-                              Time: MainTime,
+                              Time: timestamp.now(),
                               AddedUser: Array,
                               Type: 'Channel',
                               ClaimUserID: "",
+                              ClaimTime: "00000",
                               Priority: PriorityList
                             })
                             data.save()
@@ -370,7 +373,7 @@ module.exports.run = (client, interaction) => {
                             const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                             const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                             TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run /claim ticketid:${generator}`)
-                            MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
+                            MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1, ClosedTickets: +1 }, async (err20, data20) => {
                               if (err20) throw err20;
                               if (data20) {
                                 data20.save()
@@ -402,7 +405,7 @@ module.exports.run = (client, interaction) => {
                               const noblox = require('noblox.js')
                               if (response.data.user.robloxId === undefined) {
                                 const RBLXusername = 'Not Linked to Bloxlink'
-                                interaction.guild.channels.create({ name: names,  parent: Ticketcat }).then(async (chan) => {
+                                interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
                                   chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
 
                                   chan.permissionOverwrites.set([
@@ -434,7 +437,7 @@ module.exports.run = (client, interaction) => {
                                       { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
                                       { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
                                       { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                      { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                                     ])
 
 
@@ -450,7 +453,7 @@ module.exports.run = (client, interaction) => {
                                     .addFields([
                                       { name: 'Ticket ID', value: `${generator}`, inline: true },
                                       { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                      { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
 
                                     ])
 
@@ -472,7 +475,7 @@ module.exports.run = (client, interaction) => {
                                       { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
                                       { name: 'Ticket ID', value: `${generator}`, inline: true },
                                       { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                                      { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
                                     ])
 
 
@@ -490,10 +493,11 @@ module.exports.run = (client, interaction) => {
                                           ChannelID: chan.id,
                                           Reason: MSG,
                                           Locked: "No",
-                                          Time: MainTime,
+                                          Time: timestamp.now(),
                                           AddedUser: Array,
                                           Type: 'Channel',
                                           ClaimUserID: "",
+                                          ClaimTime: "00000",
                                           Priority: PriorityList
                                         })
                                         data.save()
@@ -543,9 +547,11 @@ module.exports.run = (client, interaction) => {
                                         ChannelID: chan.id,
                                         Reason: MSG,
                                         Locked: "No",
-                                        Time: MainTime,
+                                        Time: timestamp.now(),
+                                        AddedUser: Array,
                                         Type: 'Channel',
                                         ClaimUserID: "",
+                                        ClaimTime: "00000",
                                         Priority: PriorityList
                                       })
                                       data.save()
@@ -553,7 +559,7 @@ module.exports.run = (client, interaction) => {
                                       const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                       const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                       TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
-                                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
+                                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1, ClosedTickets: +1 }, async (err20, data20) => {
                                         if (err20) throw err20;
                                         if (data20) {
                                           data20.save()
@@ -567,7 +573,7 @@ module.exports.run = (client, interaction) => {
                                 })
                               } else {
                                 const RBLXusername = noblox.getUsernameFromId(response.user.robloxId)
-                                interaction.guild.channels.create ({ name: names,  parent: Ticketcat }).then(async (chan) => {
+                                interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
                                   chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
 
                                   chan.permissionOverwrites.set([
@@ -584,7 +590,7 @@ module.exports.run = (client, interaction) => {
                                     }
                                   ])
 
-                                  
+
                                   chan.permissionOverwrites.set([
                                     {
                                       id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
@@ -592,7 +598,7 @@ module.exports.run = (client, interaction) => {
                                     }
                                   ])
 
-                
+
                                   const open = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
@@ -602,7 +608,7 @@ module.exports.run = (client, interaction) => {
                                       { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
                                       { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
                                       { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                      { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                                     ])
 
 
@@ -619,7 +625,7 @@ module.exports.run = (client, interaction) => {
                                     .addFields([
                                       { name: 'TicketID', value: `${generator}`, inline: true },
                                       { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                      { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                                     ])
 
 
@@ -641,7 +647,7 @@ module.exports.run = (client, interaction) => {
                                       { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
                                       { name: 'Ticket ID', value: `${generator}`, inline: true },
                                       { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                                      { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                                      { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
                                     ])
 
                                   await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
@@ -658,10 +664,11 @@ module.exports.run = (client, interaction) => {
                                           ChannelID: chan.id,
                                           Reason: MSG,
                                           Locked: "No",
-                                          Time: MainTime,
+                                          Time: timestamp.now(),
                                           AddedUser: Array,
                                           Type: 'Channel',
                                           ClaimUserID: "",
+                                          ClaimTime: "00000",
                                           Priority: PriorityList
                                         })
                                         data.save()
@@ -712,9 +719,11 @@ module.exports.run = (client, interaction) => {
                                         ChannelID: chan.id,
                                         Reason: MSG,
                                         Locked: "No",
-                                        Time: MainTime,
+                                        Time: timestamp.now(),
+                                        AddedUser: Array,
                                         Type: 'Channel',
                                         ClaimUserID: "",
+                                        ClaimTime: "00000",
                                         Priority: PriorityList
                                       })
                                       data.save()
@@ -722,7 +731,7 @@ module.exports.run = (client, interaction) => {
                                       const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                       const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                       TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run /claim ticketid:${generator}`)
-                                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
+                                      MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1, ClosedTickets: +1 }, async (err20, data20) => {
                                         if (err20) throw err20;
                                         if (data20) {
                                           data20.save()
@@ -766,7 +775,7 @@ module.exports.run = (client, interaction) => {
                                   { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
                                   { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
                                   { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                                  { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true }
+                                  { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
                                 ])
 
 
@@ -782,7 +791,7 @@ module.exports.run = (client, interaction) => {
                                 .addFields([
                                   { name: 'Ticket ID', value: `${generator}`, inline: true },
                                   { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                                  { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                  { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                                 ])
 
                               await interaction.user.send({ embeds: [DmPerson] });
@@ -802,7 +811,7 @@ module.exports.run = (client, interaction) => {
                                   { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
                                   { name: 'Ticket ID', value: `${generator}`, inline: true },
                                   { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
-                                  { name: 'Open Time', value: `<t:${MainTime}:f>`, inline: true },
+                                  { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                                 ])
 
                               await chan.send({ embeds: [thankyou], components: [ButtonList] }).then((m) => {
@@ -819,10 +828,11 @@ module.exports.run = (client, interaction) => {
                                       ChannelID: chan.id,
                                       Reason: MSG,
                                       Locked: "No",
-                                      Time: currentDateAndTime,
+                                      Time: timestamp.now(),
                                       AddedUser: Array,
                                       Type: 'Channel',
                                       ClaimUserID: "",
+                                      ClaimTime: "00000",
                                       Priority: PriorityList
                                     })
                                     data.save()
@@ -873,25 +883,27 @@ module.exports.run = (client, interaction) => {
                                     ChannelID: chan.id,
                                     Reason: MSG,
                                     Locked: "No",
-                                    Time: MainTime,
+                                    Time: timestamp.now(),
+                                    AddedUser: Array,
                                     Type: 'Channel',
                                     ClaimUserID: "",
+                                    ClaimTime: "00000",
                                     Priority: PriorityList
                                   })
                                   data.save()
-                                    .catch(err => console.log(err))
+                                      .catch(err => console.log(err))
                                   const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                   const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                   TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
-                                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
-                                    if (err20) throw err20;
-                                    if (data20) {
-                                      data20.save()
-                                      const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
-                                      MainTicketTrackerChannel.setName(`Tickets: ${data01.TicketNumber + 1}`)
-                                    }
-                                  })
-                                }
+                                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1, ClosedTickets: +1 }, async (err20, data20) => {
+                                        if (err20) throw err20;
+                                        if (data20) {
+                                          data20.save()
+                                          const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
+                                          MainTicketTrackerChannel.setName(`Tickets: ${data01.TicketNumber + 1}`)
+                                        }
+                                      })
+                                  }
 
                               })
                             })

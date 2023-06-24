@@ -6,7 +6,7 @@ var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' })
 const ClaimTicket = require('../schemas/ticketclaim')
 const MainDatabase = require('../schemas/TicketData')
 const timestamp = require('unix-timestamp');
-const MainTime = Math.round(timestamp.now())
+timestamp.round = true
 
 
 
@@ -129,7 +129,7 @@ module.exports.run = (client, interaction) => {
                                 ChannelID: chan.id,
                                 Reason: MSG,
                                 Locked: "No",
-                                Time: MainTime,
+                                Time: timestamp.now(),
                                 AddedUser: Array,
                                 Type: 'Voice',
                                 ClaimUserID: "",
@@ -183,7 +183,7 @@ module.exports.run = (client, interaction) => {
                               ChannelID: chan.id,
                               Reason: MSG,
                               Locked: "No",
-                              Time: MainTime,
+                              Time: timestamp.now(),
                               AddedUser: Array,
                               Type: 'Voice',
                               ClaimUserID: "",

@@ -5,7 +5,7 @@ const mongo = require('../mongo2');
 const mongoose = require('mongoose');
 const TicketDataMain = require('../schemas/TicketData')
 const { BotVersions } = require('../../slappey.json')
-const { ActionRowBuilder, StringSelectMenuBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, ChannelType, PermissionFlagsBits, ComponentType } = require('discord.js');
 
 
 module.exports.data = new SlashCommandBuilder()
@@ -76,7 +76,7 @@ module.exports.run = (client, interaction) => {
 
 
   const MainCollector = interaction.channel.createMessageComponentCollector({
-    componentType: "SELECT_MENU"
+    componentType: ComponentType.StringSelectMenuBuilder
   })
   MainCollector.on("collect", async (collected) => {
     const value = collected.values[0]
@@ -112,7 +112,7 @@ module.exports.run = (client, interaction) => {
 
         const Supportcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == ChannelType.GuildCategory)
 
-        interaction.guild.channels.create('Ticket', { parent: Supportcat }).then(async (chan) => {
+        interaction.guild.channels.create({ name: 'Ticket',  parent: Supportcat }).then(async (chan) => {
           chan.permissionOverwrites.set([
             {
               id: interaction.guild.roles.everyone,
@@ -121,11 +121,12 @@ module.exports.run = (client, interaction) => {
           ])
         })
 
-        interaction.guild.channels.create('Tickets: 0', { type: ChannelType.GuildVoice, parent: Supportcat }).then(async (chan) => {
+        interaction.guild.channels.create({ name: 'Tickets: 0',  type: ChannelType.GuildVoice, parent: Supportcat }).then(async (chan) => {
           chan.permissionOverwrites.set([
             {
               id: interaction.guild.roles.everyone,
-              allow: [PermissionFlagsBits.ViewChannel]
+              allow: [PermissionFlagsBits.ViewChannel],
+              deny: [PermissionFlagsBits.Connect]
             }
           ])
           chan.permissionOverwrites.set([
@@ -135,7 +136,7 @@ module.exports.run = (client, interaction) => {
             }
           ])
         })
-        interaction.guild.channels.create('Ticket-staff', { parent: Supportcat }).then(async (chan) => {
+        interaction.guild.channels.create({ name: 'Ticket-staff', parent: Supportcat }).then(async (chan) => {
           chan.permissionOverwrites.set([
             {
               id: interaction.guild.roles.everyone,
@@ -155,7 +156,7 @@ module.exports.run = (client, interaction) => {
             }
           ])
         })
-        interaction.guild.channels.create('Transcript', { parent: Supportcat }).then(async (chan) => {
+        interaction.guild.channels.create({ name: 'Transcript', parent: Supportcat }).then(async (chan) => {
           chan.permissionOverwrites.set([
             {
               id: interaction.guild.roles.everyone,
@@ -176,7 +177,7 @@ module.exports.run = (client, interaction) => {
             }
           ])
         })
-        interaction.guild.channels.create('Ticket-logs', { parent: Supportcat }).then(async (chan) => {
+        interaction.guild.channels.create({ name: 'Ticket-logs',  parent: Supportcat }).then(async (chan) => {
           chan.permissionOverwrites.set([
             {
               id: interaction.guild.roles.everyone,
@@ -320,6 +321,7 @@ module.exports.run = (client, interaction) => {
                 TypeOfServer: 'First',
                 Important: 'Enabled',
                 WebsiteCode: "N/A",
+                Threads: 'Disabled',
                 BotVersion: BotVersions
               })
               data2.save()
@@ -349,7 +351,7 @@ module.exports.run = (client, interaction) => {
         } else {
           interaction.guild.roles.create({
             name: 'ticket manager',
-            color: 'BLUE',
+            color: '#0000FF',
           })
 
           interaction.guild.roles.create({

@@ -14,7 +14,8 @@ const MainDatabase = require('../schemas/TicketData');
 const { mainModule } = require('process');
 const { response } = require('express');
 const { ButtonStyle, ChannelType } = require('discord.js');
-
+const timestamp = require('unix-timestamp');
+timestamp.round = true
 
 module.exports.data = new SlashCommandBuilder()
   .setName('close')
@@ -60,12 +61,12 @@ module.exports.run = (client, interaction) => {
         .setLabel('3')
         .setStyle(ButtonStyle.Primary)
         .setEmoji('⭐'),
-        new ButtonBuilder()
+      new ButtonBuilder()
         .setCustomId("rate4")
         .setLabel('4')
         .setStyle(ButtonStyle.Primary)
         .setEmoji('⭐'),
-        new ButtonBuilder()
+      new ButtonBuilder()
         .setCustomId("rate5")
         .setLabel('5')
         .setStyle(ButtonStyle.Primary)
@@ -104,7 +105,6 @@ module.exports.run = (client, interaction) => {
                         if (err200) throw err200;
                         if (data200) {
                           if (data200.ClaimUserID === "") {
-
                             if (!interaction.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
                               const NoPerms2 = new EmbedBuilder()
                                 .setTitle('Error')
@@ -120,6 +120,8 @@ module.exports.run = (client, interaction) => {
                             interaction.reply({ embeds: [NoClaimer] })
 
                           } else {
+                            console.log('get data')
+
 
                             if (data01.Transcript === "Yes") {
                               function makeURL(length) {
@@ -146,7 +148,7 @@ module.exports.run = (client, interaction) => {
                                 .setTitle(`Ticket`)
                                 .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
 
-                                
+
                               const Logs = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
@@ -164,10 +166,10 @@ module.exports.run = (client, interaction) => {
                                 .setTimestamp()
                                 .setTitle(`Ticket`)
                                 .setDescription(`Your ticket will be closed in 5 seconds`)
-                                .setFooter({ text: `Making a transcript....`})
+                                .setFooter({ text: `Making a transcript....` })
 
 
-                                
+
                               const ticketembed2 = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
@@ -232,9 +234,15 @@ module.exports.run = (client, interaction) => {
                                               .setTitle(`Ticket`)
                                               .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
                                               .addFields([
-                                                {name: 'Reason', value: `${data.Reason}`, inline: true},
-                                                {name: 'Time open', value: `<t:${data.Time}:f>`, inline: true},
-                                                {name: 'Priority', value: `${data.Priority}`, inline: true}
+                                                { name: 'Ticket ID', value: `${data.TicketIDs}`, inline: true },
+                                                { name: 'Opened By', value: `<@${data.id}>`, inline: true },
+                                                { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
+                                                { name: 'Transcript', value: 'Soon', inline: true },
+                                                { name: 'Open Time', value: `<t:${data.Time}:f>`, inline: true },
+                                                { name: 'Close Time', value: `<t:${timestamp.now()}:f>`, inline: true },
+                                                { name: 'Claim Time', value: `<t:${data.ClaimTime}:f>.`, inline: true },
+                                                { name: 'Claimed By', value: `<@${data.ClaimUserID}>`, inline: true },
+                                                { name: 'Priority', value: `${data.Priority}`, inline: true }
                                               ])
 
                                             const DMTicketClaimClosed = new EmbedBuilder()
@@ -282,10 +290,12 @@ module.exports.run = (client, interaction) => {
                                             .setTitle('Transcript')
                                             .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
                                             .addFields([
-                                              {name: 'Transcript', value: 'Disabled for ModMail'},
-                                              {name: 'Reason', value: `${data.Reason}`},
-                                              {name: 'Ticket Open', value: `<t:${data.Time}:f>`},
-                                              {name: 'Claim user', value: `<@${data.ClaimUserID}>`}
+                                              { name: 'Transcript', value: 'Disabled for ModMail', inline: true },
+                                              { name: 'Reason', value: `${data.Reason}`, inline: true },
+                                              { name: 'Ticket Open', value: `<t:${data.Time}:f>`, inline: true },
+                                              { name: 'Ticket Close', value: `<t:${timestamp.now()}:f>`, inline: true },
+                                              { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
+                                              { name: 'Claim user', value: `<@${data.ClaimUserID}>`, inline: true }
                                             ])
 
                                           TranscriptLogs.send({ embeds: [CloseEmbed] })
@@ -327,9 +337,15 @@ module.exports.run = (client, interaction) => {
                                                 .setTitle(`Ticket`)
                                                 .setDescription(`<@${data.ClaimUserID}> ${data01.CloseMessage}. Please rate the support below`)
                                                 .addFields([
-                                                  {name: 'Reason', value: `${data.Reason}`, inline: true},
-                                                  {name: 'Time open', value: `<t:${data.Time}:f>`, inline: true},
-                                                  {name: 'Priority', value: `${data.Priority}`, inline: true}
+                                                  { name: 'Ticket ID', value: `${data.TicketIDs}`, inline: true },
+                                                  { name: 'Opened By', value: `<@${data.id}>`, inline: true },
+                                                  { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
+                                                  { name: 'Transcript', value: 'Soon', inline: true },
+                                                  { name: 'Open Time', value: `<t:${data.Time}:f>`, inline: true },
+                                                  { name: 'Close Time', value: `<t:${timestamp.now()}:f>`, inline: true },
+                                                  { name: 'Claim Time', value: `<t:${data.ClaimTime}:f>.`, inline: true },
+                                                  { name: 'Claimed By', value: `<@${data.ClaimUserID}>`, inline: true },
+                                                  { name: 'Priority', value: `${data.Priority}`, inline: true }
                                                 ])
 
 
@@ -341,7 +357,7 @@ module.exports.run = (client, interaction) => {
 
 
                                               const ticketttcreator = client.users.cache.get(data.id)
-                                              ticketttcreator.send({ embeds: [DMTicketCreatorClosed]})
+                                              ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
 
                                               const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
                                               ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
@@ -377,11 +393,13 @@ module.exports.run = (client, interaction) => {
                                             const CloseEmbed = new EmbedBuilder()
                                               .setTitle('Transcript')
                                               .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
-                                              .addFields([
-                                                {name: 'Transcript', value: 'Disabled until further notice'},
-                                                {name: 'Reason', value: `${data.Reason}`},
-                                                {name: 'Ticket Open', value: `<t:${data.Time}:f>`},
-                                                {name: 'Claim User', value: `<@${data.ClaimUserID}>`}
+                                              .addFields([,
+                                                { name: 'Transcript', value: 'Provided below', inline: true },
+                                                { name: 'Reason', value: `${data.Reason}`, inline: true },
+                                                { name: 'Ticket Open', value: `<t:${data.Time}:f>`, inline: true },
+                                                { name: 'Ticket Close', value: `<t:${timestamp.now()}:f>`, inline: true },
+                                                { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
+                                                { name: 'Claim user', value: `<@${data.ClaimUserID}>`, inline: true }
                                               ])
 
                                             const discordTranscripts = require('discord-html-transcripts');
@@ -444,9 +462,15 @@ module.exports.run = (client, interaction) => {
                                           .setTitle(`Ticket`)
                                           .setDescription(`<@${data.ClaimUserID}> has closed your ticket! If you think this was a mistake, please contact one of the admins. Thank you. Please rate the support below`)
                                           .addFields([
-                                            {name: 'Reason', value: `${data.Reason}`, inline: true},
-                                            {name: 'Time open', value: `<t:${data.Time}:f>`, inline: true},
-                                            {name: 'Priority', value: `${data.Priority}`, inline: true}
+                                            { name: 'Ticket ID', value: `${data.TicketIDs}`, inline: true },
+                                            { name: 'Opened By', value: `<@${data.id}>`, inline: true },
+                                            { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
+                                            { name: 'Transcript', value: 'Soon', inline: true },
+                                            { name: 'Open Time', value: `<t:${data.Time}:f>`, inline: true },
+                                            { name: 'Close Time', value: `<t:${timestamp.now()}:f>`, inline: true },
+                                            { name: 'Claim Time', value: `<t:${data.ClaimTime}:f>.`, inline: true },
+                                            { name: 'Claimed By', value: `<@${data.ClaimUserID}>`, inline: true },
+                                            { name: 'Priority', value: `${data.Priority}`, inline: true }
                                           ])
 
                                         const DMTicketClaimClosed = new EmbedBuilder()
@@ -613,9 +637,15 @@ module.exports.run = (client, interaction) => {
                                 .setTitle(`Ticket`)
                                 .setDescription(`<@${data3.ClaimUserID}> ${data1.CloseMessage}. Please rate the support below`)
                                 .addFields([
-                                  {name: 'Reason', value: `${data.Reason}`, inline: true},
-                                  {name: 'Time open', value: `<t:${data.Time}:f`, inline: true},
-                                  {name: 'Priority', value: `${data.Priority}`, inline: true}
+                                  { name: 'Ticket ID', value: `${data.TicketIDs}`, inline: true },
+                                  { name: 'Opened By', value: `<@${data.id}>`, inline: true },
+                                  { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
+                                  { name: 'Transcript', value: 'Soon', inline: true },
+                                  { name: 'Open Time', value: `<t:${data.Time}:f>`, inline: true },
+                                  { name: 'Close Time', value: `<t:${timestamp.now()}:f>`, inline: true },
+                                  { name: 'Claim Time', value: `<t:${data.ClaimTime}:f>.`, inline: true },
+                                  { name: 'Claimed By', value: `<@${data.ClaimUserID}>`, inline: true },
+                                  { name: 'Priority', value: `${data.Priority}`, inline: true }
                                 ])
 
                               const DMTicketClaimClosed = new EmbedBuilder()
@@ -665,10 +695,12 @@ module.exports.run = (client, interaction) => {
                               .setTitle('Transcript')
                               .setDescription(`${data1.TranscriptMessage} ${interaction.channel.name}`)
                               .addFields([
-                                {name: 'Transcript', value: 'Disabled for voice calls'},
-                                {name: 'Reason', value: `${data.Reason}`},
-                                {name: 'Ticket Open', value: `<t:${data.Time}:f>`},
-                                {name: 'Claim user', value: `<@${data.ClaimUserID}>`}
+                                { name: 'Transcript', value: 'Disabled for Voice Calls', inline: true },
+                                { name: 'Reason', value: `${data.Reason}`, inline: true },
+                                { name: 'Ticket Open', value: `<t:${data.Time}:f>`, inline: true },
+                                { name: 'Ticket Close', value: `<t:${timestamp.now()}:f>`, inline: true },
+                                { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
+                                { name: 'Claim user', value: `<@${data.ClaimUserID}>`, inline: true }
                               ])
 
 
