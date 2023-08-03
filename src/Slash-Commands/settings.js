@@ -810,31 +810,30 @@ module.exports.run = async (client, interaction) => {
             interaction.editReply({ content: 'Edit settings', components: [editdropdown], ephemeral: true })
             if (interaction.user.id != interaction.guild.ownerId)
               return collected.reply({ embeds: [ServerOwner] });
-              collected.reply('Disabled')
-            // MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
-            //   if (err) throw err;
-            //   if (data) {
-            //     if (data.SecondServer === 'Disabled') {
-            //       MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServer: 'Enabled' }, async (err1, data1) => {
-            //         if (err1) throw err;
-            //         if (data1) {
-            //           data1.save()
-            //           collected.reply('Second Server has been enabled on this guild')
-            //         }
-            //       })
-            //     } else {
-            //       if (data.SecondServer === 'Enabled') {
-            //         MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServer: 'Disabled' }, async (err1, data1) => {
-            //           if (err1) throw err;
-            //           if (data1) {
-            //             data1.save()
-            //             collected.reply('Second server has been disabled on this guild')
-            //           }
-            //         })
-            //       }
-            //     }
-            //   }
-           //})
+            MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
+              if (err) throw err;
+              if (data) {
+                if (data.SecondServer === 'Disabled') {
+                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServer: 'Enabled' }, async (err1, data1) => {
+                    if (err1) throw err;
+                    if (data1) {
+                      data1.save()
+                      collected.reply('Second Server has been enabled on this guild')
+                    }
+                  })
+                } else {
+                  if (data.SecondServer === 'Enabled') {
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { SecondServer: 'Disabled' }, async (err1, data1) => {
+                      if (err1) throw err;
+                      if (data1) {
+                        data1.save()
+                        collected.reply('Second server has been disabled on this guild')
+                      }
+                    })
+                  }
+                }
+              }
+           })
           }
           if (value === 'reaction') {
             editdropdown.components[0].setDisabled(true)
@@ -1161,7 +1160,7 @@ module.exports.run = async (client, interaction) => {
         await interaction.reply({ content: 'Second Server settings', components: [editdropdown], ephemeral: true });
 
         const MainCollector = interaction.channel.createMessageComponentCollector({
-          componentType: componentType.StringSelectMenuBuilder
+          componentType: ComponentType.StringSelectMenuBuilder
         })
         MainCollector.on("collect", async (collected) => {
           const value = collected.values[0]

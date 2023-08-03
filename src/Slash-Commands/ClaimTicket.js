@@ -60,6 +60,18 @@ module.exports.run = (client, interaction) => {
                                     .setTitle('Ticket Claimed!')
                                     .setDescription(`<#${data2.ChannelID}> has been claimed by <@${interaction.user.id}> You should off be given the permission to send the message in the ticket!`)
 
+                                    const TicketClaimedLogs = new EmbedBuilder()
+                                    .setTitle('Logs')
+                                    .setDescription('A ticket has been claimed in this guild')
+                                    .addFields([
+                                        { name: 'User', value: `${interaction.user.name}`, inline: true },
+                                        { name: 'Ticket ID', value: `${data2.TicketIDs}`, inline: true },
+                                        { name: 'Claim Time', value: `<t:${timestamp.now()}:f>` }
+                                    ])
+
+
+                                const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+
                                 const TicketClaimedDM = new EmbedBuilder()
                                     .setTitle('Ticket Claimed!')
                                     .setDescription(`Your ticket <#${data2.ChannelID}> has been claimed by <@${interaction.user.id}>! For you to reply, you need to reply to our DMs with your ticket id ${data2.TicketIDs}`)
@@ -78,6 +90,7 @@ module.exports.run = (client, interaction) => {
                                 interaction.reply({ embeds: [TicketClaimed] })
                                 const sendtouser = client.users.cache.get(`${user1}`)
                                 sendtouser.send({ embeds: [TicketClaimedDM] })
+                                SupportLogs.send({ embeds: [TicketClaimedLogs]})
 
                                 const MainChan = interaction.guild.channels.cache.get(data2.ChannelID)
 
@@ -120,10 +133,23 @@ module.exports.run = (client, interaction) => {
                                         data2.save()
 
 
+
                                         console.log('test')
                                         const TicketClaimed = new EmbedBuilder()
                                             .setTitle('Ticket Claimed!')
                                             .setDescription(`<#${data2.ChannelID}> has been claimed by <@${interaction.user.id}> You should off be given the permission to send the message in the ticket!`)
+
+                                            const TicketClaimedLogs = new EmbedBuilder()
+                                            .setTitle('Logs')
+                                            .setDescription('A ticket has been claimed in this guild')
+                                            .addFields([
+                                                { name: 'User', value: `${interaction.user.name}`, inline: true },
+                                                { name: 'Ticket ID', value: `${data2.TicketIDs}`, inline: true },
+                                                { name: 'Claim Time', value: `<t:${timestamp.now()}:f>` }
+                                            ])
+        
+
+                                        const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
 
                                         const TicketClaimedDM = new EmbedBuilder()
                                             .setTitle('Ticket Claimed!')
@@ -143,6 +169,7 @@ module.exports.run = (client, interaction) => {
                                         interaction.reply({ embeds: [TicketClaimed] })
                                         const sendtouser = client.users.cache.get(`${user1}`)
                                         sendtouser.send({ embeds: [TicketClaimedDM] })
+                                        SupportLogs.send({ embeds: [TicketClaimedLogs]})
 
                                         const MainChan = interaction.guild.channels.cache.get(data2.ChannelID)
 

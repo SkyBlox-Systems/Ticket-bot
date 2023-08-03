@@ -11,6 +11,7 @@ timestamp.round = true
 
 
 
+
 var today = new Date();
 var dd = String(today.getDate());
 
@@ -43,6 +44,8 @@ module.exports.data = new SlashCommandBuilder()
       .setRequired(true));
 
 module.exports.run = (client, interaction) => {
+  // const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+
   const MSG = interaction.options.getString('reason')
   const PriorityList = interaction.options.getString('priority')
 
@@ -123,6 +126,7 @@ module.exports.run = (client, interaction) => {
                 const Ticketcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == Discord.ChannelType.GuildCategory)
 
                 if (data01.SecondServer === 'Enabled') {
+                  console.log('usesx thuis')
                   if (data01.SecondServerID === 'N/A')
                     return interaction.reply('No other guild has been added')
                   if (data01.SecondServerSupportRoleID === 'N/A')
@@ -152,6 +156,20 @@ module.exports.run = (client, interaction) => {
 
                     await interaction.reply({ embeds: [open] });
 
+                    // const LogsMessageOpen = new EmbedBuilder()
+                    // .setTitle('Logs')
+                    // .setDescription('A ticket has been opened in this guild')
+                    // .addFields([
+                    //   { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                    //   { name: 'Ticket ID', value: `${generator}`, inline: true },
+                    //   { name: 'Priority', value: `${PriorityList}`|| `N/A`, inline: true }, 
+                    //   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                    // ])
+
+                    // SupportLogs.send({ embed: [LogsMessageOpen ]})
+
+
+
                     const DmPerson = new EmbedBuilder()
                       .setColor('#f6f7f8')
                       .setTimestamp()
@@ -168,29 +186,25 @@ module.exports.run = (client, interaction) => {
                     const TicketManagerID = newguild.roles.cache.find(roles => roles.id === data01.SecondServerManagerRoleID)
                     newguild.channels.cache.get(`${data01.SecondServerClaimChannel}`).send(`${TicketSupportID}, ${TicketManagerID} \n<@${interaction.user.id}> has open a support ticket! Please run /claim ticketid:${generator} to claim the ticket!`)
 
-                    ClaimTicket.findOne({ ServerID: interaction.guild.id }, async (err3, data3) => {
-                      if (err3) throw err;
-                      if (data3) {
-                        if (data3.ServerID === interaction.guild.id) {
-                          data3 = new ClaimTicket({
-                            id: interaction.user.id,
-                            TicketIDs: generator,
-                            ServerID: interaction.guild.id,
-                            ChannelID: chan.id,
-                            Reason: MSG,
-                            Locked: "No",
-                            Time: timestamp.now(),
-                            AddedUser: Array,
-                            Type: 'Channel',
-                            ClaimUserID: "",
-                            ClaimTime: "00000",
-                            Priority: PriorityList
-                          })
-                          data3.save()
-                          console.log('data saved')
-                        } else {
-                          console.log('Not saved')
-                        }
+                    ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guild.id }, async (err3, data3) => {
+                      console.log(data3)
+                      if (data3 === null) {
+                        data3 = new ClaimTicket({
+                          id: interaction.user.id,
+                          TicketIDs: generator,
+                          ServerID: newguild.id,
+                          ChannelID: chan.id,
+                          Reason: MSG,
+                          Locked: "No",
+                          Time: timestamp.now(),
+                          AddedUser: Array,
+                          Type: 'Channel',
+                          ClaimUserID: "",
+                          ClaimTime: "00000",
+                          Priority: PriorityList
+                        })
+                        data3.save()
+                        console.log('data saved')
                       }
                     })
                     MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1, ClosedTickets: +1 }, async (err20, data20) => {
@@ -259,6 +273,18 @@ module.exports.run = (client, interaction) => {
 
                         await interaction.reply({ embeds: [open], ephemeral: true });
 
+                        // const LogsMessageOpen = new EmbedBuilder()
+                        // .setTitle('Logs')
+                        // .setDescription('A ticket has been opened in this guild')
+                        // .addFields([
+                        //   { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                        //   { name: 'Ticket ID', value: `${generator}`, inline: true },
+                        //   { name: 'Priority', value: `${PriorityList}`|| `N/A`, inline: true }, 
+                        //   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                        // ])
+
+                        // SupportLogs.send({ embed: [LogsMessageOpen ]})
+
                         const DmPerson = new EmbedBuilder()
                           .setColor('#f6f7f8')
                           .setTimestamp()
@@ -272,6 +298,19 @@ module.exports.run = (client, interaction) => {
                           .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
 
                         await interaction.user.send({ embeds: [DmPerson] });
+
+                        const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                        const TicketOpenLogs = new EmbedBuilder()
+                          .setTitle('Logs')
+                          .setDescription('A Ticket has been opened in this guild')
+                          .addFields([
+                            { name: 'User', value: `${interaction.user.name}`, inline: true },
+                            { name: 'Ticket ID', value: `${generator}`, inline: true },
+                            { name: 'Priority', value: `${PriorityList}`, inline: true },
+                            { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                          ])
+
+                        SupportLogs.send({ embeds: [TicketOpenLogs] })
 
                         const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                         const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
@@ -302,7 +341,7 @@ module.exports.run = (client, interaction) => {
                               data = new ClaimTicket({
                                 id: interaction.user.id,
                                 TicketIDs: generator,
-                                ServerID: interaction.guild.id,
+                                ServerID: newguild.id,
                                 ChannelID: chan.id,
                                 Reason: MSG,
                                 Locked: "No",
@@ -357,7 +396,7 @@ module.exports.run = (client, interaction) => {
                             data = new ClaimTicket({
                               id: interaction.user.id,
                               TicketIDs: generator,
-                              ServerID: interaction.guild.id,
+                              ServerID: newguild.id,
                               ChannelID: chan.id,
                               Reason: MSG,
                               Locked: "No",
@@ -444,6 +483,19 @@ module.exports.run = (client, interaction) => {
 
                                   await interaction.reply({ embeds: [open], ephemeral: true });
 
+
+                                  // const LogsMessageOpen = new EmbedBuilder()
+                                  // .setTitle('Logs')
+                                  // .setDescription('A ticket has been opened in this guild')
+                                  // .addFields([
+                                  //   { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                  //   { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                  //   { name: 'Priority', value: `${PriorityList}`|| `N/A`, inline: true }, 
+                                  //   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                  // ])
+
+                                  // SupportLogs.send({ embeds: [LogsMessageOpen ]})
+
                                   const DmPerson = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
@@ -458,6 +510,19 @@ module.exports.run = (client, interaction) => {
                                     ])
 
                                   await interaction.user.send({ embeds: [DmPerson] });
+
+                                  const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                                  const TicketOpenLogs = new EmbedBuilder()
+                                    .setTitle('Logs')
+                                    .setDescription('A Ticket has been opened in this guild')
+                                    .addFields([
+                                      { name: 'User', value: `${interaction.user.name}`, inline: true },
+                                      { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                      { name: 'Priority', value: `${PriorityList}`, inline: true },
+                                      { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                    ])
+
+                                  SupportLogs.send({ embeds: [TicketOpenLogs] })
 
                                   const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                   const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
@@ -616,6 +681,18 @@ module.exports.run = (client, interaction) => {
 
                                   await interaction.reply({ embeds: [open], ephemeral: true });
 
+                                  // const LogsMessageOpen = new EmbedBuilder()
+                                  // .setTitle('Logs')
+                                  // .setDescription('A ticket has been opened in this guild')
+                                  // .addFields([
+                                  //   { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                  //   { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                  //   { name: 'Priority', value: `${PriorityList}`|| `N/A`, inline: true }, 
+                                  //   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                  // ])
+
+                                  // SupportLogs.send({ embeds: [LogsMessageOpen ]})
+
                                   const DmPerson = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
@@ -630,6 +707,19 @@ module.exports.run = (client, interaction) => {
 
 
                                   await interaction.user.send({ embeds: [DmPerson] });
+
+                                  const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                                  const TicketOpenLogs = new EmbedBuilder()
+                                    .setTitle('Logs')
+                                    .setDescription('A Ticket has been opened in this guild')
+                                    .addFields([
+                                      { name: 'User', value: `${interaction.user.name}`, inline: true },
+                                      { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                      { name: 'Priority', value: `${PriorityList}`, inline: true },
+                                      { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                    ])
+
+                                  SupportLogs.send({ embeds: [TicketOpenLogs] })
 
                                   const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                   const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
@@ -782,6 +872,18 @@ module.exports.run = (client, interaction) => {
 
                               await interaction.reply({ embeds: [open], ephemeral: true });
 
+                              // const LogsMessageOpen = new EmbedBuilder()
+                              // .setTitle('Logs')
+                              // .setDescription('A ticket has been opened in this guild')
+                              // .addFields([
+                              //   { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                              //   { name: 'Ticket ID', value: `${generator}`, inline: true },
+                              //   { name: 'Priority', value: `${PriorityList}`|| `N/A`, inline: true }, 
+                              //   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                              // ])
+
+                              // SupportLogs.send({ embed: [LogsMessageOpen ]})
+
                               const DmPerson = new EmbedBuilder()
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
@@ -795,6 +897,19 @@ module.exports.run = (client, interaction) => {
                                 ])
 
                               await interaction.user.send({ embeds: [DmPerson] });
+
+                              const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                              const TicketOpenLogs = new EmbedBuilder()
+                                .setTitle('Logs')
+                                .setDescription('A Ticket has been opened in this guild')
+                                .addFields([
+                                  { name: 'User', value: `${interaction.user.name}`, inline: true },
+                                  { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                  { name: 'Priority', value: `${PriorityList}`, inline: true },
+                                  { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                ])
+
+                              SupportLogs.send({ embeds: [TicketOpenLogs] })
 
                               const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                               const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
@@ -891,19 +1006,19 @@ module.exports.run = (client, interaction) => {
                                     Priority: PriorityList
                                   })
                                   data.save()
-                                      .catch(err => console.log(err))
+                                    .catch(err => console.log(err))
                                   const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                   const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                   TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
                                   MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1, ClosedTickets: +1 }, async (err20, data20) => {
-                                        if (err20) throw err20;
-                                        if (data20) {
-                                          data20.save()
-                                          const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
-                                          MainTicketTrackerChannel.setName(`Tickets: ${data01.TicketNumber + 1}`)
-                                        }
-                                      })
-                                  }
+                                    if (err20) throw err20;
+                                    if (data20) {
+                                      data20.save()
+                                      const MainTicketTrackerChannel = interaction.guild.channels.cache.get(`${data01.TicketTrackerChannelID}`)
+                                      MainTicketTrackerChannel.setName(`Tickets: ${data01.TicketNumber + 1}`)
+                                    }
+                                  })
+                                }
 
                               })
                             })

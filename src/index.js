@@ -99,19 +99,19 @@ client.on('interactionCreate', interaction => {
 
   let commandMethod = commands.get(name);
   if (commandMethod) {
-    blacklist.findOne({ UserID: interaction.user.id }, async (err, data) => {
-      const check = await db.findOne({ Guild: interaction.guild.id })
-      const versionCheck = await MainDatabase.findOne({ ServerID: interaction.guild.id })
-      if (err) throw err;
-      if (!data) {
-        if (name === 'setup') {
-          commandMethod(client, interaction)
-        } else {
-          if (name === 'upgrade') {
+    if (mongoose.connection.readyState === 1) {
+      blacklist.findOne({ UserID: interaction.user.id }, async (err, data) => {
+        const check = await db.findOne({ Guild: interaction.guild.id })
+        const versionCheck = await MainDatabase.findOne({ ServerID: interaction.guild.id })
+        if (err) throw err;
+        if (!data) {
+          if (name === 'setup') {
             commandMethod(client, interaction)
           } else {
-            if (mongoose.connection.readyState === 1) {
-              
+            if (name === 'upgrade') {
+              commandMethod(client, interaction)
+            } else {
+
               if (versionCheck === null) {
                 const notdata = new EmbedBuilder()
                   .setTitle('No data')
@@ -233,31 +233,31 @@ client.on('interactionCreate', interaction => {
                   }
                 }
               }
-            } else {
-            
-                console.log('error')
-                const DatabaseError = new EmbedBuilder()
-                .setTitle('Database Error')
-                .setDescription('The bot is having issues connecting to the database at the moment. Please check our [status page](https://status.skybloxsystems.com) or email support @ support@skybloxsystems.com')
-
-                interaction.reply({ embeds: [DatabaseError]})
-      
             }
           }
+        } else {
+          const BlacklistedFromBot = new EmbedBuilder()
+            .setTitle('Blacklisted!')
+            .setDescription('You have been blacklisted from using Ticket Bot!')
+            .addFields([
+              { name: `Reason`, value: `${data.Reason}`, inline: false },
+              { name: `Time`, value: `${data.Time} UTC`, inline: false },
+              { name: `Admin`, value: `${data.Admin}`, inline: false }
+            ])
+          interaction.reply({ embeds: [BlacklistedFromBot] })
         }
-      } else {
-        const BlacklistedFromBot = new EmbedBuilder()
-          .setTitle('Blacklisted!')
-          .setDescription('You have been blacklisted from using Ticket Bot!')
-          .addFields([
-            { name: `Reason`, value: `${data.Reason}`, inline: false },
-            { name: `Time`, value: `${data.Time} UTC`, inline: false },
-            { name: `Admin`, value: `${data.Admin}`, inline: false }
-          ])
-        interaction.reply({ embeds: [BlacklistedFromBot] })
-      }
 
-    })
+      })
+    } else {
+      if (mongoose.connection.readyState !== 1) {
+        console.log('error')
+        const DatabaseError = new EmbedBuilder()
+          .setTitle('Database Error')
+          .setDescription('The bot is having issues connecting to the database at the moment. Please check our [status page](https://status.skybloxsystems.com) or email support at support@skybloxsystems.com')
+  
+        interaction.reply({ embeds: [DatabaseError] })
+      }
+    }
   }
 
   if (!commandMethod) return;

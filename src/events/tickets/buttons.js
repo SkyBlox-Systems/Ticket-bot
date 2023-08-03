@@ -262,16 +262,21 @@ module.exports = class ReadyEvent extends BaseEvent {
                                               SupportLogs.send({ embeds: [Logs] })
 
                                               const CloseEmbed = new EmbedBuilder()
-                                                .setTitle('Transcript')
-                                                .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
-                                                .addFields([
-                                                  { name: 'Transcript', value: 'Disabled for ModMail' },
-                                                  { name: 'Reason', value: `${data.Reason}` },
-                                                  { name: 'Ticket Open', value: `<t:${data.Time}:f>` },
-                                                  { name: 'Claim user', value: `<@${data.ClaimUserID}>` }
-                                                ])
-
+                                              .setTitle('Transcript')
+                                              .setDescription(`Transcript for the user ${data.id}`)
                                               TranscriptLogs.send({ embeds: [CloseEmbed] })
+
+
+                                            const discordTranscripts = require('discord-html-transcripts');
+
+                                            const channelsss = interaction.channel;
+                                            const attachment = await discordTranscripts.createTranscript(channelsss, {
+                                              limit: -1, // Max amount of messages to fetch.
+                                              returnBuffer: false, // Return a buffer instead of a MessageAttachment 
+                                              fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
+                                            });
+
+                                            TranscriptLogs.send({ files: [attachment] })
 
 
                                             })
@@ -365,26 +370,21 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                 SupportLogs.send({ embeds: [Logs] })
 
                                                 const CloseEmbed = new EmbedBuilder()
-                                                  .setTitle('Transcript')
-                                                  .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
-                                                  .addFields([
-                                                    { name: 'Transcript', value: 'Disabled until further notice' },
-                                                    { name: 'Reason', value: `${data.Reason}` },
-                                                    { name: 'Ticket Open', value: `<t:${data.Time}:f>` },
-                                                    { name: 'Claim User', value: `<@${data.ClaimUserID}>` }
-                                                  ])
-
-                                                const discordTranscripts = require('discord-html-transcripts');
-
-                                                const channelsss = interaction.channel;
-                                                const attachment = await discordTranscripts.createTranscript(channelsss, {
-                                                  limit: -1, // Max amount of messages to fetch.
-                                                  returnBuffer: false, // Return a buffer instead of a MessageAttachment 
-                                                  fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
-                                                });
-
+                                                .setTitle('Transcript')
+                                                .setDescription(`Transcript for the user ${data.id}`)
                                                 TranscriptLogs.send({ embeds: [CloseEmbed] })
-                                                TranscriptLogs.send({ files: [attachment] })
+  
+  
+                                              const discordTranscripts = require('discord-html-transcripts');
+  
+                                              const channelsss = interaction.channel;
+                                              const attachment = await discordTranscripts.createTranscript(channelsss, {
+                                                limit: -1, // Max amount of messages to fetch.
+                                                returnBuffer: false, // Return a buffer instead of a MessageAttachment 
+                                                fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
+                                              });
+  
+                                              TranscriptLogs.send({ files: [attachment] })
                                               })
 
                                             }, 5000);

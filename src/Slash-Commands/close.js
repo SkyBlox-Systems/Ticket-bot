@@ -153,7 +153,18 @@ module.exports.run = (client, interaction) => {
                                 .setColor('#f6f7f8')
                                 .setTimestamp()
                                 .setTitle('Ticket-logs')
-                                .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully. \n\n All tickets are removed of our server within 24 hours.`)
+                                .setDescription(`A ticket has been closed in this guild.`)
+                                .addFields([
+                                  { name: 'Ticket ID', value: `${data2001.TicketIDs}`, inline: true },
+                                  { name: 'Opended by', value: `<@${data2001.id}>`, inline: true },
+                                  { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
+                                  { name: 'Transcript', value: `Link`, inline: true },
+                                  { name: 'Open Time', value: `<t:${data2001.Time}:f>`, inline: true },
+                                  { name: 'Close Time', value: `<t:${timestamp.now()}:f>`, inline: true },
+                                  { name: 'Claim Time', value: `<t:${data2001.ClaimTime}:f>`, inline: true },
+                                  { name: 'Claimed By', value: `<@${data2001.ClaimUserID}>`, inline: true },
+                                  { name: 'Priority', value: `${data2001.Priority}`, inline: true }
+                                ])
 
                               const notclosed = new EmbedBuilder()
                                 .setColor('#f6f7f8')
@@ -288,17 +299,18 @@ module.exports.run = (client, interaction) => {
 
                                           const CloseEmbed = new EmbedBuilder()
                                             .setTitle('Transcript')
-                                            .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
-                                            .addFields([
-                                              { name: 'Transcript', value: 'Disabled for ModMail', inline: true },
-                                              { name: 'Reason', value: `${data.Reason}`, inline: true },
-                                              { name: 'Ticket Open', value: `<t:${data.Time}:f>`, inline: true },
-                                              { name: 'Ticket Close', value: `<t:${timestamp.now()}:f>`, inline: true },
-                                              { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
-                                              { name: 'Claim user', value: `<@${data.ClaimUserID}>`, inline: true }
-                                            ])
-
+                                            .setDescription(`Transcript for the user ${data.id}`)
                                           TranscriptLogs.send({ embeds: [CloseEmbed] })
+
+
+                                          const channelsss = interaction.channel;
+                                          const attachment = await discordTranscripts.createTranscript(channelsss, {
+                                            limit: -1, // Max amount of messages to fetch.
+                                            returnBuffer: false, // Return a buffer instead of a MessageAttachment 
+                                            fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
+                                          });
+
+                                          TranscriptLogs.send({ files: [attachment] })
 
 
                                         })
@@ -392,15 +404,9 @@ module.exports.run = (client, interaction) => {
 
                                             const CloseEmbed = new EmbedBuilder()
                                               .setTitle('Transcript')
-                                              .setDescription(`${data01.TranscriptMessage} ${interaction.channel.name}`)
-                                              .addFields([,
-                                                { name: 'Transcript', value: 'Provided below', inline: true },
-                                                { name: 'Reason', value: `${data.Reason}`, inline: true },
-                                                { name: 'Ticket Open', value: `<t:${data.Time}:f>`, inline: true },
-                                                { name: 'Ticket Close', value: `<t:${timestamp.now()}:f>`, inline: true },
-                                                { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
-                                                { name: 'Claim user', value: `<@${data.ClaimUserID}>`, inline: true }
-                                              ])
+                                              .setDescription(`Transcript for the user ${data.id}`)
+                                              TranscriptLogs.send({ embeds: [CloseEmbed] })
+
 
                                             const discordTranscripts = require('discord-html-transcripts');
 
@@ -411,7 +417,6 @@ module.exports.run = (client, interaction) => {
                                               fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
                                             });
 
-                                            TranscriptLogs.send({ embeds: [CloseEmbed] })
                                             TranscriptLogs.send({ files: [attachment] })
                                           })
 
@@ -601,7 +606,18 @@ module.exports.run = (client, interaction) => {
                     .setColor('#f6f7f8')
                     .setTimestamp()
                     .setTitle('Ticket-logs')
-                    .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully. \n\n All tickets are removed of our server within 24 hours.`)
+                    .setDescription(`A ticket has been  closed in this guild.`)
+                    .addFields([
+                      { name: 'Ticket ID', value: `${data2001.TicketIDs}`, inline: true },
+                      { name: 'Opended by', value: `<@${data2001.id}>`, inline: true },
+                      { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
+                      { name: 'Transcript', value: `Link`, inline: true },
+                      { name: 'Open Time', value: `<t:${data2001.Time}:f>`, inline: true },
+                      { name: 'Close Time', value: `<<t:${timestamp.now()}:f>`, inline: true },
+                      { name: 'Claim Time', value: `<t:${data2001.ClaimTime}:f>`, inline: true },
+                      { name: 'Claimed By', value: `<@${data2001.ClaimUserID}>`, inline: true },
+                      { name: 'Priority', value: `${data2001.Priority}`, inline: true }
+                    ])
 
                   const notclosed = new EmbedBuilder()
                     .setColor('#f6f7f8')
@@ -693,15 +709,7 @@ module.exports.run = (client, interaction) => {
 
                             const CloseEmbed = new EmbedBuilder()
                               .setTitle('Transcript')
-                              .setDescription(`${data1.TranscriptMessage} ${interaction.channel.name}`)
-                              .addFields([
-                                { name: 'Transcript', value: 'Disabled for Voice Calls', inline: true },
-                                { name: 'Reason', value: `${data.Reason}`, inline: true },
-                                { name: 'Ticket Open', value: `<t:${data.Time}:f>`, inline: true },
-                                { name: 'Ticket Close', value: `<t:${timestamp.now()}:f>`, inline: true },
-                                { name: 'Closed By', value: `<@${interaction.user.id}>`, inline: true },
-                                { name: 'Claim user', value: `<@${data.ClaimUserID}>`, inline: true }
-                              ])
+                              .setDescription(`Transcript for the user ${data.id}`)
 
 
                             TranscriptLogs.send({ embeds: [CloseEmbed] })
