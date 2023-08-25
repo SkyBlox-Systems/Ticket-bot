@@ -38,7 +38,7 @@ module.exports.run = (client, interaction) => {
 
         const emailConfig = {
             options: {
-                host: 'smtp.ionos.co.uk',
+                host: 'smtp.office365.com',
                 port: 587,
                 secure: false,
                 auth: {
