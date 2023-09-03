@@ -12,6 +12,14 @@ const timestamp = require('unix-timestamp');
 timestamp.round = true
 const { Translate } = require('@google-cloud/translate').v2;
 const { TranslateID } = require('../../slappey.json')
+const sellix = require("@sellix/node-sdk")("TdadLA5hHnVN3Dz2YKWk1gcv94mYsPQPylJLj2NP34MW85ExQ5MLMWMqDHcIMRll");
+
+
+const hardwarePayload = {
+    key: "TICKETBOT-FDKZIGKTGHHNMFMQ",
+    product_id: "6297d688d34c6"
+  };
+
 
 
 module.exports.data = new SlashCommandBuilder()
@@ -19,5 +27,21 @@ module.exports.data = new SlashCommandBuilder()
     .setDescription('test Command')
 
 module.exports.run = async (client, interaction) => {
-    console.log(client.users.cache.get("406164395643633665").username)
+    void (async () => {
+        try {
+          const check = await sellix.products.licensing.check(hardwarePayload);
+          console.log(check)
+          const toTimestamp = (strDate) => {
+            const dt = new Date(strDate).getTime();
+            return dt / 1000;
+          }
+          console.log(toTimestamp(check.expires_at));
+          interaction.reply(`<t:${toTimestamp(check.expires_at)}:f>`)
+        } catch (e) {
+          console.log(e);
+          if (e === 'Error: License expired.: {"status":400,"data":null,"error":"License expired.","message":null,"env":"production"}') {
+            console.log('kik')
+          }
+        }
+      })();
 }

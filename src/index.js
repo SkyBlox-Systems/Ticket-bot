@@ -15,6 +15,11 @@ var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' })
 const mongoose = require('mongoose');
 const Stats = require('discord-live-stats');
 const DLU = require("@dbd-soft-ui/logs")
+const timestamp = require('unix-timestamp');
+timestamp.round = true
+
+const sellix = require("@sellix/node-sdk")(config.StoreCode);
+
 
 
 // const Poster = new Stats.Client(client, {
@@ -30,6 +35,7 @@ const blacklist = require('./schemas/Blacklist-schema');
 const ClaimTicket = require('./schemas/ticketclaim');
 const { truncate } = require('fs/promises');
 const GiveawayDatabase = require('./schemas/giveaways-user-data');
+const { Timestamp } = require('mongodb');
 
 
 
@@ -99,19 +105,19 @@ client.on('interactionCreate', interaction => {
 
   let commandMethod = commands.get(name);
   if (commandMethod) {
-    blacklist.findOne({ UserID: interaction.user.id }, async (err, data) => {
-      const check = await db.findOne({ Guild: interaction.guild.id })
-      const versionCheck = await MainDatabase.findOne({ ServerID: interaction.guild.id })
-      if (err) throw err;
-      if (!data) {
-        if (name === 'setup') {
-          commandMethod(client, interaction)
-        } else {
-          if (name === 'upgrade') {
+    if (mongoose.connection.readyState === 1) {
+      blacklist.findOne({ UserID: interaction.user.id }, async (err, data) => {
+        const check = await db.findOne({ Guild: interaction.guild.id })
+        const versionCheck = await MainDatabase.findOne({ ServerID: interaction.guild.id })
+        if (err) throw err;
+        if (!data) {
+          if (name === 'setup') {
             commandMethod(client, interaction)
           } else {
-            if (mongoose.connection.readyState === 1) {
-              
+            if (name === 'upgrade') {
+              commandMethod(client, interaction)
+            } else {
+
               if (versionCheck === null) {
                 const notdata = new EmbedBuilder()
                   .setTitle('No data')
@@ -141,6 +147,7 @@ client.on('interactionCreate', interaction => {
                         PaidGuild: data4.PaidGuild || 'No',
                         Tier: data4.Tier || 'Free',
                         PremiumCode: data4.PremiumCode || 'N/A',
+                        PremiumExpire: data4.PremiumExpire || '0',
                         Transcript: data4.Transcript || 'Yes',
                         UseTicketReactions: data4.UseTicketReactions || 'Yes',
                         UseDashboard: data4.UseDashboard || 'Yes',
@@ -193,71 +200,116 @@ client.on('interactionCreate', interaction => {
 
                   // New Update system
                 } else {
-                  if (check) {
-                    const DisabledCommand = new EmbedBuilder()
-                      .setTitle('Disabled')
-                      .setDescription(`The following command **/${interaction.commandName}** has been disabled in the server by an administrator`)
-                      .setColor('#f6f7f8')
-                    if (check.Cmds.includes(interaction.commandName)) return interaction.reply({ embeds: [DisabledCommand] })
-                    if (versionCheck.Important === 'Enabled') {
+                  // New Pro System
+                  if (versionCheck.PaidGuild === 'Yes') {
+                    if (versionCheck.PremiumCode === 'Old System') {
                       commandMethod(client, interaction)
-                      // commandMethod(client, interaction)
-                      // const ImportantAnnouncement = new EmbedBuilder()
-                      //   .setTitle('Imporant announcement from bot owner')
-                      //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
-                      //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
-
-                      // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
-                      // setTimeout(() => {
-                      //   commandMethod(client, interaction)
-                      // }, 2000);
                     } else {
-                      commandMethod(client, interaction)
+                      if (versionCheck.PremiumExpire < timestamp.now()) {
+                        console.log('1')
+                        const hardwarePayload = {
+                          key: versionCheck.PremiumCode,
+                          product_id: config.product_ids,
+                        };
+                        const toTimestamp = (strDate) => {
+                          const dt = new Date(strDate).getTime();
+                          return dt / 1000;
+                        }
+                        const hardware =  await sellix.products.licensing.check(hardwarePayload);
+
+                        const PremiumExpireCode = (toTimestamp(hardware.expires_at))
+                        if (versionCheck.PremiumExpire !== PremiumExpireCode) {
+                          MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PremiumExpire: toTimestamp(hardware.expires_at) }, async (err200, data200) => {
+                            if (err200) throw err;
+                            if (data200) {
+                              data200.save()
+                              interaction.reply('This guild premium has been renewed!')
+                            }
+                          })
+                        } else {
+                          interaction.channel.send('This guild has not renewed their premium subscription. Premium has now been removed from the guild')
+                          MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PremiumExpire: '0', PaidGuild: 'No', Tier: 'Free' }, async (err200, data200) => {
+                            if (err200) throw err;
+                            if (data200) {
+                              data200.save()
+                            }
+                          })
+                        }
+
+                      } else {
+                        if (timestamp.now() <= versionCheck.PremiumExpire) {
+                          commandMethod(client, interaction)
+                        }
+                      }
                     }
                   } else {
-                    if (versionCheck.Important === 'Enabled') {
-                      commandMethod(client, interaction)
-                      //  commandMethod(client, interaction)
-                      // const ImportantAnnouncement = new EmbedBuilder()
-                      //   .setTitle('Imporant announcement from bot owner')
-                      //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
-                      //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
-
-                      // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
-                      // setTimeout(() => {
-                      //   commandMethod(client, interaction)
-                      // }, 2000);
+                    if (check) {
+                      const DisabledCommand = new EmbedBuilder()
+                        .setTitle('Disabled')
+                        .setDescription(`The following command **/${interaction.commandName}** has been disabled in the server by an administrator`)
+                        .setColor('#f6f7f8')
+                      if (check.Cmds.includes(interaction.commandName)) return interaction.reply({ embeds: [DisabledCommand] })
+                      if (versionCheck.Important === 'Enabled') {
+                        commandMethod(client, interaction)
+                        // commandMethod(client, interaction)
+                        // const ImportantAnnouncement = new EmbedBuilder()
+                        //   .setTitle('Imporant announcement from bot owner')
+                        //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
+                        //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
+  
+                        // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
+                        // setTimeout(() => {
+                        //   commandMethod(client, interaction)
+                        // }, 2000);
+                      } else {
+                        commandMethod(client, interaction)
+                      }
                     } else {
-                      commandMethod(client, interaction)
+                      if (versionCheck.Important === 'Enabled') {
+                        commandMethod(client, interaction)
+                        //  commandMethod(client, interaction)
+                        // const ImportantAnnouncement = new EmbedBuilder()
+                        //   .setTitle('Imporant announcement from bot owner')
+                        //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
+                        //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
+  
+                        // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
+                        // setTimeout(() => {
+                        //   commandMethod(client, interaction)
+                        // }, 2000);
+                      } else {
+                        commandMethod(client, interaction)
+                      }
                     }
                   }
+
                 }
               }
-            } else {
-            
-                console.log('error')
-                const DatabaseError = new EmbedBuilder()
-                .setTitle('Database Error')
-                .setDescription('The bot is having issues connecting to the database at the moment. Please check our [status page](https://status.skybloxsystems.com) or email support @ support@skybloxsystems.com')
-
-                interaction.reply({ embeds: [DatabaseError]})
-      
             }
           }
+        } else {
+          const BlacklistedFromBot = new EmbedBuilder()
+            .setTitle('Blacklisted!')
+            .setDescription('You have been blacklisted from using Ticket Bot!')
+            .addFields([
+              { name: `Reason`, value: `${data.Reason}`, inline: false },
+              { name: `Time`, value: `${data.Time} UTC`, inline: false },
+              { name: `Admin`, value: `${data.Admin}`, inline: false }
+            ])
+          interaction.reply({ embeds: [BlacklistedFromBot] })
         }
-      } else {
-        const BlacklistedFromBot = new EmbedBuilder()
-          .setTitle('Blacklisted!')
-          .setDescription('You have been blacklisted from using Ticket Bot!')
-          .addFields([
-            { name: `Reason`, value: `${data.Reason}`, inline: false },
-            { name: `Time`, value: `${data.Time} UTC`, inline: false },
-            { name: `Admin`, value: `${data.Admin}`, inline: false }
-          ])
-        interaction.reply({ embeds: [BlacklistedFromBot] })
-      }
 
-    })
+      })
+    } else {
+      if (mongoose.connection.readyState !== 1) {
+        console.log('error')
+        const DatabaseError = new EmbedBuilder()
+          .setTitle('Database Error')
+          .setDescription('The bot is having issues connecting to the database at the moment. Please check our [status page](https://status.skybloxsystems.com) or email support at support@skybloxsystems.com')
+  
+        interaction.reply({ embeds: [DatabaseError] })
+      }
+    }
   }
 
   if (!commandMethod) return;

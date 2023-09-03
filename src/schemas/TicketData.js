@@ -18,6 +18,7 @@ const TicketData = mongoose.Schema({
   PaidGuild: String,
   Tier: String,
   PremiumCode: String,
+  PremiumExpire: String,
   Transcript: String,
   UseTicketReactions: String,
   UseDashboard: String,
@@ -46,6 +47,7 @@ const TicketData = mongoose.Schema({
   Important: String,
   WebsiteCode: String,
   Language: String,
+  Threads: String,
   Threads: String,
   BotVersion: String
 })
