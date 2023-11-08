@@ -2,8 +2,11 @@
   "name": "ticket-bot13",
   "language": "javascript",
   "manager": "npm",
-  "token": "ODA0NjYzMDE2MTI0OTczMDc2.GjYWmR.hktkC9Qhskp8VQ7WHPm8Fpw5xy52pfL7NnBE3Q",
+  "token": "ODA0NjYzMDE2MTI0OTczMDc2.G5N6a7.jShBI33Eob97KIE0C1W7WkFZ7kU5mbQlsSLS1k",
   "prefix": "!",
   "BotOwnerID": "406164395643633665",
-  "BotVersions": "5.0"
+  "BotVersions": "6.1 Dev",
+  "TranslateID": "AIzaSyA7ePbWzCp9PC890-nP5uGU4Kf41r0yYV4",
+  "product_ids": "6297d688d34c6",
+  "StoreCode": "vqV9atPtS87hpHF0PqhPYDHuNH19rZlElFOrAvf2OHAEoBRMg29Q6wo3oiBe29uQ"
 }

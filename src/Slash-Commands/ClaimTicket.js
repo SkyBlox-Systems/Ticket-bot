@@ -2,9 +2,11 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
 const ClaimTicket = require('../schemas/ticketclaim');
 const { findOneAndUpdate } = require('../schemas/ticketclaim');
-const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { EmbedBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const MainDatabase = require('../schemas/TicketData');
+const timestamp = require('unix-timestamp');
+timestamp.round = true
 
 module.exports.data = new SlashCommandBuilder()
     .setName('claim')
@@ -48,7 +50,7 @@ module.exports.run = (client, interaction) => {
                     if (data) {
                         const user1 = data.id
 
-                        data = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id }, async (err2, data2) => {
+                        data = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id, ClaimTime: timestamp.now() }, async (err2, data2) => {
                             if (err2) throw err2;
                             if (data2) {
                                 data2.save()
@@ -57,6 +59,18 @@ module.exports.run = (client, interaction) => {
                                 const TicketClaimed = new EmbedBuilder()
                                     .setTitle('Ticket Claimed!')
                                     .setDescription(`<#${data2.ChannelID}> has been claimed by <@${interaction.user.id}> You should off be given the permission to send the message in the ticket!`)
+
+                                    const TicketClaimedLogs = new EmbedBuilder()
+                                    .setTitle('Logs')
+                                    .setDescription('A ticket has been claimed in this guild')
+                                    .addFields([
+                                        { name: 'User', value: `${interaction.user.name}`, inline: true },
+                                        { name: 'Ticket ID', value: `${data2.TicketIDs}`, inline: true },
+                                        { name: 'Claim Time', value: `<t:${timestamp.now()}:f>` }
+                                    ])
+
+
+                                const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
 
                                 const TicketClaimedDM = new EmbedBuilder()
                                     .setTitle('Ticket Claimed!')
@@ -76,6 +90,7 @@ module.exports.run = (client, interaction) => {
                                 interaction.reply({ embeds: [TicketClaimed] })
                                 const sendtouser = client.users.cache.get(`${user1}`)
                                 sendtouser.send({ embeds: [TicketClaimedDM] })
+                                SupportLogs.send({ embeds: [TicketClaimedLogs]})
 
                                 const MainChan = interaction.guild.channels.cache.get(data2.ChannelID)
 
@@ -112,15 +127,29 @@ module.exports.run = (client, interaction) => {
                             if (data) {
                                 const user1 = data.id
 
-                                data = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id }, async (err2, data2) => {
+                                data = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id, ClaimTime: timestamp.now() }, async (err2, data2) => {
                                     if (err2) throw err2;
                                     if (data2) {
                                         data2.save()
 
 
+
+                                        console.log('test')
                                         const TicketClaimed = new EmbedBuilder()
                                             .setTitle('Ticket Claimed!')
                                             .setDescription(`<#${data2.ChannelID}> has been claimed by <@${interaction.user.id}> You should off be given the permission to send the message in the ticket!`)
+
+                                            const TicketClaimedLogs = new EmbedBuilder()
+                                            .setTitle('Logs')
+                                            .setDescription('A ticket has been claimed in this guild')
+                                            .addFields([
+                                                { name: 'User', value: `${interaction.user.name}`, inline: true },
+                                                { name: 'Ticket ID', value: `${data2.TicketIDs}`, inline: true },
+                                                { name: 'Claim Time', value: `<t:${timestamp.now()}:f>` }
+                                            ])
+        
+
+                                        const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
 
                                         const TicketClaimedDM = new EmbedBuilder()
                                             .setTitle('Ticket Claimed!')
@@ -140,6 +169,7 @@ module.exports.run = (client, interaction) => {
                                         interaction.reply({ embeds: [TicketClaimed] })
                                         const sendtouser = client.users.cache.get(`${user1}`)
                                         sendtouser.send({ embeds: [TicketClaimedDM] })
+                                        SupportLogs.send({ embeds: [TicketClaimedLogs]})
 
                                         const MainChan = interaction.guild.channels.cache.get(data2.ChannelID)
 
@@ -176,7 +206,7 @@ module.exports.run = (client, interaction) => {
                                 if (err03) throw err;
                                 if (data03) {
                                     const user1 = data03.id
-                                    data03 = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id }, async (err2, data2) => {
+                                    data03 = ClaimTicket.findOneAndUpdate({ TicketIDs: claimit }, { ClaimUserID: interaction.user.id, ClaimTime: timestamp.now() }, async (err2, data2) => {
                                         if (err2) throw err2;
                                         if (data2) {
                                             data2.save()
@@ -199,7 +229,7 @@ module.exports.run = (client, interaction) => {
 
                                             const VCTicketClaim = interaction.guild.channels.cache.get(data2.ChannelID)
 
-                                            if (VCTicketClaim.type === 'GUILD_TEXT') {
+                                            if (VCTicketClaim.type === ChannelType.GuildText) {
 
                                                 const TicketClaimedDM = new EmbedBuilder()
                                                     .setTitle('Ticket Claimed!')
@@ -222,7 +252,7 @@ module.exports.run = (client, interaction) => {
                                                 ])
                                             }
 
-                                            if (VCTicketClaim.type === 'GUILD_VOICE') {
+                                            if (VCTicketClaim.type === ChannelType.GuildVoice) {
                                                 const dmUserID = data2.id;
 
 

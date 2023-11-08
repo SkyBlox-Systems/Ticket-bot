@@ -1,10 +1,9 @@
 
 const mongoose = require('mongoose')
 
-const TicketClaimMain = mongoose.Schema({
+const TicketSupportMain = mongoose.Schema({
   id: String,
   TicketIDs: String,
-  ServerID: String,
   ChannelID: String,
   Reason: String,
   Locked: String,
@@ -16,4 +15,4 @@ const TicketClaimMain = mongoose.Schema({
   Priority: String
 })
 
-module.exports = mongoose.model('TicketClaim',  TicketClaimMain)
+module.exports = mongoose.model('TicketSupport',  TicketSupportMain)

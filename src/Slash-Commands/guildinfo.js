@@ -24,17 +24,17 @@ module.exports.run = async (client, interaction) => {
     const embed = new EmbedBuilder()
         .setTitle('Guild Info')
         .setDescription('Returns information about the guild.')
-        // .addFields([
-        //     {name: 'Name', value: guild.name, inline: true},
-        //     {name: 'ID', value: guild.id, inline: true},
-        //     {name: 'Description', value: guildDescription, inline: true},
-        //     {name: 'Created at', value: guild.createdAt.toDateString(), inline: true},
-        //     {name: 'Owner', value: owner.user.tag, inline: true},
-        //     {name: 'Member Count', value: guild.memberCount.toString(), inline: true},
-        //     {name: 'Member Cap', value: guild.maximumMembers.toString(), inline: true},
-        //     {name: 'Boosts', value: guild.premiumSubscriptionCount.toString(), inline: true},
-        //     {name: 'Boost Level', value: guild.premiumTier, inline: true}
-        // ])
+        .addFields([
+            {name: 'Name', value: guild.name, inline: true},
+            {name: 'ID', value: guild.id, inline: true},
+            {name: 'Description', value: guildDescription, inline: true},
+            {name: 'Created at', value: guild.createdAt.toDateString(), inline: true},
+            {name: 'Owner', value: owner.user.tag, inline: true},
+            {name: 'Member Count', value: guild.memberCount.toString(), inline: true},
+            {name: 'Member Cap', value: guild.maximumMembers.toString(), inline: true},
+            {name: 'Boosts', value: guild.premiumSubscriptionCount.toString(), inline: true},
+            {name: 'Boost Level', value: guild.premiumTier, inline: true}
+        ])
 
         
 
