@@ -17,7 +17,7 @@ module.exports.data = new SlashCommandBuilder()
                 value: 'user'
             })
             .addChoices({
-                name: 'support (Disabled in v4.0 testing)',
+                name: 'support',
                 value: 'support'
             }))
 
@@ -56,21 +56,32 @@ module.exports.run = async (client, interaction) => {
     }
 
     if (categorys === 'support') {
-        interaction.reply('Disabled in v4.0 testing')
-        // const userModalBuilder = new ModalBuilderBuilder()
-        //     .setTitle('Support Feedback')
-        //     .setCustomId("support")
-        //     .addComponents(
-        //         new ActionRowBuilder({
-        //             components: [
-        //                 new TextInputBuilder()
-        //                     .setCustomId("supportMessage")
-        //                     .setPlaceholder("Type it in here")
-        //                     .setLabel("Please type the feedback on that support")
-        //                     .setStyle('PARAGRAPH')
-        //             ]
-        //         }),
-        //     )
-        // await interaction.showModal(userModalBuilder)
+
+        const userModalBuilder = new ModalBuilder()
+            .setTitle('Customer Support')
+            .setCustomId("support")
+            .addComponents(
+                new ActionRowBuilder({
+                    components: [
+                        new TextInputBuilder()
+                            .setCustomId("supportMessage")
+                            .setPlaceholder("Type it in here")
+                            .setLabel("Please type the feedback on that support")
+                            .setStyle(ButtonStyle.Primary)
+                    ]
+                }),
+                new ActionRowBuilder({
+                    components: [
+                        new TextInputBuilder()
+                            .setCustomId("email")
+                            .setPlaceholder("Type it in here")
+                            .setLabel("Please type your email out. This will allow us to email you.")
+                            .setStyle(ButtonStyle.Primary)
+                    ]
+                }),
+            )
+        await interaction.showModal(userModalBuilder)
+
+
     }
 }

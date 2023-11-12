@@ -18,7 +18,8 @@ const mongoose = require('mongoose');
 const timestamp = require('unix-timestamp');
 timestamp.round = true
 const sellix = require("@sellix/node-sdk")(config.StoreCode);
-
+const fs = require('fs')
+const { sendMail } = require('send-email-api')
 
 
 // const Poster = new Stats.Client(client, {
@@ -316,7 +317,7 @@ client.on('interactionCreate', interaction => {
 })
 
 client.on('interactionCreate', interaction => {
-  const TicketChannelIdChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'feedback' && ch.type == 'GUILD_TEXT');
+  const TicketChannelIdChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'feedback' && ch.type == ChannelType.GuildText);
 
   if (!interaction.isModalSubmit()) return;
   if (interaction.customId === "user") {
@@ -326,11 +327,50 @@ client.on('interactionCreate', interaction => {
     const userEmbed = new EmbedBuilder()
       .setTitle('New feedback!')
       .setDescription(`${interaction.user.id} has sent a user feedback message. Below is the message`)
-      .addField('User', `${usertitle}`)
-      .addField('Message', `${userfeedback}`)
+      .addFields([
+        { name: 'User', value: `${usertitle}`, inline: true },
+        { name: 'Message', value: `${userfeedback}`, inline: true }
+      ])
+
 
     TicketChannelIdChannel.send({ embeds: [userEmbed] })
     interaction.reply('Feedback sent!')
+  }
+
+  if (interaction.customId === "support") {
+    const SupportMessage = interaction.fields.getTextInputValue("supportMessage")
+    const EmailUsed = interaction.fields.getTextInputValue("email")
+
+
+
+      const emailConfig = {
+        options: {
+            host: 'smtp.office365.com',
+            port: 587,
+            secure: false,
+            auth: {
+                user: 'no-reply@skybloxsystems.com',
+                pass: '!3Y&R3Yf##&ddAH4edRbGMAm&@Yj$X5A9$ABLfn6',
+            }
+        },
+        from: 'no-reply@skybloxsystems.com',
+    }
+
+    const emailData = {
+        to: EmailUsed,
+        subject: 'Customer Support',
+        text: 'Thank you for contacting support for ticket bot. A staff member will email you back within 2 business days. \n - SkyBlox Systems LTD',
+    }
+
+    const SendToStaff = {
+      to: EmailUsed,
+      subject: 'Ticket Bot - Customer needed support',
+      text: `Hello there, \n Someone at Ticket Bot is needing customer service support. Please email them back through this email account. \n Email: ${EmailUsed} \n Reason: ${SupportMessage}`,
+  }
+
+    sendMail(emailData, emailConfig)
+    sendMail(SendToStaff, emailConfig)
+    interaction.reply('Ticket has been open via email')
   }
   if (interaction.customId === "giveaway") {
     const GiveawayEmail = interaction.fields.getTextInputValue("Email")
