@@ -46,7 +46,7 @@ module.exports.run = async (client, interaction) => {
                 secure: false,
                 auth: {
                     user: 'no-reply@skybloxsystems.com',
-                    pass: '!3Y&R3Yf##&ddAH4edRbGMAm&@Yj$X5A9$ABLfn6',
+                    pass: 'hnShHGQhR6',
                 }
             },
             from: 'no-reply@skybloxsystems.com',

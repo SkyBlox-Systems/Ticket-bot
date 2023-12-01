@@ -20,6 +20,7 @@ timestamp.round = true
 const sellix = require("@sellix/node-sdk")(config.StoreCode);
 const fs = require('fs')
 const { sendMail } = require('send-email-api')
+const GiveawayDatabase = require('./schemas/christmas-giveaway')
 
 
 // const Poster = new Stats.Client(client, {
@@ -34,7 +35,6 @@ const MainDatabase = require('./schemas/TicketData')
 const blacklist = require('./schemas/Blacklist-schema');
 const ClaimTicket = require('./schemas/ticketclaim');
 const { truncate } = require('fs/promises');
-const GiveawayDatabase = require('./schemas/giveaways-user-data');
 const { Timestamp } = require('mongodb');
 
 
@@ -372,32 +372,7 @@ client.on('interactionCreate', interaction => {
     sendMail(SendToStaff, emailConfig)
     interaction.reply('Ticket has been open via email')
   }
-  if (interaction.customId === "giveaway") {
-    const GiveawayEmail = interaction.fields.getTextInputValue("Email")
-    const GiveawayWhy = interaction.fields.getTextInputValue("Why")
 
-    const GiveawayDM = new EmbedBuilder()
-      .setTitle('Giveaway')
-      .setDescription('You have entered into the christmas giveaway! You can not enter again unless told to by admins of the bot.')
-
-    const usergiveaway = client.users.cache.get(interaction.user.id)
-    usergiveaway.send({ embeds: [GiveawayDM] })
-
-    GiveawayDatabase.findOne({ UserID: interaction.user.id }, (err, data) => {
-      if (err) throw err;
-      if (data) {
-        // do nothing
-      } else {
-        data = new GiveawayDatabase({
-          UserID: interaction.user.id,
-          Email: GiveawayEmail,
-          Why: GiveawayWhy,
-          Usage: 1
-        })
-        data.save()
-      }
-    })
-  }
   if (interaction.customId === "reportuser") {
     const ReportUserIDs = interaction.fields.getTextInputValue("reportUserID")
     const reportUserMessages = interaction.fields.getTextInputValue("reportUserMessage")
@@ -444,6 +419,26 @@ client.on('interactionCreate', interaction => {
         { name: `Images provided`, value: `${reportUserImagess}`, inline: true }
       ])
     LogChannel.send({ embeds: [reportuserchannel] })
+  }
+
+  if (interaction.customId === "christmasgiveaway") {
+    const EmailUsedforit = interaction.fields.getTextInputValue("emailaddress")
+
+    interaction.channel.send('You have entered into the giveaway.')
+
+    GiveawayDatabase.findOne({id: interaction.user.id}, async (err1, data1) => {
+      if (err1) throw err;
+      if (data1) {
+        interaction.channel.send('You already entered into the giveaway')
+      } else {
+        data1 = new GiveawayDatabase({
+          id: interaction.user.id,
+          ServerID: interaction.guild.id,
+          Email: EmailUsedforit
+        })
+        data1.save()
+      }
+    })
   }
 });
 
