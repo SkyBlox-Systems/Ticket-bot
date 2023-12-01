@@ -12,8 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@dbd-soft-ui/logs": "^1.1.1",
-    "@dbd-soft-ui/shards": "^1.0.0",
     "@devraelfreeze/discordjs-pagination": "^2.7.2",
     "@google-cloud/translate": "^7.2.1",
     "@sellix/node-sdk": "^1.0.9",

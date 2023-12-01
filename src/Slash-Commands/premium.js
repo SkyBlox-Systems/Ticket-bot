@@ -7,7 +7,7 @@ const MainDatabase = require('../schemas/TicketData')
 const ProKeys = require('../schemas/keys');
 const { ObjectId } = require('mongodb');
 const config = require('../../slappey.json')
-const sellix = require("@sellix/node-sdk")("TdadLA5hHnVN3Dz2YKWk1gcv94mYsPQPylJLj2NP34MW85ExQ5MLMWMqDHcIMRll");
+const sellix = require("@sellix/node-sdk")(config.StoreCode);
 
 
 module.exports.data = new SlashCommandBuilder()
@@ -17,14 +17,14 @@ module.exports.data = new SlashCommandBuilder()
         option.setName('category')
             .setDescription('Click which one you want to transfer')
             .setRequired(true)
-              .addChoices({
+            .addChoices({
                 name: 'view',
                 value: 'view'
-              })
-              .addChoices({
+            })
+            .addChoices({
                 name: 'redeem',
                 value: 'redeem'
-              }))
+            }))
     .addStringOption(option =>
         option.setName('code')
             .setDescription('Enter the code you would like to redeem. (Code should be sent via email)')
@@ -52,7 +52,7 @@ module.exports.run = async (client, interaction) => {
                     ProKeys.findOne({ OwnerID: '406164395643633665' }, async (err1, data1) => {
                         if (err1) throw err;
                         if (data1) {
-    
+
                             data1.Pro.forEach(async (element, i) => {
                                 if (element === MSG) {
                                     const foundcode = new EmbedBuilder()
@@ -61,43 +61,49 @@ module.exports.run = async (client, interaction) => {
                                     const PremiumEmoji = await interaction.reply({ embeds: [foundcode], fetchReply: true })
                                     PremiumEmoji.react('✅')
                                     PremiumEmoji.react('❌')
-    
+
                                     const Filter1 = (reaction, user) => reaction.emoji.name === '✅' && user.id === interaction.user.id;
                                     const Collector1 = PremiumEmoji.createReactionCollector({ filter: Filter1, max: 1, time: 2 * 60 * 1000 });
                                     const Filter2 = (reaction, user) => reaction.emoji.name === '❌' && user.id === interaction.user.id;
                                     const Collector2 = PremiumEmoji.createReactionCollector({ filter: Filter2, max: 1, time: 2 * 60 * 1000 });
-    
+
                                     Collector1.on('collect', async () => {
-                                        const needed = data1.Pro[0].i
-                                        const hardwarePayload = {
-                                            key: MSG,
-                                            product_id: config.product_ids
-                                        };
-                                        const hardware = await sellix.products.licensing.check(hardwarePayload);
-                                        console.log(hardware)
-    
-                                        const toTimestamp = (strDate) => {
-                                            const dt = new Date(strDate).getTime();
-                                            return dt / 1000;
-                                        }
-    
-                                        MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: MSG, PremiumExpire: toTimestamp(hardware.expires_at) }, async (err2, data2) => {
-                                            if (err2) throw err;
-                                            if (data2) {
-                                                data2.save()
-                                                ProKeys.findOneAndUpdate({ OwnerID: '406164395643633665' }, { $pull: { Pro: MSG } }, async (err3, data3) => {
-                                                    if (err3) throw err;
-                                                    if (data3) {
-                                                        interaction.channel.send('This guild is now a premium server! The code can no longer be used.')
-                                                    }
-                                                })
+
+                                        try {
+                                            const needed = data1.Pro[0].i
+                                            const hardwarePayload = {
+                                                key: MSG,
+                                                product_id: config.product_ids
+                                            };
+                                            const hardware = await sellix.products.licensing.check(hardwarePayload);
+                                            console.log(hardware)
+
+                                            const toTimestamp = (strDate) => {
+                                                const dt = new Date(strDate).getTime();
+                                                return dt / 1000;
                                             }
-                                        })
+    
+                                            MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: MSG, PremiumExpire: toTimestamp(hardware.expires_at) }, async (err2, data2) => {
+                                                if (err2) throw err;
+                                                if (data2) {
+                                                    data2.save()
+                                                    ProKeys.findOneAndUpdate({ OwnerID: '406164395643633665' }, { $pull: { Pro: MSG } }, async (err3, data3) => {
+                                                        if (err3) throw err;
+                                                        if (data3) {
+                                                            interaction.channel.send('This guild is now a premium server! The code can no longer be used.')
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                        } catch (e) {
+                                            console.log(e)
+                                        }
+
                                     })
                                 }
-    
-    
-    
+
+
+
                             })
                             if (MSG === null) {
                                 interaction.reply('No code is provided! If you are trying to buy premium, please buy it here https://ticketbot.sellix.io/')
@@ -108,15 +114,15 @@ module.exports.run = async (client, interaction) => {
                             }
                         }
                     })
-    
+
                 }
             }
-    
+
         })
     }
 
     if (categorys === 'view') {
-        
+
         const toTimestamp = (strDate) => {
             const dt = new Date(strDate).getTime();
             return dt / 1000;
@@ -136,16 +142,16 @@ module.exports.run = async (client, interaction) => {
                     };
                     const hardware = await sellix.products.licensing.check(hardwarePayload);
                     const MainEmbed = new EmbedBuilder()
-                    .setTitle('Premium')
-                    .setDescription('Information of premium')
-                    .addFields([
-                        { name: 'Key', value: `${hardware.license_key}`, inline: true },
-                        { name: 'Uses', value: `${hardware.uses}`, inline: true },
-                        { name: 'Created At', value: `<t:${toTimestamp(hardware.created_at)}:f>`, inline: true },
-                        { name: 'Expires', value: `<t:${toTimestamp(hardware.expires_at)}:f>`, inline: true },
-                        { name: 'Updated', value: `<t:${toTimestamp(hardware.updated_at)}:f>`, inline: true }
-                    ])
-                    interaction.reply({ embeds: [MainEmbed]})
+                        .setTitle('Premium')
+                        .setDescription('Information of premium')
+                        .addFields([
+                            { name: 'Key', value: `${hardware.license_key}`, inline: true },
+                            { name: 'Uses', value: `${hardware.uses}`, inline: true },
+                            { name: 'Created At', value: `<t:${toTimestamp(hardware.created_at)}:f>`, inline: true },
+                            { name: 'Expires', value: `<t:${toTimestamp(hardware.expires_at)}:f>`, inline: true },
+                            { name: 'Updated', value: `<t:${toTimestamp(hardware.updated_at)}:f>`, inline: true }
+                        ])
+                    interaction.reply({ embeds: [MainEmbed] })
                 }
             }
         })

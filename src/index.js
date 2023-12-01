@@ -13,13 +13,14 @@ const { Permissions } = require('discord.js');
 const { MessageCollector, Collector, ChannelType } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const mongoose = require('mongoose');
-const Stats = require('discord-live-stats');
-const DLU = require("@dbd-soft-ui/logs")
+//const Stats = require('discord-live-stats');
+//const DLU = require("@dbd-soft-ui/logs")
 const timestamp = require('unix-timestamp');
 timestamp.round = true
-
 const sellix = require("@sellix/node-sdk")(config.StoreCode);
-
+const fs = require('fs')
+const { sendMail } = require('send-email-api')
+const GiveawayDatabase = require('./schemas/christmas-giveaway')
 
 
 // const Poster = new Stats.Client(client, {
@@ -34,7 +35,6 @@ const MainDatabase = require('./schemas/TicketData')
 const blacklist = require('./schemas/Blacklist-schema');
 const ClaimTicket = require('./schemas/ticketclaim');
 const { truncate } = require('fs/promises');
-const GiveawayDatabase = require('./schemas/giveaways-user-data');
 const { Timestamp } = require('mongodb');
 
 
@@ -62,10 +62,10 @@ client.on('ready', () => {
 })
 
 client.on("ready", () => {
-  DLU.register(client, {
-    dashboard_url: "https://dashboard.ticketbots.co.uk",
-    key: "richard1234YT!"
-  })
+ // DLU.register(client, {
+ //   dashboard_url: "https://dashboard.ticketbots.co.uk",
+ //   key: "richard1234YT!"
+ // })
 })
 
 client.on('guildCreate', guild => {
@@ -177,6 +177,7 @@ client.on('interactionCreate', interaction => {
                         WebsiteCode: data4.WebsiteCode || 'N/A',
                         Language: data4.Language || 'en',
                         Threads: data4.Threads || 'Disabled',
+                        SupportServer: data4.SupportServer || 'No',
                         BotVersion: config.BotVersions
                       })
                       data4.save()
@@ -316,7 +317,7 @@ client.on('interactionCreate', interaction => {
 })
 
 client.on('interactionCreate', interaction => {
-  const TicketChannelIdChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'feedback' && ch.type == 'GUILD_TEXT');
+  const TicketChannelIdChannel = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == 'feedback' && ch.type == ChannelType.GuildText);
 
   if (!interaction.isModalSubmit()) return;
   if (interaction.customId === "user") {
@@ -326,38 +327,52 @@ client.on('interactionCreate', interaction => {
     const userEmbed = new EmbedBuilder()
       .setTitle('New feedback!')
       .setDescription(`${interaction.user.id} has sent a user feedback message. Below is the message`)
-      .addField('User', `${usertitle}`)
-      .addField('Message', `${userfeedback}`)
+      .addFields([
+        { name: 'User', value: `${usertitle}`, inline: true },
+        { name: 'Message', value: `${userfeedback}`, inline: true }
+      ])
+
 
     TicketChannelIdChannel.send({ embeds: [userEmbed] })
     interaction.reply('Feedback sent!')
   }
-  if (interaction.customId === "giveaway") {
-    const GiveawayEmail = interaction.fields.getTextInputValue("Email")
-    const GiveawayWhy = interaction.fields.getTextInputValue("Why")
 
-    const GiveawayDM = new EmbedBuilder()
-      .setTitle('Giveaway')
-      .setDescription('You have entered into the christmas giveaway! You can not enter again unless told to by admins of the bot.')
+  if (interaction.customId === "support") {
+    const SupportMessage = interaction.fields.getTextInputValue("supportMessage")
+    const EmailUsed = interaction.fields.getTextInputValue("email")
 
-    const usergiveaway = client.users.cache.get(interaction.user.id)
-    usergiveaway.send({ embeds: [GiveawayDM] })
 
-    GiveawayDatabase.findOne({ UserID: interaction.user.id }, (err, data) => {
-      if (err) throw err;
-      if (data) {
-        // do nothing
-      } else {
-        data = new GiveawayDatabase({
-          UserID: interaction.user.id,
-          Email: GiveawayEmail,
-          Why: GiveawayWhy,
-          Usage: 1
-        })
-        data.save()
-      }
-    })
+
+      const emailConfig = {
+        options: {
+            host: 'smtp.office365.com',
+            port: 587,
+            secure: false,
+            auth: {
+                user: 'no-reply@skybloxsystems.com',
+                pass: '!3Y&R3Yf##&ddAH4edRbGMAm&@Yj$X5A9$ABLfn6',
+            }
+        },
+        from: 'no-reply@skybloxsystems.com',
+    }
+
+    const emailData = {
+        to: EmailUsed,
+        subject: 'Customer Support',
+        text: 'Thank you for contacting support for ticket bot. A staff member will email you back within 2 business days. \n - SkyBlox Systems LTD',
+    }
+
+    const SendToStaff = {
+      to: EmailUsed,
+      subject: 'Ticket Bot - Customer needed support',
+      text: `Hello there, \n Someone at Ticket Bot is needing customer service support. Please email them back through this email account. \n Email: ${EmailUsed} \n Reason: ${SupportMessage}`,
   }
+
+    sendMail(emailData, emailConfig)
+    sendMail(SendToStaff, emailConfig)
+    interaction.reply('Ticket has been open via email')
+  }
+
   if (interaction.customId === "reportuser") {
     const ReportUserIDs = interaction.fields.getTextInputValue("reportUserID")
     const reportUserMessages = interaction.fields.getTextInputValue("reportUserMessage")
@@ -404,6 +419,26 @@ client.on('interactionCreate', interaction => {
         { name: `Images provided`, value: `${reportUserImagess}`, inline: true }
       ])
     LogChannel.send({ embeds: [reportuserchannel] })
+  }
+
+  if (interaction.customId === "christmasgiveaway") {
+    const EmailUsedforit = interaction.fields.getTextInputValue("emailaddress")
+
+    interaction.channel.send('You have entered into the giveaway.')
+
+    GiveawayDatabase.findOne({id: interaction.user.id}, async (err1, data1) => {
+      if (err1) throw err;
+      if (data1) {
+        interaction.channel.send('You already entered into the giveaway')
+      } else {
+        data1 = new GiveawayDatabase({
+          id: interaction.user.id,
+          ServerID: interaction.guild.id,
+          Email: EmailUsedforit
+        })
+        data1.save()
+      }
+    })
   }
 });
 
@@ -483,10 +518,10 @@ client.on("messageCreate", msg => {
 
 });
 process.on("unhandledRejection", (reason, p) => {
-  DLU.send(client, {
-    title: "Unhandled Rejection",
-    description: reason
-  })
+ // DLU.send(client, {
+ //   title: "Unhandled Rejection",
+ //   description: reason
+ // })
 })
 
 

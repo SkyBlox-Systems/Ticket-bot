@@ -12,6 +12,8 @@ const { EmbedBuilder, Message } = require("discord.js");
 const axios = require('axios');
 const { response } = require('express');
 const cron = require('cron');
+const timestamp = require('unix-timestamp');
+timestamp.round = true
 
 
 
@@ -56,136 +58,23 @@ module.exports.run = async (client, interaction) => {
             });
     }
     if (teststring === 'status') {
-        let scheduledMessage = new cron.CronJob('* * * * *', () => {
+        const config = {
+            headers: { Authorization: `Bearer 9248ffdb653c4f5eb2f3dc0e1337ac82` }
+        };
             // This runs every day at 10:30:00, you can do anything you want
-            axios.get('https://public-api.freshstatus.io/api/v1/services/', {
-                auth: {
-                    username: 'ace01fa75db9ccce27a25bbc69c00887',
-                    password: 'skybloxrblx-241'
-                },
+            axios.get('https://api.statuspage.io/v1/pages/czzb85ttlzzf/components', config, {
             }).then((res) => {
-                axios.get(`https://public-api.freshstatus.io/api/v1/services/${res.data.results[7].id}`, {
-                    auth: {
-                        username: 'ace01fa75db9ccce27a25bbc69c00887',
-                        password: 'skybloxrblx-241'
-                    },
+                axios.get('https://api.statuspage.io/v1/pages/czzb85ttlzzf/incidents', config, {
                 }).then((res1) => {
-                    axios.get(`https://public-api.freshstatus.io/api/v1/services/${res.data.results[5].id}`, {
-                        auth: {
-                            username: 'ace01fa75db9ccce27a25bbc69c00887',
-                            password: 'skybloxrblx-241'
-                        },
-                    }).then((res2) => {
-
-                        axios.get(`https://public-api.freshstatus.io/api/v1/services/${res.data.results[0].id}`, {
-                            auth: {
-                                username: 'ace01fa75db9ccce27a25bbc69c00887',
-                                password: 'skybloxrblx-241'
-                            },
-                        }).then((res3) => {
-
-                            axios.get(`https://public-api.freshstatus.io/api/v1/services/${res.data.results[38].id}`, {
-                                auth: {
-                                    username: 'ace01fa75db9ccce27a25bbc69c00887',
-                                    password: 'skybloxrblx-241'
-                                },
-                            }).then((res4) => {
-
-                                axios.get(`https://public-api.freshstatus.io/api/v1/services/${res.data.results[7].id}`, {
-                                    auth: {
-                                        username: 'ace01fa75db9ccce27a25bbc69c00887',
-                                        password: 'skybloxrblx-241'
-                                    },
-                                }).then((res5) => {
-                                    axios.get(`https://public-api.freshstatus.io/api/v1/services/${res.data.results[3].id}`, {
-                                        auth: {
-                                            username: 'ace01fa75db9ccce27a25bbc69c00887',
-                                            password: 'skybloxrblx-241'
-                                        },
-                                    }).then((res6) => {
-                                        axios.get(`https://public-api.freshstatus.io/api/v1/services/${res.data.results[2].id}`, {
-                                            auth: {
-                                                username: 'ace01fa75db9ccce27a25bbc69c00887',
-                                                password: 'skybloxrblx-241'
-                                            },
-                                        }).then((res7) => {
-                                            axios.get(`https://public-api.freshstatus.io/api/v1/services/${res.data.results[1].id}`, {
-                                                auth: {
-                                                    username: 'ace01fa75db9ccce27a25bbc69c00887',
-                                                    password: 'skybloxrblx-241'
-                                                },
-                                            }).then((res8) => {
-                                                axios.get(`https://public-api.freshstatus.io/api/v1/services/${res.data.results[22].id}`, {
-                                                    auth: {
-                                                        username: 'ace01fa75db9ccce27a25bbc69c00887',
-                                                        password: 'skybloxrblx-241'
-                                                    },
-                                                }).then((res9) => {
-
-                                                    axios.get(`https://public-api.freshstatus.io/api/v1/services/${res.data.results[6].id}`, {
-                                                        auth: {
-                                                            username: 'ace01fa75db9ccce27a25bbc69c00887',
-                                                            password: 'skybloxrblx-241'
-                                                        },
-                                                    }).then((res10) => {
-                                                        axios.get(`https://public-api.freshstatus.io/api/v1/services/${res.data.results[23].id}`, {
-                                                            auth: {
-                                                                username: 'ace01fa75db9ccce27a25bbc69c00887',
-                                                                password: 'skybloxrblx-241'
-                                                            },
-                                                        }).then((res11) => {
-                                                            axios.get(`https://public-api.freshstatus.io/api/v1/incidents/`, {
-                                                                auth: {
-                                                                    username: 'ace01fa75db9ccce27a25bbc69c00887',
-                                                                    password: 'skybloxrblx-241'
-                                                                },
-                                                            }).then((res21) => {
-
-                                                                if (res21.data.results[0].end_time === null) {
-                                                                    const StatusDown = new EmbedBuilder()
-                                                                        .setTitle('Ticket Bot Status')
-                                                                        .setDescription('Below is the Ticket Bot status. Updated every minute.')
-                                                                        .addFields([
-                                                                            { name: 'Shards', value: `${res.data.results[7].name} **${res1.data.status}** \n ${res.data.results[5].name} **${res2.data.status}** \n ${res.data.results[0].name} **${res3.data.status}**` },
-                                                                            { name: 'Backend', value: `${res.data.results[38].name} **${res4.data.status}** \n ${res.data.results[4].name} **${res5.data.status}** \n ${res.data.results[3].name} **${res6.data.status}** \n ${res.data.results[2].name} **${res7.data.status}** \n ${res.data.results[1].name} **${res8.data.status}** \n ${res.data.results[22].name} **${res9.data.status}** \n ${res.data.results[6].name} **${res10.data.status}**` },
-                                                                            { name: 'Open Source', value: `${res.data.results[23].name} **${res11.data.status}**` },
-                                                                            { name: 'Current Incidents', value: `**${res21.data.results[0].title}** \n${res21.data.results[0].description} \n\nYou can find the incident here: https://status..skybloxsystems.com/incident/${res21.data.results[0].id} **Keep in mind, this status could be for a issue outside of ticket bot. This is a company status.**` }
-                                                                        ])
-                                                                        .setTimestamp()
-
-
-
-                                                                    interaction.reply({ embeds: [StatusDown] })
-                                                                } else {
-                                                                    const StatusUp = new EmbedBuilder()
-                                                                        .setTitle('Ticket Bot Status')
-                                                                        .setDescription('Below is the Ticket Bot status. Updated every minute.')
-                                                                        .addFields([
-                                                                            { name: 'Shards', value: `${res.data.results[7].name} **${res1.data.status}** \n ${res.data.results[5].name} **${res2.data.status}** \n ${res.data.results[0].name} **${res3.data.status}**` },
-                                                                            { name: 'Backend', value: `${res.data.results[38].name} **${res4.data.status}** \n ${res.data.results[4].name} **${res5.data.status}** \n ${res.data.results[3].name} **${res6.data.status}** \n ${res.data.results[2].name} **${res7.data.status}** \n ${res.data.results[1].name} **${res8.data.status}** \n ${res.data.results[22].name} **${res9.data.status}** \n ${res.data.results[6].name} **${res10.data.status}**` },
-                                                                            { name: 'Open Source', value: `${res.data.results[23].name} **${res11.data.status}**` },
-                                                                            { name: 'Current Incidents', value: `none` }
-                                                                        ])
-                                                                        .setTimestamp()
-
-                                                                    interaction.reply({ embeds: [StatusUp] })
-                                                                }
-                                                            })
-                                                        })
-                                                    })
-                                                })
-                                            })
-                                        })
-                                    })
-                                })
-                            })
-                        })
-                    })
+                    const MainEmbed = new EmbedBuilder()
+                    .setTitle('Ticket Bot Status')
+                    .setDescription('This is the status of Ticket Bot, created by SkyBlox Systems LTD')
+                    .addFields({ name: `${res.data[9].name} - ${res.data[9].status}`, value: `${res.data[2].name} - ${res.data[2].status} \n ${res.data[10].name} - ${res.data[10].status} \n ${res.data[17].name} - ${res.data[17].status} \n ${res.data[25].name} - ${res.data[25].status} \n ${res.data[33].name} - ${res.data[33].status} \n ${res.data[40].name} - ${res.data[40].status} \n ${res.data[45].name} - ${res.data[45].status} \n ${res.data[50].name} - ${res.data[50].status} \n ${res.data[53].name} - ${res.data[53].status} \n ${res.data[57].name} - ${res.data[57].status} \n ${res.data[60].name} - ${res.data[60].status} \n ${res.data[65].name} - ${res.data[65].status} \n ${res.data[67].name} - ${res.data[67].status} \n ${res.data[69].name} - ${res.data[69].status}`})
+                    interaction.reply({ embeds: [MainEmbed]})                
                 })
             }).catch(function (error) {
                 console.log('failed to connect')
             })
-        });
     }
 
 }

@@ -48,7 +48,7 @@ const TicketData = mongoose.Schema({
   WebsiteCode: String,
   Language: String,
   Threads: String,
-  Threads: String,
+  SupportServer: String,
   BotVersion: String
 })
 

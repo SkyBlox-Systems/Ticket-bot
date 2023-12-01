@@ -12,7 +12,8 @@ const timestamp = require('unix-timestamp');
 timestamp.round = true
 const { Translate } = require('@google-cloud/translate').v2;
 const { TranslateID } = require('../../slappey.json')
-const sellix = require("@sellix/node-sdk")("TdadLA5hHnVN3Dz2YKWk1gcv94mYsPQPylJLj2NP34MW85ExQ5MLMWMqDHcIMRll");
+const config = require('../../slappey.json')
+const sellix = require("@sellix/node-sdk")(config.StoreCode, "ticketbot");
 
 
 const hardwarePayload = {
