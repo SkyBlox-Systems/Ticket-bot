@@ -13,8 +13,7 @@ const { Permissions } = require('discord.js');
 const { MessageCollector, Collector, ChannelType } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const mongoose = require('mongoose');
-//const Stats = require('discord-live-stats');
-//const DLU = require("@dbd-soft-ui/logs")
+const Stats = require('sharding-stats');
 const timestamp = require('unix-timestamp');
 timestamp.round = true
 const sellix = require("@sellix/node-sdk")(config.StoreCode);
@@ -23,10 +22,10 @@ const { sendMail } = require('send-email-api')
 const GiveawayDatabase = require('./schemas/christmas-giveaway')
 
 
-// const Poster = new Stats.Client(client, {
-//   stats_uri: 'https://shard1.ticketbots.co.uk/',
-//   authorizationkey: "ticketbot",
-// })
+const Poster = new Stats.Client(client, {
+  stats_uri: 'https://devbot.ticketbots.co.uk',
+  authorizationkey: "testing",
+})
 
 
 
@@ -62,10 +61,10 @@ client.on('ready', () => {
 })
 
 client.on("ready", () => {
- // DLU.register(client, {
- //   dashboard_url: "https://dashboard.ticketbots.co.uk",
- //   key: "richard1234YT!"
- // })
+  // DLU.register(client, {
+  //   dashboard_url: "https://dashboard.ticketbots.co.uk",
+  //   key: "richard1234YT!"
+  // })
 })
 
 client.on('guildCreate', guild => {
@@ -216,7 +215,7 @@ client.on('interactionCreate', interaction => {
                           const dt = new Date(strDate).getTime();
                           return dt / 1000;
                         }
-                        const hardware =  await sellix.products.licensing.check(hardwarePayload);
+                        const hardware = await sellix.products.licensing.check(hardwarePayload);
 
                         const PremiumExpireCode = (toTimestamp(hardware.expires_at))
                         if (versionCheck.PremiumExpire !== PremiumExpireCode) {
@@ -257,7 +256,7 @@ client.on('interactionCreate', interaction => {
                         //   .setTitle('Imporant announcement from bot owner')
                         //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
                         //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
-  
+
                         // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
                         // setTimeout(() => {
                         //   commandMethod(client, interaction)
@@ -273,7 +272,7 @@ client.on('interactionCreate', interaction => {
                         //   .setTitle('Imporant announcement from bot owner')
                         //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
                         //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
-  
+
                         // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
                         // setTimeout(() => {
                         //   commandMethod(client, interaction)
@@ -307,7 +306,7 @@ client.on('interactionCreate', interaction => {
         const DatabaseError = new EmbedBuilder()
           .setTitle('Database Error')
           .setDescription('The bot is having issues connecting to the database at the moment. Please check our [status page](https://status.skybloxsystems.com) or email support at support@skybloxsystems.com')
-  
+
         interaction.reply({ embeds: [DatabaseError] })
       }
     }
@@ -343,30 +342,30 @@ client.on('interactionCreate', interaction => {
 
 
 
-      const emailConfig = {
-        options: {
-            host: 'smtp.office365.com',
-            port: 587,
-            secure: false,
-            auth: {
-                user: 'no-reply@skybloxsystems.com',
-                pass: '!3Y&R3Yf##&ddAH4edRbGMAm&@Yj$X5A9$ABLfn6',
-            }
-        },
-        from: 'no-reply@skybloxsystems.com',
+    const emailConfig = {
+      options: {
+        host: 'smtp.office365.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: config.EmailUsername,
+          pass: config.EmailPassword,
+        }
+      },
+      from: 'no-reply@skybloxsystems.com',
     }
 
     const emailData = {
-        to: EmailUsed,
-        subject: 'Customer Support',
-        text: 'Thank you for contacting support for ticket bot. A staff member will email you back within 2 business days. \n - SkyBlox Systems LTD',
+      to: EmailUsed,
+      subject: 'Customer Support',
+      text: 'Thank you for contacting support for ticket bot. A staff member will email you back within 2 business days. \n - SkyBlox Systems LTD',
     }
 
     const SendToStaff = {
       to: EmailUsed,
       subject: 'Ticket Bot - Customer needed support',
       text: `Hello there, \n Someone at Ticket Bot is needing customer service support. Please email them back through this email account. \n Email: ${EmailUsed} \n Reason: ${SupportMessage}`,
-  }
+    }
 
     sendMail(emailData, emailConfig)
     sendMail(SendToStaff, emailConfig)
@@ -426,7 +425,7 @@ client.on('interactionCreate', interaction => {
 
     interaction.channel.send('You have entered into the giveaway.')
 
-    GiveawayDatabase.findOne({id: interaction.user.id}, async (err1, data1) => {
+    GiveawayDatabase.findOne({ id: interaction.user.id }, async (err1, data1) => {
       if (err1) throw err;
       if (data1) {
         interaction.channel.send('You already entered into the giveaway')
@@ -518,10 +517,10 @@ client.on("messageCreate", msg => {
 
 });
 process.on("unhandledRejection", (reason, p) => {
- // DLU.send(client, {
- //   title: "Unhandled Rejection",
- //   description: reason
- // })
+  // DLU.send(client, {
+  //   title: "Unhandled Rejection",
+  //   description: reason
+  // })
 })
 
 

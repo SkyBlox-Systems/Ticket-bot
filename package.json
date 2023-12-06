@@ -46,6 +46,7 @@
     "patreon": "^0.0.1",
     "patreon-discord": "^0.0.5",
     "send-email-api": "^1.0.1",
+    "sharding-stats": "^2.4.0",
     "stripe": "^8.219.0",
     "unix-timestamp": "^1.0.2"
   },

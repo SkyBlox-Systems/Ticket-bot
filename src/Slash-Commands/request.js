@@ -4,7 +4,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
 const ticketclaim = require('../schemas/ticketclaim')
-const MainFile = require('../../slappey.json')
+const config = require('../../slappey.json')
 const ProKeys = require('../schemas/keys')
 const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 const axios = require('axios');
@@ -45,8 +45,8 @@ module.exports.run = async (client, interaction) => {
                 port: 587,
                 secure: false,
                 auth: {
-                    user: 'no-reply@skybloxsystems.com',
-                    pass: 'hnShHGQhR6',
+                    user: config.EmailUsername,
+                    pass: config.EmailPassword,
                 }
             },
             from: 'no-reply@skybloxsystems.com',
