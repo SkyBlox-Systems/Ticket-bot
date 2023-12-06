@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const fs = require('fs')
 const { sendMail } = require('send-email-api')
 const { EmbedBuilder } = require('discord.js');
+const config = require('../../slappey.json')
 
 
 
@@ -42,8 +43,8 @@ module.exports.run = (client, interaction) => {
                 port: 587,
                 secure: false,
                 auth: {
-                    user: 'no-reply@skybloxsystems.com',
-                    pass: '!3Y&R3Yf##&ddAH4edRbGMAm&@Yj$X5A9$ABLfn6',
+                    user: config.EmailUsername,
+                    pass: config.EmailPassword,
                 }
             },
             from: 'no-reply@skybloxsystems.com',
