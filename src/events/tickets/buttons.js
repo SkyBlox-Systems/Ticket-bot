@@ -262,21 +262,21 @@ module.exports = class ReadyEvent extends BaseEvent {
                                               SupportLogs.send({ embeds: [Logs] })
 
                                               const CloseEmbed = new EmbedBuilder()
-                                              .setTitle('Transcript')
-                                              .setDescription(`Transcript for the user ${data.id}`)
+                                                .setTitle('Transcript')
+                                                .setDescription(`Transcript for the user ${data.id}`)
                                               TranscriptLogs.send({ embeds: [CloseEmbed] })
 
 
-                                            const discordTranscripts = require('discord-html-transcripts');
+                                              const discordTranscripts = require('discord-html-transcripts');
 
-                                            const channelsss = interaction.channel;
-                                            const attachment = await discordTranscripts.createTranscript(channelsss, {
-                                              limit: -1, // Max amount of messages to fetch.
-                                              returnBuffer: false, // Return a buffer instead of a MessageAttachment 
-                                              fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
-                                            });
+                                              const channelsss = interaction.channel;
+                                              const attachment = await discordTranscripts.createTranscript(channelsss, {
+                                                limit: -1, // Max amount of messages to fetch.
+                                                returnBuffer: false, // Return a buffer instead of a MessageAttachment 
+                                                fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
+                                              });
 
-                                            TranscriptLogs.send({ files: [attachment] })
+                                              TranscriptLogs.send({ files: [attachment] })
 
 
                                             })
@@ -370,21 +370,21 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                 SupportLogs.send({ embeds: [Logs] })
 
                                                 const CloseEmbed = new EmbedBuilder()
-                                                .setTitle('Transcript')
-                                                .setDescription(`Transcript for the user ${data.id}`)
+                                                  .setTitle('Transcript')
+                                                  .setDescription(`Transcript for the user ${data.id}`)
                                                 TranscriptLogs.send({ embeds: [CloseEmbed] })
-  
-  
-                                              const discordTranscripts = require('discord-html-transcripts');
-  
-                                              const channelsss = interaction.channel;
-                                              const attachment = await discordTranscripts.createTranscript(channelsss, {
-                                                limit: -1, // Max amount of messages to fetch.
-                                                returnBuffer: false, // Return a buffer instead of a MessageAttachment 
-                                                fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
-                                              });
-  
-                                              TranscriptLogs.send({ files: [attachment] })
+
+
+                                                const discordTranscripts = require('discord-html-transcripts');
+
+                                                const channelsss = interaction.channel;
+                                                const attachment = await discordTranscripts.createTranscript(channelsss, {
+                                                  limit: -1, // Max amount of messages to fetch.
+                                                  returnBuffer: false, // Return a buffer instead of a MessageAttachment 
+                                                  fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
+                                                });
+
+                                                TranscriptLogs.send({ files: [attachment] })
                                               })
 
                                             }, 5000);
@@ -667,6 +667,17 @@ module.exports = class ReadyEvent extends BaseEvent {
     client.on('interactionCreate', interaction => {
       if (!interaction.isButton()) return
       if (interaction.customId === 'create') {
+
+        function makeURL(length) {
+          var result = '';
+          var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+          var charactersLength = characters.length;
+          for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+          }
+          return result;
+        };
+
         const ButtonList = new ActionRowBuilder()
           .addComponents(
             new ButtonBuilder()
@@ -692,7 +703,9 @@ module.exports = class ReadyEvent extends BaseEvent {
           );
 
 
-        const Xmas95 = new Date('December 31, 2022 00:00:00');
+        var today = new Date();
+        var dd = String(today.getDate());
+        const Xmas95 = new Date('December 24, 2023 00:00:00');
         if (Xmas95.getDate() == dd) {
           const DisabledInAllServers = new EmbedBuilder()
             .setTitle('Disabled!')
@@ -711,15 +724,6 @@ module.exports = class ReadyEvent extends BaseEvent {
                 interaction.reply({ embeds: [ErrorDataBase] })
               } else {
                 if (data01.EnableTicket === 'Enabled') {
-                  function makeURL(length) {
-                    var result = '';
-                    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                    var charactersLength = characters.length;
-                    for (var i = 0; i < length; i++) {
-                      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-                    }
-                    return result;
-                  }
 
                   const TicketIDMainLength = data01.TicketIDLength
                   const generator = makeURL(20)
@@ -737,7 +741,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                           { name: 'Channel', value: `<#${data45.ChannelID}>`, inline: true },
                           { name: 'Reason', value: `${data45.Reason}`, inline: true },
                           { name: 'Ticket ID', value: `${data45.TicketIDs}`, inline: true },
-                          { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
+                          { name: 'Priority', value: `N/A`, inline: true }
                         ])
                       await interaction.reply({ embeds: [embed] })
                     } else {
@@ -768,10 +772,24 @@ module.exports = class ReadyEvent extends BaseEvent {
                             .addFields([
                               { name: 'Information', value: `<@${interaction.user.id}> ${data01.OpenTicket}`, inline: true },
                               { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
-                              { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
+                              { name: 'Priority', value: `N/A`, inline: true }
                             ])
 
                           await interaction.reply({ embeds: [open] });
+
+                          // const LogsMessageOpen = new EmbedBuilder()
+                          // .setTitle('Logs')
+                          // .setDescription('A ticket has been opened in this guild')
+                          // .addFields([
+                          //   { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                          //   { name: 'Ticket ID', value: `${generator}`, inline: true },
+                          //   { name: 'Priority', value: `${PriorityList}`|| `N/A`, inline: true }, 
+                          //   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                          // ])
+
+                          // SupportLogs.send({ embed: [LogsMessageOpen ]})
+
+
 
                           const DmPerson = new EmbedBuilder()
                             .setColor('#f6f7f8')
@@ -780,7 +798,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                             .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can send a message to your ticket by replying to our DMs with your ticketID: ${generator}`)
                             .addFields([
                               { name: 'TicketID', value: `${generator}`, inline: true },
-                              { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
+                              { name: 'Priority', value: `N/A`, inline: true }
                             ])
                             .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
                           await interaction.user.send({ embeds: [DmPerson] });
@@ -789,29 +807,25 @@ module.exports = class ReadyEvent extends BaseEvent {
                           const TicketManagerID = newguild.roles.cache.find(roles => roles.id === data01.SecondServerManagerRoleID)
                           newguild.channels.cache.get(`${data01.SecondServerClaimChannel}`).send(`${TicketSupportID}, ${TicketManagerID} \n<@${interaction.user.id}> has open a support ticket! Please run /claim ticketid:${generator} to claim the ticket!`)
 
-                          ClaimTicket.findOne({ ServerID: interaction.guild.id }, async (err3, data3) => {
-                            if (err3) throw err;
-                            if (data3) {
-                              if (data3.ServerID === interaction.guild.id) {
-                                data3 = new ClaimTicket({
-                                  id: interaction.user.id,
-                                  TicketIDs: generator,
-                                  ServerID: interaction.guild.id,
-                                  ChannelID: chan.id,
-                                  Reason: MSG,
-                                  Locked: "No",
-                                  Time: currentDateAndTime,
-                                  AddedUser: Array,
-                                  Type: 'Channel',
-                                  ClaimUserID: "",
-                                  ClaimTime: "Nothing",
-                                  Priority: PriorityList
-                                })
-                                data3.save()
-                                console.log('data saved')
-                              } else {
-                                console.log('Not saved')
-                              }
+                          ClaimTicket.findOne({ id: interaction.user.id, ServerID: interaction.guild.id }, async (err3, data3) => {
+                            console.log(data3)
+                            if (data3 === null) {
+                              data3 = new ClaimTicket({
+                                id: interaction.user.id,
+                                TicketIDs: generator,
+                                ServerID: newguild.id,
+                                ChannelID: chan.id,
+                                Reason: 'N/A',
+                                Locked: "No",
+                                Time: timestamp.now(),
+                                AddedUser: Array,
+                                Type: 'Channel',
+                                ClaimUserID: "",
+                                ClaimTime: "00000",
+                                Priority: 'N/A'
+                              })
+                              data3.save()
+                              console.log('data saved')
                             }
                           })
                           MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1, ClosedTickets: +1 }, async (err20, data20) => {
@@ -831,11 +845,11 @@ module.exports = class ReadyEvent extends BaseEvent {
                             .setDescription('To reply to this user ticket, please use the following command `/ticketreply message:` ')
                             .addFields([
                               { name: 'Infomation', value: `${data01.TicketMessage}`, inline: true },
-                              { name: 'Issue', value: `${MSG}`, inline: true },
+                              { name: 'Issue', value: `N/A`, inline: true },
                               { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
                               { name: 'Staff', value: `${TicketSupportID} ${TicketManagerID}`, inline: true },
                               { name: 'Ticket ID', value: `${generator}`, inline: true },
-                              { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
+                              { name: 'Priority', value: `N/A`, inline: true }
                             ])
                           await chan.send({ embeds: [thankyou] }).then((m) => {
                             m.pin()
@@ -874,11 +888,23 @@ module.exports = class ReadyEvent extends BaseEvent {
                                 .addFields([
                                   { name: 'Infomation', value: `<@${interaction.user.id}> ${data01.OpenTicket}`, inline: true },
                                   { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
-                                  { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                  { name: 'Priority', value: `N/A`, inline: true },
                                   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
                                 ])
 
                               await interaction.reply({ embeds: [open], ephemeral: true });
+
+                              // const LogsMessageOpen = new EmbedBuilder()
+                              // .setTitle('Logs')
+                              // .setDescription('A ticket has been opened in this guild')
+                              // .addFields([
+                              //   { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                              //   { name: 'Ticket ID', value: `${generator}`, inline: true },
+                              //   { name: 'Priority', value: `${PriorityList}`|| `N/A`, inline: true }, 
+                              //   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                              // ])
+
+                              // SupportLogs.send({ embed: [LogsMessageOpen ]})
 
                               const DmPerson = new EmbedBuilder()
                                 .setColor('#f6f7f8')
@@ -887,12 +913,25 @@ module.exports = class ReadyEvent extends BaseEvent {
                                 .setDescription(`You have open a ticket in the server ${interaction.guild.name}. You can send a message to your ticket by replying to our DMs with your ticketID: ${generator}`)
                                 .addFields([
                                   { name: 'TicketID', value: `${generator}`, inline: true },
-                                  { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                  { name: 'Priority', value: `N/A`, inline: true },
                                   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
                                 ])
                                 .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
 
                               await interaction.user.send({ embeds: [DmPerson] });
+
+                              const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                              const TicketOpenLogs = new EmbedBuilder()
+                                .setTitle('Logs')
+                                .setDescription('A Ticket has been opened in this guild')
+                                .addFields([
+                                  { name: 'User', value: `${interaction.user.name}`, inline: true },
+                                  { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                  { name: 'Priority', value: `N/A`, inline: true },
+                                  { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                ])
+
+                              SupportLogs.send({ embeds: [TicketOpenLogs] })
 
                               const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                               const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
@@ -905,11 +944,11 @@ module.exports = class ReadyEvent extends BaseEvent {
                                 .setDescription('To reply to this user ticket, please use the following command `/ticketreply message:` ')
                                 .addFields([
                                   { name: 'Infomation', value: `${data01.TicketMessage}`, inline: true },
-                                  { name: 'Issue', value: `${MSG}`, inline: true },
+                                  { name: 'Issue', value: `N/A`, inline: true },
                                   { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
                                   { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
                                   { name: 'Ticket  ID', value: `${generator}`, inline: true },
-                                  { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                  { name: 'Priority', value: `N/A`, inline: true },
                                   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                                 ])
 
@@ -923,16 +962,16 @@ module.exports = class ReadyEvent extends BaseEvent {
                                     data = new ClaimTicket({
                                       id: interaction.user.id,
                                       TicketIDs: generator,
-                                      ServerID: interaction.guild.id,
+                                      ServerID: newguild.id,
                                       ChannelID: chan.id,
-                                      Reason: MSG,
+                                      Reason: 'N/A',
                                       Locked: "No",
                                       Time: timestamp.now(),
                                       AddedUser: Array,
                                       Type: 'Channel',
                                       ClaimUserID: "",
                                       ClaimTime: "00000",
-                                      Priority: PriorityList
+                                      Priority: 'N/A'
                                     })
                                     data.save()
                                       .catch(err => console.log(err))
@@ -978,16 +1017,16 @@ module.exports = class ReadyEvent extends BaseEvent {
                                   data = new ClaimTicket({
                                     id: interaction.user.id,
                                     TicketIDs: generator,
-                                    ServerID: interaction.guild.id,
+                                    ServerID: newguild.id,
                                     ChannelID: chan.id,
-                                    Reason: MSG,
+                                    Reason: 'N/A',
                                     Locked: "No",
                                     Time: timestamp.now(),
                                     AddedUser: Array,
                                     Type: 'Channel',
                                     ClaimUserID: "",
                                     ClaimTime: "00000",
-                                    Priority: PriorityList
+                                    Priority: 'N/A'
                                   })
                                   data.save()
                                     .catch(err => console.log(err))
@@ -1057,13 +1096,26 @@ module.exports = class ReadyEvent extends BaseEvent {
                                           .addFields([
                                             { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
                                             { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
-                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Priority', value: `N/A`, inline: true },
                                             { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                                           ])
 
 
 
                                         await interaction.reply({ embeds: [open], ephemeral: true });
+
+
+                                        // const LogsMessageOpen = new EmbedBuilder()
+                                        // .setTitle('Logs')
+                                        // .setDescription('A ticket has been opened in this guild')
+                                        // .addFields([
+                                        //   { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                        //   { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                        //   { name: 'Priority', value: `${PriorityList}`|| `N/A`, inline: true }, 
+                                        //   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                        // ])
+
+                                        // SupportLogs.send({ embeds: [LogsMessageOpen ]})
 
                                         const DmPerson = new EmbedBuilder()
                                           .setColor('#f6f7f8')
@@ -1073,12 +1125,25 @@ module.exports = class ReadyEvent extends BaseEvent {
                                           .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
                                           .addFields([
                                             { name: 'Ticket ID', value: `${generator}`, inline: true },
-                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Priority', value: `N/A`, inline: true },
                                             { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
 
                                           ])
 
                                         await interaction.user.send({ embeds: [DmPerson] });
+
+                                        const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                                        const TicketOpenLogs = new EmbedBuilder()
+                                          .setTitle('Logs')
+                                          .setDescription('A Ticket has been opened in this guild')
+                                          .addFields([
+                                            { name: 'User', value: `${interaction.user.name}`, inline: true },
+                                            { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                            { name: 'Priority', value: `N/A`, inline: true },
+                                            { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                          ])
+
+                                        SupportLogs.send({ embeds: [TicketOpenLogs] })
 
                                         const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                         const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
@@ -1090,12 +1155,12 @@ module.exports = class ReadyEvent extends BaseEvent {
                                           .setTitle('Ticket')
                                           .addFields([
                                             { name: 'Information', value: `${data01.TicketMessage}`, inline: true },
-                                            { name: 'Issue', value: `${MSG}`, inline: true },
+                                            { name: 'Issue', value: `N/A`, inline: true },
                                             { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
                                             { name: 'Roblox username', value: `${RBLXusername}`, inline: true },
                                             { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
                                             { name: 'Ticket ID', value: `${generator}`, inline: true },
-                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Priority', value: `N/A`, inline: true },
                                             { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
                                           ])
 
@@ -1112,14 +1177,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                 TicketIDs: generator,
                                                 ServerID: interaction.guild.id,
                                                 ChannelID: chan.id,
-                                                Reason: MSG,
+                                                Reason: 'N/A',
                                                 Locked: "No",
                                                 Time: timestamp.now(),
                                                 AddedUser: Array,
                                                 Type: 'Channel',
                                                 ClaimUserID: "",
                                                 ClaimTime: "00000",
-                                                Priority: PriorityList
+                                                Priority: 'N/A'
                                               })
                                               data.save()
                                                 .catch(err => console.log(err))
@@ -1166,14 +1231,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                                               TicketIDs: generator,
                                               ServerID: interaction.guild.id,
                                               ChannelID: chan.id,
-                                              Reason: MSG,
+                                              Reason: 'N/A',
                                               Locked: "No",
                                               Time: timestamp.now(),
                                               AddedUser: Array,
                                               Type: 'Channel',
                                               ClaimUserID: "",
                                               ClaimTime: "00000",
-                                              Priority: PriorityList
+                                              Priority: 'N/A'
                                             })
                                             data.save()
                                               .catch(err => console.log(err))
@@ -1228,7 +1293,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                           .addFields([
                                             { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
                                             { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
-                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Priority', value: `N/A`, inline: true },
                                             { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                                           ])
 
@@ -1236,6 +1301,18 @@ module.exports = class ReadyEvent extends BaseEvent {
 
 
                                         await interaction.reply({ embeds: [open], ephemeral: true });
+
+                                        // const LogsMessageOpen = new EmbedBuilder()
+                                        // .setTitle('Logs')
+                                        // .setDescription('A ticket has been opened in this guild')
+                                        // .addFields([
+                                        //   { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                        //   { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                        //   { name: 'Priority', value: `${PriorityList}`|| `N/A`, inline: true }, 
+                                        //   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                        // ])
+
+                                        // SupportLogs.send({ embeds: [LogsMessageOpen ]})
 
                                         const DmPerson = new EmbedBuilder()
                                           .setColor('#f6f7f8')
@@ -1245,12 +1322,25 @@ module.exports = class ReadyEvent extends BaseEvent {
                                           .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
                                           .addFields([
                                             { name: 'TicketID', value: `${generator}`, inline: true },
-                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Priority', value: `N/A`, inline: true },
                                             { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                                           ])
 
 
                                         await interaction.user.send({ embeds: [DmPerson] });
+
+                                        const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                                        const TicketOpenLogs = new EmbedBuilder()
+                                          .setTitle('Logs')
+                                          .setDescription('A Ticket has been opened in this guild')
+                                          .addFields([
+                                            { name: 'User', value: `${interaction.user.name}`, inline: true },
+                                            { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                            { name: 'Priority', value: `N/A`, inline: true },
+                                            { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                          ])
+
+                                        SupportLogs.send({ embeds: [TicketOpenLogs] })
 
                                         const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                         const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
@@ -1262,12 +1352,12 @@ module.exports = class ReadyEvent extends BaseEvent {
                                           .setTitle('Ticket')
                                           .addFields([
                                             { name: 'Information', value: `${data01.TicketMessage}`, inline: true },
-                                            { name: 'Issue', value: `${MSG}`, inline: true },
+                                            { name: 'Issue', value: `N/A`, inline: true },
                                             { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
                                             { name: 'Roblox username', value: `${RBLXusername}`, inline: true },
                                             { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
                                             { name: 'Ticket ID', value: `${generator}`, inline: true },
-                                            { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                            { name: 'Priority', value: `N/A`, inline: true },
                                             { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
                                           ])
 
@@ -1283,14 +1373,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                                                 TicketIDs: generator,
                                                 ServerID: interaction.guild.id,
                                                 ChannelID: chan.id,
-                                                Reason: MSG,
+                                                Reason: 'N/A',
                                                 Locked: "No",
                                                 Time: timestamp.now(),
                                                 AddedUser: Array,
                                                 Type: 'Channel',
                                                 ClaimUserID: "",
                                                 ClaimTime: "00000",
-                                                Priority: PriorityList
+                                                Priority: 'N/A'
                                               })
                                               data.save()
                                                 .catch(err => console.log(err))
@@ -1338,14 +1428,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                                               TicketIDs: generator,
                                               ServerID: interaction.guild.id,
                                               ChannelID: chan.id,
-                                              Reason: MSG,
+                                              Reason: 'N/A',
                                               Locked: "No",
                                               Time: timestamp.now(),
                                               AddedUser: Array,
                                               Type: 'Channel',
                                               ClaimUserID: "",
                                               ClaimTime: "00000",
-                                              Priority: PriorityList
+                                              Priority: 'N/A'
                                             })
                                             data.save()
                                               .catch(err => console.log(err))
@@ -1395,13 +1485,25 @@ module.exports = class ReadyEvent extends BaseEvent {
                                       .addFields([
                                         { name: 'Information', value: `<@${interaction.user.id}> I have open a ticket for you!`, inline: true },
                                         { name: 'Channel', value: `Your ticket is <#${chan.id}>`, inline: true },
-                                        { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                        { name: 'Priority', value: `N/A`, inline: true },
                                         { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
                                       ])
 
 
 
                                     await interaction.reply({ embeds: [open], ephemeral: true });
+
+                                    // const LogsMessageOpen = new EmbedBuilder()
+                                    // .setTitle('Logs')
+                                    // .setDescription('A ticket has been opened in this guild')
+                                    // .addFields([
+                                    //   { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
+                                    //   { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                    //   { name: 'Priority', value: `${PriorityList}`|| `N/A`, inline: true }, 
+                                    //   { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                    // ])
+
+                                    // SupportLogs.send({ embed: [LogsMessageOpen ]})
 
                                     const DmPerson = new EmbedBuilder()
                                       .setColor('#f6f7f8')
@@ -1411,11 +1513,24 @@ module.exports = class ReadyEvent extends BaseEvent {
                                       .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
                                       .addFields([
                                         { name: 'Ticket ID', value: `${generator}`, inline: true },
-                                        { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                        { name: 'Priority', value: `N/A`, inline: true },
                                         { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                                       ])
 
                                     await interaction.user.send({ embeds: [DmPerson] });
+
+                                    const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
+                                    const TicketOpenLogs = new EmbedBuilder()
+                                      .setTitle('Logs')
+                                      .setDescription('A Ticket has been opened in this guild')
+                                      .addFields([
+                                        { name: 'User', value: `${interaction.user.name}`, inline: true },
+                                        { name: 'Ticket ID', value: `${generator}`, inline: true },
+                                        { name: 'Priority', value: `N/A`, inline: true },
+                                        { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true }
+                                      ])
+
+                                    SupportLogs.send({ embeds: [TicketOpenLogs] })
 
                                     const TicketSupportID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                     const TicketManagerID2 = interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`)
@@ -1427,11 +1542,11 @@ module.exports = class ReadyEvent extends BaseEvent {
                                       .setTitle('Ticket')
                                       .addFields([
                                         { name: 'Information', value: `${data01.TicketMessage}`, inline: true },
-                                        { name: 'Issue', value: `${MSG}`, inline: true },
+                                        { name: 'Issue', value: `N/A`, inline: true },
                                         { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
                                         { name: 'Staff', value: `${TicketManagerID2} ${TicketSupportID2}`, inline: true },
                                         { name: 'Ticket ID', value: `${generator}`, inline: true },
-                                        { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true },
+                                        { name: 'Priority', value: `N/A`, inline: true },
                                         { name: 'Open Time', value: `<t:${timestamp.now()}:f>`, inline: true },
                                       ])
 
@@ -1447,14 +1562,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                                             TicketIDs: generator,
                                             ServerID: interaction.guild.id,
                                             ChannelID: chan.id,
-                                            Reason: MSG,
+                                            Reason: 'N/A',
                                             Locked: "No",
                                             Time: timestamp.now(),
                                             AddedUser: Array,
                                             Type: 'Channel',
                                             ClaimUserID: "",
                                             ClaimTime: "00000",
-                                            Priority: PriorityList
+                                            Priority: 'N/A'
                                           })
                                           data.save()
                                             .catch(err => console.log(err))
@@ -1502,21 +1617,21 @@ module.exports = class ReadyEvent extends BaseEvent {
                                           TicketIDs: generator,
                                           ServerID: interaction.guild.id,
                                           ChannelID: chan.id,
-                                          Reason: MSG,
+                                          Reason: 'N/A',
                                           Locked: "No",
                                           Time: timestamp.now(),
                                           AddedUser: Array,
                                           Type: 'Channel',
                                           ClaimUserID: "",
                                           ClaimTime: "00000",
-                                          Priority: PriorityList
+                                          Priority: 'N/A'
                                         })
                                         data.save()
                                           .catch(err => console.log(err))
                                         const TicketClainCommandSend = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-staff" && ch.type == Discord.ChannelType.GuildText)
                                         const TicketSupportID = interaction.guild.roles.cache.find(roles => roles.id === `${data01.SupportRoleID}`)
                                         TicketClainCommandSend.send(`${TicketSupportID} \n<@${interaction.user.id}> ${data01.ClaimTicketMessage}. Please run  /claim ticketid:${generator}`)
-                                        MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1 }, async (err20, data20) => {
+                                        MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { TicketNumber: +1, ClosedTickets: +1 }, async (err20, data20) => {
                                           if (err20) throw err20;
                                           if (data20) {
                                             data20.save()
