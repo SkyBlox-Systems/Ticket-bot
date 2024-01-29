@@ -32,6 +32,10 @@ module.exports.data = new SlashCommandBuilder()
             .addChoices({
                 name: 'Main Status',
                 value: 'status'
+            })
+            .addChoices({
+                name: 'Database',
+                value: 'database'
             }));
 
 module.exports.run = async (client, interaction) => {

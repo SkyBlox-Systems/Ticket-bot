@@ -12,5 +12,6 @@
   "EmailUsername": "no-reply@skybloxsystems.com",
   "EmailPassword": "hnShHGQhR6",
   "clientID": "804663016124973076",
-  "ClientSecret": "NuhmnAT8JVuVyhJ9y36CecvaawaKoVqU"
+  "ClientSecret": "NuhmnAT8JVuVyhJ9y36CecvaawaKoVqU",
+  "osTicketAPI": "214308812A1ECB07AC89DB3F3D793D3E"
 }

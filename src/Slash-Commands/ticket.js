@@ -33,10 +33,6 @@ module.exports.data = new SlashCommandBuilder()
     option.setName('option')
       .setDescription('Create a ticket for Ticket Bot help or create a ticket for support in this guild.')
       .addChoices({
-        name: 'Ticket Bot Help',
-        value: 'help'
-      })
-      .addChoices({
         name: 'Support in this guild',
         value: 'guild'
       })
@@ -98,11 +94,17 @@ module.exports.run = (client, interaction) => {
     );
 
 
-  const Xmas95 = new Date('December 24, 2023 00:00:00');
+  const Xmas95 = new Date('December 24, 2023 12:00:00');
   if (Xmas95.getDate() == dd) {
     const DisabledInAllServers = new EmbedBuilder()
-      .setTitle('Disabled!')
-      .setDescription('The bot owner has disabled all creations of ticket in all servers for worldwide events. https://status.skybloxsystems.com/incident/298944')
+      .setTitle('Disabled')
+      .setDescription('Ticket creations has been disabled across all guilds due to the holiday season. If you need support, please wait for the ticket creations to be enabled again')
+      .addFields([
+        { name: 'Disabled 1', value: `Disabled between <t:1703419200:f> until <t:1703592000:f>\n [Status](https://status.skybloxsystems.com/incidents/t0ft3glktyy6)`},
+        { name: 'Disabled 2', value: `Disabled between <t:1703937600:f> until <t:1704369600:f>\n [Status](https://status.skybloxsystems.com/incidents/s6290kxy9vtv)`}
+        
+
+      ])
 
     interaction.reply({ embeds: [DisabledInAllServers] })
   }
@@ -1077,109 +1079,7 @@ module.exports.run = (client, interaction) => {
         }
       })
     }
-    if (OptionList === 'help') {
-      TicketBotHelp.findOne({ id: interaction.user.id }, async (err01, data01) => {
-        if (err01) throw err;
-        if (data01) {
-          const embed = new EmbedBuilder()
-            .setTitle(`Ticket`)
-            .addFields([
-              { name: 'Infomation', value: `You have already opened a ticket. Please close your current ticket.`, inline: true },
-              { name: 'Reason', value: `${data45.Reason}`, inline: true },
-              { name: 'Ticket ID', value: `${data45.TicketIDs}`, inline: true },
-              { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
-            ])
-
-          interaction.reply({ embeds: [embed] })
-        }
-        if (data01 === null) {
-          const generator = makeURL(20)
-          const generator2 = makeURL(10)
-          const user = interaction.user.id;
-          const names = "support-" + generator2;
-          const Ticketcat = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "support" && ch.type == Discord.ChannelType.GuildCategory)
-          const newguild = client.guilds.cache.get('770050024582283265')
-          newguild.channels.create({ name: names }).then(async (chan) => {
-            chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been opened as from: ${currentDateAndTime} UTC.`)
-            chan.permissionOverwrites.set([
-              {
-                id: newguild.roles.everyone,
-                deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
-              }
-            ])
-            const open = new EmbedBuilder()
-              .setColor('#f6f7f8')
-              .setTimestamp()
-              .setFooter({ text: `Ticket ID: <#${chan.id}>` })
-              .setTitle(`Ticket`)
-              .addFields([
-                { name: 'Information', value: `<@${interaction.user.id}> has opened a ticket`, inline: true },
-                { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
-              ])
-
-              interaction.reply({embeds: [open]})
-
-
-
-            const DmPerson = new EmbedBuilder()
-              .setColor('#f6f7f8')
-              .setTimestamp()
-              .setTitle('Ticket open')
-              .setDescription(`You have open a staff support ticket.. You can send a message to your ticket by replying to our DMs with your ticketID: ${generator}`)
-              .addFields([
-                { name: 'TicketID', value: `${generator}`, inline: true },
-                { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
-              ])
-              .setFooter({ text: `${interaction.guild.name}| ${interaction.guild.id}` })
-             interaction.user.send({ embeds: [DmPerson] });
-
-            const TicketSupportID = newguild.roles.cache.find(roles => roles.id === '1101595649306279977')
-            const TicketManagerID = newguild.roles.cache.find(roles => roles.id === '1101597650668752896')
-         //   newguild.channels.cache.get(`${data01.SecondServerClaimChannel}`).send(`${TicketSupportID}, ${TicketManagerID} \n<@${interaction.user.id}> has open a support ticket! Please run /claim ticketid:${generator} to claim the ticket!`)
-
-            TicketBotHelp.findOne({ id: interaction.user.id }, async (err3, data3) => {
-              console.log(data3)
-              if (data3 === null) {
-                data3 = new ClaimTicket({
-                  id: interaction.user.id,
-                  TicketIDs: generator,
-                  ChannelID: chan.id,
-                  Reason: MSG,
-                  Locked: "No",
-                  Time: timestamp.now(),
-                  AddedUser: Array,
-                  Type: 'Channel',
-                  ClaimUserID: "",
-                  ClaimTime: "00000",
-                  Priority: PriorityList
-                })
-                data3.save()
-                console.log('data saved')
-              }
-            })
-
-            const thankyou = new EmbedBuilder()
-              .setColor('#f6f7f8')
-              .setTimestamp()
-              .setFooter({ text: `Ticket ID: <#${chan.id}>` })
-              .setTitle('Ticket')
-              .setDescription('To reply to this user ticket, please use the following command `/ticketreply message:` ')
-              .addFields([
-                { name: 'Infomation', value: `n/a`, inline: true },
-                { name: 'Issue', value: `${MSG}`, inline: true },
-                { name: 'User', value: `<@${interaction.user.id}>`, inline: true },
-             //   { name: 'Staff', value: `${TicketSupportID} ${TicketManagerID}`, inline: true },
-                { name: 'Ticket ID', value: `${generator}`, inline: true },
-                { name: 'Priority', value: `${PriorityList}` || `N/A`, inline: true }
-              ])
-            await chan.send({ embeds: [thankyou] }).then((m) => {
-              m.pin()
-            })
-          })
-        }
-
-      })
-    }
+   
 
 
   }

@@ -22,10 +22,10 @@ const { sendMail } = require('send-email-api')
 const GiveawayDatabase = require('./schemas/christmas-giveaway')
 
 
-const Poster = new Stats.Client(client, {
-  stats_uri: 'https://devbot.ticketbots.co.uk',
-  authorizationkey: "testing",
-})
+// const Poster = new Stats.Client(client, {
+//   stats_uri: 'https://devbot.ticketbots.co.uk',
+//   authorizationkey: "testing",
+// })
 
 
 
@@ -89,10 +89,20 @@ client.on('guildCreate', guild => {
 
 
 client.on('guildDelete', guild => {
-  MainDatabase.findOneAndDelete({ ServerID: guild.id }, async (err01, data01) => {
-    if (err01) throw err01;
-    if (data01) {
-      console.log(`Removed ${guild.id} from the database.`)
+  MainDatabase.findone({ ServerID: guild.id }, async (err1, data1) => {
+    if (err1) throw err;
+    if (data1) {
+      if (data1.CustomBots === '1') {
+        // Do nothing
+      }
+      if (data1.CustomBots === '0'){
+        MainDatabase.findOneAndDelete({ ServerID: guild.id }, async (err01, data01) => {
+          if (err01) throw err01;
+          if (data01) {
+            console.log(`Removed ${guild.id} from the database.`)
+          }
+        })
+      }
     }
   })
 })
