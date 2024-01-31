@@ -32,6 +32,11 @@ module.exports.data = new SlashCommandBuilder()
                 option
                     .setName('ownerid')
                     .setDescription('Please type out the bot owner ID')
+                    .setRequired(true))
+            .addStringOption(option =>
+                option
+                    .setName('guildid')
+                    .setDescription('Please type out the guild id')
                     .setRequired(true)))
     .addSubcommand(subcommand =>
         subcommand
@@ -53,12 +58,21 @@ module.exports.data = new SlashCommandBuilder()
         subcommand
             .setName('start')
             .setDescription('Start your custom bot'))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('edit')
+            .setDescription('Edit your custom bot'))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('view')
+            .setDescription('See your bot config'))
 
 module.exports.run = (client, interaction) => {
     const clientidbot = interaction.options.getString('clientid')
     const clientsecretbot = interaction.options.getString('secret')
     const tokenbot = interaction.options.getString('token')
     const owneridbot = interaction.options.getString('ownerid')
+    const guildidbot = interaction.options.getString('guildid')
 
 
 
@@ -86,9 +100,12 @@ module.exports.run = (client, interaction) => {
                                 `CLIENTID=${clientidbot}`,
                                 `CLIENTSEC=${clientsecretbot}`,
                                 `TOKEN=${tokenbot}`,
-                                `BotOwnerID=${owneridbot}`
+                                `BotOwnerID=${owneridbot}`,
+                                `GuildID=${guildidbot}`
                             ]
                         });
+
+
 
                         let config = {
                             method: 'post',
@@ -205,6 +222,7 @@ module.exports.run = (client, interaction) => {
             headers: {}
         };
 
+        
         axios.request(config)
             .then((response) => {
                 interaction.reply('You bot has been restarted successfully.')
@@ -219,6 +237,45 @@ module.exports.run = (client, interaction) => {
     if (interaction.options.getSubcommand() === 'delete') { // Delete the container -- Needs to be done
         if (interaction.user.id != interaction.guild.ownerId)
             return interaction.reply({ embeds: [ServerOwner] });
+
+
+
+        
+        
+        let config2 = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `https://portainer.skybloxsystems.com/api/endpoints/2/docker/containers/${interaction.guild.id}/stop?X-API-Key=ptr_5RIzgQaLyxFlZ8mjidhGUdmoyMSzQGFSvrR4GbtHj8A=`,
+            headers: {}
+        };
+
+        let config = {
+            method: 'delete',
+            maxBodyLength: Infinity,
+            url: `https://portainer.skybloxsystems.com/api/endpoints/2/docker/containers/${interaction.guild.id}?X-API-Key=ptr_5RIzgQaLyxFlZ8mjidhGUdmoyMSzQGFSvrR4GbtHj8A=`,
+            headers: {}
+        };
+
+        axios.request(config2)
+
+        setTimeout(() => {
+            axios.request(config)
+            .then((response) => {
+                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { CustomBots: '0' }, async (err2, data2) => {
+                    if (err2) throw err;
+                    if (data2) {
+                        data2.save()
+                        interaction.reply('Your custom bot has been deleted.')
+                    }
+                })
+            })
+            .catch((error) => {
+                console.log(error);
+                interaction.reply('An error has occurred!')
+
+            });
+        }, 5000);
+    
     }
 
     if (interaction.options.getSubcommand() === 'start') { // start the container
@@ -241,6 +298,41 @@ module.exports.run = (client, interaction) => {
                 interaction.reply('An error has occurred!')
 
             });
+
+    }
+
+    if (interaction.options.getSubcommand() === 'edit') { // Edit the container coming soon
+
+    }
+
+    if (interaction.options.getSubcommand() === 'view') { // View the settings of the container
+
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: `https://portainer.skybloxsystems.com/api/endpoints/2/docker/containers/${interaction.guild.id}/json?X-API-Key=ptr_5RIzgQaLyxFlZ8mjidhGUdmoyMSzQGFSvrR4GbtHj8A=`,
+            headers: {}
+        };
+
+        axios.request(config)
+            .then((response) => {
+                const dmsend = client.users.cache.get(interaction.user.id)
+
+                const containerdata = new EmbedBuilder()
+                    .setTitle('View')
+                    .setDescription('Get the info of your bot')
+                    .addFields(
+                        { name: 'Env', value: `${response.data.Config.Env[0]} \n ${response.data.Config.Env[1]}, \n ${response.data.Config.Env[2]} \n ${response.data.Config.Env[3]} \n ${response.data.Config.Env[4]}`, inline: true },
+                    )
+                    .setFooter({ text: `Container ID: ${response.data.Config.Hostname}. Container ID is only used if there is a issue with the bot. Send that to customer service if needed.` })
+                dmsend.send({ embeds: [containerdata] })
+            })
+            .catch((error) => {
+                console.log(error);
+                interaction.reply('An error has occurred!')
+            });
+
+
 
     }
 

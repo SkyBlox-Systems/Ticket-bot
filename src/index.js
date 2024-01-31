@@ -22,10 +22,10 @@ const { sendMail } = require('send-email-api')
 const GiveawayDatabase = require('./schemas/christmas-giveaway')
 
 
-// const Poster = new Stats.Client(client, {
-//   stats_uri: 'https://devbot.ticketbots.co.uk',
-//   authorizationkey: "testing",
-// })
+const Poster = new Stats.Client(client, {
+  stats_uri: 'https://devbot.ticketbots.co.uk',
+  authorizationkey: "testing",
+})
 
 
 

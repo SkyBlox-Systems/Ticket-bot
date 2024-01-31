@@ -21,27 +21,19 @@ timestamp.round = true
 module.exports.data = new SlashCommandBuilder()
     .setName('status')
     .setDescription('status Command')
-    .addStringOption(option =>
-        option.setName('options')
-            .setDescription('The main category')
-            .setRequired(true)
-            .addChoices({
-                name: 'Shards',
-                value: 'shards'
-            })
-            .addChoices({
-                name: 'Main Status',
-                value: 'status'
-            })
-            .addChoices({
-                name: 'Database',
-                value: 'database'
-            }));
+    .addSubcommand(subcommand =>
+        subcommand
+        .setName('shards')
+        .setDescription('View the status of the shards'))
+    .addSubcommand(subcommand =>
+        subcommand
+        .setName('status')
+        .setDescription('Get the status of the company status'))
 
 module.exports.run = async (client, interaction) => {
     const teststring = interaction.options.getString('options');
 
-    if (teststring === 'shards') {
+    if (interaction.options.getSubcommand() === 'shards') {
         client.shard.broadcastEval(client => [client.shard.ids, client.ws.status, client.ws.ping, client.guilds.cache.size])
             .then((results) => {
                 const embed = new EmbedBuilder()
@@ -61,7 +53,7 @@ module.exports.run = async (client, interaction) => {
                 interaction.reply(`❌ Error.`);
             });
     }
-    if (teststring === 'status') {
+    if (interaction.options.getSubcommand() === 'status') {
         const config = {
             headers: { Authorization: `Bearer 9248ffdb653c4f5eb2f3dc0e1337ac82` }
         };

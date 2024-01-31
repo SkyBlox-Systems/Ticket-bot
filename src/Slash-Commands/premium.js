@@ -13,27 +13,22 @@ const sellix = require("@sellix/node-sdk")(config.StoreCode);
 module.exports.data = new SlashCommandBuilder()
     .setName('premium')
     .setDescription('Premium Command')
-    .addStringOption(option =>
-        option.setName('category')
-            .setDescription('Click which one you want to transfer')
-            .setRequired(true)
-            .addChoices({
-                name: 'view',
-                value: 'view'
-            })
-            .addChoices({
-                name: 'redeem',
-                value: 'redeem'
-            }))
-    .addStringOption(option =>
-        option.setName('code')
-            .setDescription('Enter the code you would like to redeem. (Code should be sent via email)')
-            .setRequired(false));
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('view')
+            .setDescription('View your premium settings'))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('redeem')
+            .setDescription('Add ticket bot pro to your guild')
+            .addStringOption(option =>
+                option.setName('code')
+                    .setDescription('Enter the code you would like to redeem. (Code should be sent via email)')
+                    .setRequired(true)));
 
 
 module.exports.run = async (client, interaction) => {
 
-    const categorys = interaction.options.getString('category')
 
     const notOwner = new EmbedBuilder()
         .setTitle('Owner only command!')
@@ -41,7 +36,7 @@ module.exports.run = async (client, interaction) => {
         interaction.reply({ embeds: [notOwner] })
     }
 
-    if (categorys === 'redeem') {
+    if (interaction.options.getSubcommand() === 'redeem') {
         MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
             if (err) throw err;
             if (data) {
@@ -82,7 +77,7 @@ module.exports.run = async (client, interaction) => {
                                                 const dt = new Date(strDate).getTime();
                                                 return dt / 1000;
                                             }
-    
+
                                             MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: MSG, PremiumExpire: toTimestamp(hardware.expires_at) }, async (err2, data2) => {
                                                 if (err2) throw err;
                                                 if (data2) {
@@ -121,7 +116,7 @@ module.exports.run = async (client, interaction) => {
         })
     }
 
-    if (categorys === 'view') {
+    if (interaction.options.getSubcommand() === 'view') {
 
         const toTimestamp = (strDate) => {
             const dt = new Date(strDate).getTime();

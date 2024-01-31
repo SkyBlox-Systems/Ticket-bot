@@ -9,68 +9,88 @@ const ProKeys = require('../schemas/keys')
 const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 const axios = require('axios');
 const { sendMail } = require('send-email-api')
+const MainDatabase = require('../schemas/TicketData')
 
 
 module.exports.data = new SlashCommandBuilder()
     .setName('request')
     .setDescription('request Command')
-    .addStringOption(option => 
+    .addStringOption(option =>
         option.setName('category')
-        .setDescription('Select which option you would like')
-        .addChoices({
-            name: 'Guild',
-            value: 'guild' 
-        })
-        .setRequired(true))
-    .addStringOption(option => 
-        option.setName('email')
-        .setDescription('Please type out the email you would like us send the data to')
-        .setRequired(true))
+            .setDescription('Select which option you would like')
+            .addChoices({
+                name: 'Guild',
+                value: 'guild'
+            })
+            .setRequired(true))
+
 
 module.exports.run = async (client, interaction) => {
-    const emails = interaction.options.getString('email');
     const values = interaction.options.getString('category');
 
     const ServerOwner = new EmbedBuilder()
-    .setTitle('Error')
-    .setDescription('This command is restricted to guild owner only. Please do not try and use this command because you will not get anywhere.')
+        .setTitle('Error')
+        .setDescription('This command is restricted to guild owner only. Please do not try and use this command because you will not get anywhere.')
     if (interaction.user.id != interaction.guild.ownerId)
-      return interaction.reply({ embeds: [ServerOwner] });
+        return interaction.reply({ embeds: [ServerOwner] });
 
     if (values === 'guild') {
+        MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
+            if (err) throw err;
+            if (data) {
+                interaction.reply('We have sent the messages in DMS')
+                if (data.APIKey === 'N/A') {
+                    function makeURL(length) {
+                        var result = '';
+                        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                        var charactersLength = characters.length;
+                        for (var i = 0; i < length; i++) {
+                            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                        }
+                        return result;
+                    }
+                    const generator = makeURL(15)
 
-        const emailConfig = {
-            options: {
-                host: 'smtp.office365.com',
-                port: 587,
-                secure: false,
-                auth: {
-                    user: config.EmailUsername,
-                    pass: config.EmailPassword,
+                    MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { APIKey: generator }, async (err1, data1) => {
+                        if (err1) throw err;
+                        if (data1) {
+                            data1.save()
+                            const dmsend = client.users.cache.get(interaction.user.id)
+
+                            const MainEmbed = new EmbedBuilder()
+                                .setTitle('Request')
+                                .setDescription(`A API has been created for your guild for 5 minutes to allow you to download your guild data. You can download the data from here https://api.ticketbots.co.uk/api/v1/settings/${interaction.guild.id}/apikey=${generator}`)
+
+                            dmsend.send({ embeds: [MainEmbed] })
+
+                            setTimeout(() => {
+                                const MainEmbed2 = new EmbedBuilder()
+                                    .setTitle('Request')
+                                    .setDescription(`Your API has been deleted`)
+
+                                MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { APIKey: 'N/A' }, async (err2, data2) => {
+                                    if (err2) throw err;
+                                    if (data2) {
+                                        data2.save()
+                                    }
+                                })
+                                dmsend.send({ embeds: [MainEmbed2] })
+                            }, 300000);
+                        }
+                    })
+
+                } else {
+                    const dmsend = client.users.cache.get(interaction.user.id)
+                    console.log(dmsend)
+
+                    const MainEmbed = new EmbedBuilder()
+                        .setTitle('Request')
+                        .setDescription(`As your guild has a API, you can download the data from here https://api.ticketbots.co.uk/api/v1/settings/${interaction.guild.id}/apikey=${data.APIKey}`)
+
+                    dmsend.send({ embeds: [MainEmbed] })
                 }
-            },
-            from: 'no-reply@skybloxsystems.com',
-        }
-
-        const emailData = {
-            to: 'admin@skybloxsystems.com',
-            subject: 'Request data',
-            text: `This guild ${interaction.guild.id} // ${interaction.guild.name} has requested guild data. please send the email back to the following email ${emails}. \n your sincerely, \n Ticket Bot Automatic email system`,
-        }
-
-        const emailDataUser = {
-            to: emails,
-            subject: 'Request data Received',
-            text: `Dear ${interaction.user.username}, \nWe are emailing you to let you know that the team has gotten your request. Please allow up to 5 working days to get your guild data. \n\n your sincerely, \n SkyBlox Systems LTD`,
-        }
-
-        sendMail(emailData, emailConfig)
-        sendMail(emailDataUser, emailConfig)
-
-       const emailsent = new EmbedBuilder()
-       .setTitle('Request sent')
-       .setDescription('We have sent the request to the Admins of SkyBlox Systems. You should get a email within 5 working days.')
-        interaction.reply({ embeds: [emailsent], ephemeral: true})
+            }
+        })
     }
 
 }

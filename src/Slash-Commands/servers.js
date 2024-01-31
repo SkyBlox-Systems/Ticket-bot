@@ -14,8 +14,8 @@ module.exports.run = (client, interaction) => {
             .setColor('RANDOM')
             .setTimestamp()
             .setTitle('Help')
-            .setDescription('You cannot use the following the command: `!servers`. The command is only available for the owner.')
-        return interaction.reply(NotOwner)
+            .setDescription('You cannot use the following the command: `/servers`. The command is only available for the owner.')
+        return interaction.reply({ embeds: [NotOwner]})
     }
     interaction.reply('Server')
     client.guilds.cache.forEach(async (guild) => {
