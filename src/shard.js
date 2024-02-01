@@ -7,7 +7,7 @@ const DataBaseMongo = require('./mongo');
 
 const shards = new ShardingManager("./src/index.js", {
     token: config.token,
-    totalShards: 1,
+    totalShards: 2,
     timeout: -1,
     respawn: true
 })
@@ -23,5 +23,5 @@ shards.on("ShardCreate", async (shard) =>{
 // })
 
 shards.spawn()
-require('./dashboard/server')
+// require('./dashboard/server')
 // DataBaseMongo.init()

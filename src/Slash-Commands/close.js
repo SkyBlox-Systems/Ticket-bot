@@ -20,26 +20,20 @@ timestamp.round = true
 module.exports.data = new SlashCommandBuilder()
   .setName('close')
   .setDescription('close Command')
-  .addStringOption(option =>
-    option.setName('normal')
-      .setDescription('Used to close normal ticket channels')
-      .addChoices({
-        name: 'close',
-        value: 'close'
-      })
-      .setRequired(false))
-  .addStringOption(option =>
-    option.setName('premium')
-      .setDescription('Premium only section')
-      .addChoices({
-        name: 'voice tickets',
-        value: 'voice'
-      })
-      .setRequired(false))
-  .addStringOption(option =>
-    option.setName('id')
-      .setDescription('Enter the ticket ID')
-      .setRequired(false));
+  .addSubcommand(subcommand =>
+    subcommand
+      .setName('ticket')
+      .setDescription('Close the ticket'))
+  .addSubcommand(subcommand =>
+    subcommand
+      .setName('voice')
+      .setDescription('Close voice tickets (Pro only)')
+      .addStringOption(option =>
+        option
+          .setName('id')
+          .setDescription('Enter the ticket ID')
+          .setRequired(false)));
+
 
 
 module.exports.run = (client, interaction) => {
@@ -76,24 +70,22 @@ module.exports.run = (client, interaction) => {
 
   const premiumstring = interaction.options.getString('premium');
   const idstring = interaction.options.getString('id');
-  const normalstring = interaction.options.getString('normal');
 
-
-  if (normalstring === 'close') {
+  if (interaction.options.getSubcommand() === 'ticket') {
     MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
       if (err) throw err;
       if (data) {
         if (data.SupportServer === 'Yes') {
-          ClaimTicket.findOne({ ChannelID: interaction.channel.id}, async (err02, data02) => {
-            ClaimTicket.findOneAndDelete({ ChannelID: interaction.channel.id}, async (err03, data03) => {
+          ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err02, data02) => {
+            ClaimTicket.findOneAndDelete({ ChannelID: interaction.channel.id }, async (err03, data03) => {
               if (err03) throw err;
               if (data03) {
                 data03.save()
               }
             })
             const DMTicketCreatorClosed = new EmbedBuilder()
-            .setTitle('Ticket')
-            .setDescription('Your Support ticket has now been closed by a SkyBlox Systems LTD. If you bealive that this is a mistake, please contact support.')
+              .setTitle('Ticket')
+              .setDescription('Your Support ticket has now been closed by a SkyBlox Systems LTD. If you bealive that this is a mistake, please contact support.')
             const ticketttcreator = client.users.cache.get(data02.id)
             ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
 
@@ -123,14 +115,14 @@ module.exports.run = (client, interaction) => {
               //                     const NoPerms2 = new EmbedBuilder()
               //                       .setTitle('Error')
               //                       .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
-    
+
               //                     return interaction.reply({ embeds: [NoPerms2] })
               //                   }
-    
+
               //                   const NoClaimer = new EmbedBuilder()
               //                     .setTitle('Error')
               //                     .setDescription('No staff member has not claimed the ticket. This ticket can not be closed')
-    
+
               //                   interaction.reply({ embeds: [NoClaimer] })
               //                 } else {
               //                   if (data01.Transcript === "Yes") {
@@ -144,21 +136,21 @@ module.exports.run = (client, interaction) => {
               //                       return result;
               //                     }
               //                     const generators = makeURL(20)
-    
-    
+
+
               //                     const ticketembed = new EmbedBuilder()
               //                       .setColor('#f6f7f8')
               //                       .setTimestamp()
               //                       .setTitle(`Ticket`)
               //                       .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will cancel the command within 10 seconds.`)
-    
+
               //                     const closed = new EmbedBuilder()
               //                       .setColor('#f6f7f8')
               //                       .setTimestamp()
               //                       .setTitle(`Ticket`)
               //                       .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
-    
-    
+
+
               //                     const Logs = new EmbedBuilder()
               //                       .setColor('#f6f7f8')
               //                       .setTimestamp()
@@ -175,63 +167,63 @@ module.exports.run = (client, interaction) => {
               //                         { name: 'Claimed By', value: `<@${data2001.ClaimUserID}>`, inline: true },
               //                         { name: 'Priority', value: `${data2001.Priority}`, inline: true }
               //                       ])
-    
+
               //                     const notclosed = new EmbedBuilder()
               //                       .setColor('#f6f7f8')
               //                       .setTimestamp()
               //                       .setTitle(`Ticket`)
               //                       .setDescription(`Close cancelled.`)
-    
+
               //                     const closing = new EmbedBuilder()
               //                       .setColor('#f6f7f8')
               //                       .setTimestamp()
               //                       .setTitle(`Ticket`)
               //                       .setDescription(`Your ticket will be closed in 5 seconds`)
               //                       .setFooter({ text: `Making a transcript....` })
-    
-    
-    
+
+
+
               //                     const ticketembed2 = new EmbedBuilder()
               //                       .setColor('#f6f7f8')
               //                       .setTimestamp()
               //                       .setTitle(`Ticket`)
               //                       .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will automatticaly close within 10 seconds.`)
-    
+
               //                     const closed2 = new EmbedBuilder()
               //                       .setColor('#f6f7f8')
               //                       .setTimestamp()
               //                       .setTitle(`Ticket`)
               //                       .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
-    
+
               //                     const Logs2 = new EmbedBuilder()
               //                       .setColor('#f6f7f8')
               //                       .setTimestamp()
               //                       .setTitle('Ticket-logs')
               //                       .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully.`)
-    
+
               //                     const notclosed2 = new EmbedBuilder()
               //                       .setColor('#f6f7f8')
               //                       .setTimestamp()
               //                       .setTitle(`Ticket`)
               //                       .setDescription(`Close cancelled.`)
-    
+
               //                     const closing2 = new EmbedBuilder()
               //                       .setColor('#f6f7f8')
               //                       .setTimestamp()
               //                       .setTitle(`Ticket`)
               //                       .setDescription(`Your ticket will be closed in 5 seconds`)
-    
-    
+
+
               //                     if (!interaction.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
               //                       const NoPerms3 = new EmbedBuilder()
               //                         .setTitle('Error')
               //                         .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
-    
+
               //                       return interaction.reply({ embeds: [NoPerms3] })
               //                     }
-    
+
               //                     if (data01.ModMail === 'Enabled') {
-    
+
               //                       if (!interaction.channel.name.startsWith("ticket-")) return interaction.channel.send("This is not a valid ticket")
               //                       if (!interaction.member.permissions.has("MANAGE_CHANNELS")) return interaction.channel.send("You need MANAGE_CHANNELS permission to use this command")
               //                       interaction.reply({ embeds: [ticketembed] })
@@ -243,12 +235,12 @@ module.exports.run = (client, interaction) => {
               //                             errors: ['time']
               //                           }).then(() => {
               //                             interaction.channel.send({ embeds: [closing] })
-    
+
               //                             setTimeout(() => {
               //                               ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err, data) => {
               //                                 if (err) throw err;
               //                                 if (data) {
-    
+
               //                                   const DMTicketCreatorClosed = new EmbedBuilder()
               //                                     .setColor('#f5f5f5')
               //                                     .setTimestamp()
@@ -265,17 +257,17 @@ module.exports.run = (client, interaction) => {
               //                                       { name: 'Claimed By', value: `<@${data.ClaimUserID}>`, inline: true },
               //                                       { name: 'Priority', value: `${data.Priority}`, inline: true }
               //                                     ])
-    
+
               //                                   const DMTicketClaimClosed = new EmbedBuilder()
               //                                     .setColor('#f5f5f5')
               //                                     .setTimestamp()
               //                                     .setTitle(`Ticket`)
               //                                     .setDescription(`You have closed the following ticket-${data.ChannelID} for the following user <@${data.id}>.`)
-    
-    
+
+
               //                                   const ticketttcreator = client.users.cache.get(data.id)
               //                                   ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
-    
+
               //                                   const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
               //                                   ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
               //                                   setTimeout(() => {
@@ -286,10 +278,10 @@ module.exports.run = (client, interaction) => {
               //                                       }
               //                                     })
               //                                   }, 5000);
-    
-    
+
+
               //                                 }
-    
+
               //                                 MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err30, data30) => {
               //                                   if (err30) throw err30;
               //                                   if (data30) {
@@ -298,33 +290,33 @@ module.exports.run = (client, interaction) => {
               //                                   }
               //                                 })
               //                                 interaction.channel.delete()
-    
+
               //                                 const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
               //                                 const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == ChannelType.GuildText)
-    
+
               //                                 const UserName = client.users.cache.find(user => user.id === data.id)
               //                                 console.log(UserName)
-    
+
               //                                 SupportLogs.send({ embeds: [Logs] })
-    
+
               //                                 const CloseEmbed = new EmbedBuilder()
               //                                   .setTitle('Transcript')
               //                                   .setDescription(`Transcript for the user ${data.id}`)
               //                                 TranscriptLogs.send({ embeds: [CloseEmbed] })
-    
-    
+
+
               //                                 const channelsss = interaction.channel;
               //                                 const attachment = await discordTranscripts.createTranscript(channelsss, {
               //                                   limit: -1, // Max amount of messages to fetch.
               //                                   returnBuffer: false, // Return a buffer instead of a MessageAttachment 
               //                                   fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
               //                                 });
-    
+
               //                                 TranscriptLogs.send({ files: [attachment] })
-    
-    
+
+
               //                               })
-    
+
               //                             }, 5000);
               //                           }).catch(() => {
               //                             m.edit({ embeds: [notclosed] })
@@ -332,10 +324,10 @@ module.exports.run = (client, interaction) => {
               //                         }).catch(() => {
               //                           m.edit({ embeds: [notclosed] })
               //                         })
-    
+
               //                     } else {
               //                       if (data01.ModMail === 'Disabled') {
-    
+
               //                         if (!interaction.channel.name.startsWith("ticket-")) return interaction.channel.send("This is not a valid ticket")
               //                         if (!interaction.member.permissions.has("MANAGE_CHANNELS")) return interaction.channel.send("You need MANAGE_CHANNELS permission to use this command")
               //                         interaction.reply({ embeds: [ticketembed] })
@@ -347,12 +339,12 @@ module.exports.run = (client, interaction) => {
               //                               errors: ['time']
               //                             }).then(() => {
               //                               interaction.channel.send({ embeds: [closing] })
-    
+
               //                               setTimeout(() => {
               //                                 ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err, data) => {
               //                                   if (err) throw err;
               //                                   if (data) {
-    
+
               //                                     const DMTicketCreatorClosed = new EmbedBuilder()
               //                                       .setColor('#f5f5f5')
               //                                       .setTimestamp()
@@ -369,18 +361,18 @@ module.exports.run = (client, interaction) => {
               //                                         { name: 'Claimed By', value: `<@${data.ClaimUserID}>`, inline: true },
               //                                         { name: 'Priority', value: `${data.Priority}`, inline: true }
               //                                       ])
-    
-    
+
+
               //                                     const DMTicketClaimClosed = new EmbedBuilder()
               //                                       .setColor('#f5f5f5')
               //                                       .setTimestamp()
               //                                       .setTitle(`Ticket`)
               //                                       .setDescription(`You have closed the following ticket-${data.ChannelID} for the following user <@${data.id}>.`)
-    
-    
+
+
               //                                     const ticketttcreator = client.users.cache.get(data.id)
               //                                     ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
-    
+
               //                                     const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
               //                                     ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
               //                                     setTimeout(() => {
@@ -391,10 +383,10 @@ module.exports.run = (client, interaction) => {
               //                                         }
               //                                       })
               //                                     }, 5000);
-    
-    
+
+
               //                                   }
-    
+
               //                                   MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err30, data30) => {
               //                                     if (err30) throw err30;
               //                                     if (data30) {
@@ -403,33 +395,33 @@ module.exports.run = (client, interaction) => {
               //                                     }
               //                                   })
               //                                   interaction.channel.delete()
-    
+
               //                                   const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
               //                                   const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == ChannelType.GuildText)
-    
+
               //                                   const UserName = client.users.cache.find(user => user.id === data.id)
               //                                   console.log(UserName)
-    
+
               //                                   SupportLogs.send({ embeds: [Logs] })
-    
+
               //                                   const CloseEmbed = new EmbedBuilder()
               //                                     .setTitle('Transcript')
               //                                     .setDescription(`Transcript for the user ${data.id}`)
               //                                   TranscriptLogs.send({ embeds: [CloseEmbed] })
-    
-    
+
+
               //                                   const discordTranscripts = require('discord-html-transcripts');
-    
+
               //                                   const channelsss = interaction.channel;
               //                                   const attachment = await discordTranscripts.createTranscript(channelsss, {
               //                                     limit: -1, // Max amount of messages to fetch.
               //                                     returnBuffer: false, // Return a buffer instead of a MessageAttachment 
               //                                     fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
               //                                   });
-    
+
               //                                   TranscriptLogs.send({ files: [attachment] })
               //                                 })
-    
+
               //                               }, 5000);
               //                             }).catch(() => {
               //                               m.edit({ embeds: [notclosed] })
@@ -437,24 +429,24 @@ module.exports.run = (client, interaction) => {
               //                           }).catch(() => {
               //                             m.edit({ embeds: [notclosed] })
               //                           })
-    
+
               //                       }
               //                     }
-    
-    
-    
-    
-    
+
+
+
+
+
               //                   } else {
               //                     if (!message.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
               //                       const NoPerms = new EmbedBuilder()
               //                         .setTitle('Error')
               //                         .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
-    
+
               //                       return interaction.reply({ embeds: [NoPerms] })
               //                     }
-    
-    
+
+
               //                     if (!interaction.channel.name.startsWith("ticket-")) return interaction.reply("This is not a valid ticket")
               //                     if (!interaction.member.permissions.has("MANAGE_CHANNELS")) return interaction.reply("You need MANAGE_CHANNELS permission to use this command")
               //                     interaction.reply({ embeds: [ticketembed2] }).then((m) => {
@@ -470,7 +462,7 @@ module.exports.run = (client, interaction) => {
               //                           ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err, data) => {
               //                             if (err) throw err;
               //                             if (data) {
-    
+
               //                               const DMTicketCreatorClosed = new EmbedBuilder()
               //                                 .setColor('#f5f5f5')
               //                                 .setTimestamp()
@@ -487,17 +479,17 @@ module.exports.run = (client, interaction) => {
               //                                   { name: 'Claimed By', value: `<@${data.ClaimUserID}>`, inline: true },
               //                                   { name: 'Priority', value: `${data.Priority}`, inline: true }
               //                                 ])
-    
+
               //                               const DMTicketClaimClosed = new EmbedBuilder()
               //                                 .setColor('#f5f5f5')
               //                                 .setTimestamp()
               //                                 .setTitle(`Ticket`)
               //                                 .setDescription(`You have closed the following ticket ${data.ChannelID} for the following user <@${data.id}>.`)
-    
-    
+
+
               //                               const ticketttcreator = client.users.cache.get(data.id)
               //                               ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
-    
+
               //                               const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
               //                               ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
               //                               setTimeout(() => {
@@ -508,10 +500,10 @@ module.exports.run = (client, interaction) => {
               //                                   }
               //                                 })
               //                               }, 5000);
-    
-    
+
+
               //                             }
-    
+
               //                             MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err300, data300) => {
               //                               if (err300) throw err300;
               //                               if (data300) {
@@ -520,18 +512,18 @@ module.exports.run = (client, interaction) => {
               //                               }
               //                             })
               //                             interaction.channel.delete()
-    
+
               //                             const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "text")
               //                             const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
-    
+
               //                             const UserName = client.users.cache.find(user => user.id === data.id)
               //                             console.log(UserName)
-    
+
               //                             SupportLogs.send({ embeds: [Logs2] })
-    
-    
+
+
               //                           })
-    
+
               //                         }, 5000);
               //                       }).catch(() => {
               //                         interaction.channel.send({ embeds: [notclosed2] })
@@ -551,7 +543,7 @@ module.exports.run = (client, interaction) => {
               // })
               interaction.reply('This feature is currently disabled')
             } else {
-    
+
               ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err2001, data2001) => {
                 if (err2001) throw err2001;
                 if (data2001) {
@@ -565,7 +557,7 @@ module.exports.run = (client, interaction) => {
                       MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err01, data01) => {
                         if (err01) throw err01;
                         if (data01) {
-    
+
                           ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err200, data200) => {
                             if (err200) throw err200;
                             if (data200) {
@@ -574,20 +566,20 @@ module.exports.run = (client, interaction) => {
                                   const NoPerms2 = new EmbedBuilder()
                                     .setTitle('Error')
                                     .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
-    
+
                                   return interaction.reply({ embeds: [NoPerms2] })
                                 }
-    
+
                                 const NoClaimer = new EmbedBuilder()
                                   .setTitle('Error')
                                   .setDescription('No staff member has not claimed the ticket. This ticket can not be closed')
-    
+
                                 interaction.reply({ embeds: [NoClaimer] })
-    
+
                               } else {
                                 console.log('get data')
-    
-    
+
+
                                 if (data01.Transcript === "Yes") {
                                   function makeURL(length) {
                                     var result = '';
@@ -599,21 +591,21 @@ module.exports.run = (client, interaction) => {
                                     return result;
                                   }
                                   const generators = makeURL(20)
-    
-    
+
+
                                   const ticketembed = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will cancel the command within 10 seconds.`)
-    
+
                                   const closed = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
-    
-    
+
+
                                   const Logs = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
@@ -630,63 +622,63 @@ module.exports.run = (client, interaction) => {
                                       { name: 'Claimed By', value: `<@${data2001.ClaimUserID}>`, inline: true },
                                       { name: 'Priority', value: `${data2001.Priority}`, inline: true }
                                     ])
-    
+
                                   const notclosed = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`Close cancelled.`)
-    
+
                                   const closing = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`Your ticket will be closed in 5 seconds`)
                                     .setFooter({ text: `Making a transcript....` })
-    
-    
-    
+
+
+
                                   const ticketembed2 = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`<@${interaction.user.id}>, are you sure you want to close this ticket? **yes**. If not, it will automatticaly close within 10 seconds.`)
-    
+
                                   const closed2 = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`You have closed the following ticket: ${interaction.channel.name}.`)
-    
+
                                   const Logs2 = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle('Ticket-logs')
                                     .setDescription(`<@${interaction.user.id}> has close the following ticket: ${interaction.channel.name} successfully.`)
-    
+
                                   const notclosed2 = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`Close cancelled.`)
-    
+
                                   const closing2 = new EmbedBuilder()
                                     .setColor('#f6f7f8')
                                     .setTimestamp()
                                     .setTitle(`Ticket`)
                                     .setDescription(`Your ticket will be closed in 5 seconds`)
-    
-    
+
+
                                   if (!interaction.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
                                     const NoPerms3 = new EmbedBuilder()
                                       .setTitle('Error')
                                       .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
-    
+
                                     return interaction.reply({ embeds: [NoPerms3] })
                                   }
-    
+
                                   if (data01.ModMail === 'Enabled') {
-    
+
                                     if (!interaction.channel.name.startsWith("ticket-")) return interaction.channel.send("This is not a valid ticket")
                                     if (!interaction.member.permissions.has("MANAGE_CHANNELS")) return interaction.channel.send("You need MANAGE_CHANNELS permission to use this command")
                                     interaction.reply({ embeds: [ticketembed] })
@@ -698,12 +690,12 @@ module.exports.run = (client, interaction) => {
                                           errors: ['time']
                                         }).then(() => {
                                           interaction.channel.send({ embeds: [closing] })
-    
+
                                           setTimeout(() => {
                                             ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err, data) => {
                                               if (err) throw err;
                                               if (data) {
-    
+
                                                 const DMTicketCreatorClosed = new EmbedBuilder()
                                                   .setColor('#f5f5f5')
                                                   .setTimestamp()
@@ -720,17 +712,17 @@ module.exports.run = (client, interaction) => {
                                                     { name: 'Claimed By', value: `<@${data.ClaimUserID}>`, inline: true },
                                                     { name: 'Priority', value: `${data.Priority}`, inline: true }
                                                   ])
-    
+
                                                 const DMTicketClaimClosed = new EmbedBuilder()
                                                   .setColor('#f5f5f5')
                                                   .setTimestamp()
                                                   .setTitle(`Ticket`)
                                                   .setDescription(`You have closed the following ticket-${data.ChannelID} for the following user <@${data.id}>.`)
-    
-    
+
+
                                                 const ticketttcreator = client.users.cache.get(data.id)
                                                 ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
-    
+
                                                 const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
                                                 ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
                                                 setTimeout(() => {
@@ -741,10 +733,10 @@ module.exports.run = (client, interaction) => {
                                                     }
                                                   })
                                                 }, 5000);
-    
-    
+
+
                                               }
-    
+
                                               MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err30, data30) => {
                                                 if (err30) throw err30;
                                                 if (data30) {
@@ -753,33 +745,33 @@ module.exports.run = (client, interaction) => {
                                                 }
                                               })
                                               interaction.channel.delete()
-    
+
                                               const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
                                               const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == ChannelType.GuildText)
-    
+
                                               const UserName = client.users.cache.find(user => user.id === data.id)
                                               console.log(UserName)
-    
+
                                               SupportLogs.send({ embeds: [Logs] })
-    
+
                                               const CloseEmbed = new EmbedBuilder()
                                                 .setTitle('Transcript')
                                                 .setDescription(`Transcript for the user ${data.id}`)
                                               TranscriptLogs.send({ embeds: [CloseEmbed] })
-    
-    
+
+
                                               const channelsss = interaction.channel;
                                               const attachment = await discordTranscripts.createTranscript(channelsss, {
                                                 limit: -1, // Max amount of messages to fetch.
                                                 returnBuffer: false, // Return a buffer instead of a MessageAttachment 
                                                 fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
                                               });
-    
+
                                               TranscriptLogs.send({ files: [attachment] })
-    
-    
+
+
                                             })
-    
+
                                           }, 5000);
                                         }).catch(() => {
                                           m.edit({ embeds: [notclosed] })
@@ -787,10 +779,10 @@ module.exports.run = (client, interaction) => {
                                       }).catch(() => {
                                         m.edit({ embeds: [notclosed] })
                                       })
-    
+
                                   } else {
                                     if (data01.ModMail === 'Disabled') {
-    
+
                                       if (!interaction.channel.name.startsWith("ticket-")) return interaction.channel.send("This is not a valid ticket")
                                       if (!interaction.member.permissions.has("MANAGE_CHANNELS")) return interaction.channel.send("You need MANAGE_CHANNELS permission to use this command")
                                       interaction.reply({ embeds: [ticketembed] })
@@ -802,12 +794,12 @@ module.exports.run = (client, interaction) => {
                                             errors: ['time']
                                           }).then(() => {
                                             interaction.channel.send({ embeds: [closing] })
-    
+
                                             setTimeout(() => {
                                               ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err, data) => {
                                                 if (err) throw err;
                                                 if (data) {
-    
+
                                                   const DMTicketCreatorClosed = new EmbedBuilder()
                                                     .setColor('#f5f5f5')
                                                     .setTimestamp()
@@ -824,18 +816,18 @@ module.exports.run = (client, interaction) => {
                                                       { name: 'Claimed By', value: `<@${data.ClaimUserID}>`, inline: true },
                                                       { name: 'Priority', value: `${data.Priority}`, inline: true }
                                                     ])
-    
-    
+
+
                                                   const DMTicketClaimClosed = new EmbedBuilder()
                                                     .setColor('#f5f5f5')
                                                     .setTimestamp()
                                                     .setTitle(`Ticket`)
                                                     .setDescription(`You have closed the following ticket-${data.ChannelID} for the following user <@${data.id}>.`)
-    
-    
+
+
                                                   const ticketttcreator = client.users.cache.get(data.id)
                                                   ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
-    
+
                                                   const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
                                                   ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
                                                   setTimeout(() => {
@@ -846,10 +838,10 @@ module.exports.run = (client, interaction) => {
                                                       }
                                                     })
                                                   }, 5000);
-    
-    
+
+
                                                 }
-    
+
                                                 MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err30, data30) => {
                                                   if (err30) throw err30;
                                                   if (data30) {
@@ -858,33 +850,33 @@ module.exports.run = (client, interaction) => {
                                                   }
                                                 })
                                                 interaction.channel.delete()
-    
+
                                                 const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == ChannelType.GuildText)
                                                 const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == ChannelType.GuildText)
-    
+
                                                 const UserName = client.users.cache.find(user => user.id === data.id)
                                                 console.log(UserName)
-    
+
                                                 SupportLogs.send({ embeds: [Logs] })
-    
+
                                                 const CloseEmbed = new EmbedBuilder()
                                                   .setTitle('Transcript')
                                                   .setDescription(`Transcript for the user ${data.id}`)
                                                 TranscriptLogs.send({ embeds: [CloseEmbed] })
-    
-    
+
+
                                                 const discordTranscripts = require('discord-html-transcripts');
-    
+
                                                 const channelsss = interaction.channel;
                                                 const attachment = await discordTranscripts.createTranscript(channelsss, {
                                                   limit: -1, // Max amount of messages to fetch.
                                                   returnBuffer: false, // Return a buffer instead of a MessageAttachment 
                                                   fileName: `${generators}.html` // Only valid with returnBuffer false. Name of attachment. 
                                                 });
-    
+
                                                 TranscriptLogs.send({ files: [attachment] })
                                               })
-    
+
                                             }, 5000);
                                           }).catch(() => {
                                             m.edit({ embeds: [notclosed] })
@@ -892,24 +884,24 @@ module.exports.run = (client, interaction) => {
                                         }).catch(() => {
                                           m.edit({ embeds: [notclosed] })
                                         })
-    
+
                                     }
                                   }
-    
-    
-    
-    
-    
+
+
+
+
+
                                 } else {
                                   if (!message.member.roles.cache.some(r => r.id === `${data01.SupportRoleID}`)) {
                                     const NoPerms = new EmbedBuilder()
                                       .setTitle('Error')
                                       .setDescription('The command you tried to run is only allowed to be used on Ticket staff members only')
-    
+
                                     return interaction.reply({ embeds: [NoPerms] })
                                   }
-    
-    
+
+
                                   if (!interaction.channel.name.startsWith("ticket-")) return interaction.reply("This is not a valid ticket")
                                   if (!interaction.member.permissions.has("MANAGE_CHANNELS")) return interaction.reply("You need MANAGE_CHANNELS permission to use this command")
                                   interaction.reply({ embeds: [ticketembed2] }).then((m) => {
@@ -925,7 +917,7 @@ module.exports.run = (client, interaction) => {
                                         ClaimTicket.findOne({ ChannelID: interaction.channel.id }, async (err, data) => {
                                           if (err) throw err;
                                           if (data) {
-    
+
                                             const DMTicketCreatorClosed = new EmbedBuilder()
                                               .setColor('#f5f5f5')
                                               .setTimestamp()
@@ -942,17 +934,17 @@ module.exports.run = (client, interaction) => {
                                                 { name: 'Claimed By', value: `<@${data.ClaimUserID}>`, inline: true },
                                                 { name: 'Priority', value: `${data.Priority}`, inline: true }
                                               ])
-    
+
                                             const DMTicketClaimClosed = new EmbedBuilder()
                                               .setColor('#f5f5f5')
                                               .setTimestamp()
                                               .setTitle(`Ticket`)
                                               .setDescription(`You have closed the following ticket ${data.ChannelID} for the following user <@${data.id}>.`)
-    
-    
+
+
                                             const ticketttcreator = client.users.cache.get(data.id)
                                             ticketttcreator.send({ embeds: [DMTicketCreatorClosed] })
-    
+
                                             const ticketttClaimer = client.users.cache.get(`${data.ClaimUserID}`)
                                             ticketttClaimer.send({ embeds: [DMTicketClaimClosed] })
                                             setTimeout(() => {
@@ -963,10 +955,10 @@ module.exports.run = (client, interaction) => {
                                                 }
                                               })
                                             }, 5000);
-    
-    
+
+
                                           }
-    
+
                                           MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err300, data300) => {
                                             if (err300) throw err300;
                                             if (data300) {
@@ -975,18 +967,18 @@ module.exports.run = (client, interaction) => {
                                             }
                                           })
                                           interaction.channel.delete()
-    
+
                                           const SupportLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "ticket-logs" && ch.type == "text")
                                           const TranscriptLogs = interaction.guild.channels.cache.find(ch => ch.name.toLowerCase() == "transcript" && ch.type == "text")
-    
+
                                           const UserName = client.users.cache.find(user => user.id === data.id)
                                           console.log(UserName)
-    
+
                                           SupportLogs.send({ embeds: [Logs2] })
-    
-    
+
+
                                         })
-    
+
                                       }, 5000);
                                     }).catch(() => {
                                       interaction.channel.send({ embeds: [notclosed2] })
@@ -995,27 +987,27 @@ module.exports.run = (client, interaction) => {
                                     interaction.channel.send({ embeds: [notclosed2] })
                                   })
                                 }
-    
+
                               }
                             }
                           })
-    
+
                         } else {
                           const NoData = new EmbedBuilder()
                             .setTitle('Not updated')
                             .setDescription(`The server is not updated with the latest version of the bot. This server is currently running version **v2.0** and the latest update is **v2.1** Please get the owner to run ${client.prefix}update`)
-    
+
                           interaction.reply({ embeds: [NoData] })
                         }
                       })
-    
+
                     }
                   }
                 } else {
                   interaction.reply('This is not a vaild ticket.')
                 }
               })
-    
+
             }
           }
         }
@@ -1025,7 +1017,7 @@ module.exports.run = (client, interaction) => {
 
   }
 
-  if (premiumstring === 'voice') {
+  if (interaction.options.getSubcommand() === 'voice') {
     ClaimTicket.findOne({ TicketIDs: idstring }, async (err, data) => {
       if (err) throw err;
       if (data) {

@@ -14,26 +14,22 @@ const paginationEmbed = require('discordjs-v14-pagination');
 module.exports.data = new SlashCommandBuilder()
   .setName('settings')
   .setDescription('Settings Command')
-  .addStringOption(option =>
-    option.setName('category')
-      .setDescription('The main category')
-      .setRequired(true)
-      .addChoices({
-        name: 'Edit',
-        value: 'edit'
-      })
-      .addChoices({
-        name: 'View',
-        value: 'view'
-      })
-      .addChoices({
-        name: 'Auto Insert',
-        value: 'auto'
-      })
-      .addChoices({
-        name: 'Second Server',
-        value: 'second'
-      }));
+  .addSubcommand(subcommand =>
+    subcommand
+    .setName('edit')
+    .setDescription('Edit your guild settings'))
+  .addSubcommand(subcommand =>
+    subcommand
+    .setName('view')
+    .setDescription('View your guild settings'))
+  .addSubcommand(subcommand =>
+    subcommand
+    .setName('auto')
+    .setDescription('Auto insert your settings (Mainly only used on new guilds)'))
+  .addSubcommand(subcommand => 
+    subcommand
+    .setName('second')
+    .setDescription('Setup second guild'))
 
 
 module.exports.run = async (client, interaction) => {
@@ -44,9 +40,8 @@ module.exports.run = async (client, interaction) => {
 
   
 
-  const teststring = interaction.options.getString('category');
 
-  if (teststring === 'view') {
+  if (interaction.options.getSubcommand() === 'view') {
 
 
     MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
@@ -161,7 +156,7 @@ module.exports.run = async (client, interaction) => {
     })
   }
 
-  if (teststring === 'edit') {
+  if (interaction.options.getSubcommand() === 'edit') {
     if (interaction.user.id != interaction.guild.ownerId)
       return interaction.reply({ embeds: [ServerOwner] });
 
@@ -1047,7 +1042,7 @@ module.exports.run = async (client, interaction) => {
 
   }
 
-  if (teststring === 'auto') {
+  if (interaction.options.getSubcommand() === 'auto') {
     if (interaction.user.id != interaction.guild.ownerId)
       return interaction.reply({ embeds: [ServerOwner] });
     MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
@@ -1101,7 +1096,7 @@ module.exports.run = async (client, interaction) => {
     )
   }
 
-  if (teststring === 'second') {
+  if (interaction.options.getSubcommand() === 'second') {
     if (interaction.user.id != interaction.guild.ownerId)
       return interaction.reply({ embeds: [ServerOwner] });
     MainDatabase.findOne({ ServerID: interaction.guild.id }, async (err, data) => {
