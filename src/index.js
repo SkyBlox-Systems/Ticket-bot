@@ -20,12 +20,14 @@ const sellix = require("@sellix/node-sdk")(config.StoreCode);
 const fs = require('fs')
 const { sendMail } = require('send-email-api')
 const GiveawayDatabase = require('./schemas/christmas-giveaway')
+const axios = require('axios');
 
 
-const Poster = new Stats.Client(client, {
-  stats_uri: 'https://devbot.ticketbots.co.uk',
-  authorizationkey: "testing",
-})
+
+// const Poster = new Stats.Client(client, {
+//   stats_uri: 'https://devbot.ticketbots.co.uk',
+//   authorizationkey: "testing",
+// })
 
 
 
@@ -95,7 +97,7 @@ client.on('guildDelete', guild => {
       if (data1.CustomBots === '1') {
         // Do nothing
       }
-      if (data1.CustomBots === '0'){
+      if (data1.CustomBots === '0') {
         MainDatabase.findOneAndDelete({ ServerID: guild.id }, async (err01, data01) => {
           if (err01) throw err01;
           if (data01) {
@@ -212,46 +214,54 @@ client.on('interactionCreate', interaction => {
                 } else {
                   // New Pro System
                   if (versionCheck.PaidGuild === 'Yes') {
-                    if (versionCheck.PremiumCode === 'Old System') {
-                      commandMethod(client, interaction)
-                    } else {
-                      if (versionCheck.PremiumExpire < timestamp.now()) {
-                        console.log('1')
-                        const hardwarePayload = {
-                          key: versionCheck.PremiumCode,
-                          product_id: config.product_ids,
-                        };
-                        const toTimestamp = (strDate) => {
-                          const dt = new Date(strDate).getTime();
-                          return dt / 1000;
-                        }
-                        const hardware = await sellix.products.licensing.check(hardwarePayload);
-
-                        const PremiumExpireCode = (toTimestamp(hardware.expires_at))
-                        if (versionCheck.PremiumExpire !== PremiumExpireCode) {
-                          MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PremiumExpire: toTimestamp(hardware.expires_at) }, async (err200, data200) => {
-                            if (err200) throw err;
-                            if (data200) {
-                              data200.save()
-                              interaction.reply('This guild premium has been renewed!')
-                            }
-                          })
-                        } else {
-                          interaction.channel.send('This guild has not renewed their premium subscription. Premium has now been removed from the guild')
-                          MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PremiumExpire: '0', PaidGuild: 'No', Tier: 'Free' }, async (err200, data200) => {
-                            if (err200) throw err;
-                            if (data200) {
-                              data200.save()
-                            }
-                          })
-                        }
-
-                      } else {
-                        if (timestamp.now() <= versionCheck.PremiumExpire) {
-                          commandMethod(client, interaction)
-                        }
+                    let config = {
+                      method: 'get',
+                      maxBodyLength: Infinity,
+                      url: 'https://discord.com/api/v10/applications/799231222303293461/entitlements',
+                      headers: {
+                        'Authorization': 'Bot Nzk5MjMxMjIyMzAzMjkzNDYx.GhGP2Z.g5SQL1Y5K2LCQxdmStCvUOMsg2swG0kvE_d3nA',
+                        'Cookie': '__cfruid=b38b869f2c3ab286225cf6b1d295d1e743902b36-1707385624; __dcfduid=03c368bcc66711eea872b635cedfef12; __sdcfduid=03c368bcc66711eea872b635cedfef120ae4ce1aa387d6e356eb8dfa23be6a0dba82319aee9107197c9c34b1cc4f7332; _cfuvid=NrOvjstiwNDYx44coJwkCSbtpSR6ftTeXfzJnyG10Zw-1707385624261-0-604800000'
                       }
-                    }
+                    };
+
+                    axios.request(config)
+                      .then((response) => {
+                        response.data.forEach(async data => {
+                          let guildId = data.guild_id;
+
+                          if (guildId === interaction.guild.id) {
+                            if (versionCheck.PaidGuild === 'Yes') {
+                              commandMethod(client, interaction)
+                            }
+                          }
+
+                          if (guildId !== interaction.guild.id) {
+                            if (versionCheck.PaidGuild === 'Yes') {
+                              if (versionCheck.PremiumCode === 'Old') {
+                                MainDatabase.findOneAndUpdate({ serverID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: 'Old', PremiumExpire: 'Never' }, async (err4, data4) => {
+                                  if (err4) throw err;
+                                  if (data4) {
+                                    data4.save()
+                                    commandMethod(client, interaction)
+                                  }
+                                })
+                              } else {
+                                MainDatabase.findOneAndUpdate({ serverID: interaction.guild.id }, { PaidGuild: 'No', Tier: 'Free', PremiumCode: 'N/A', PremiumExpire: 'N/A' }, async (err4, data4) => {
+                                  if (err4) throw err;
+                                  if (data4) {
+                                    data4.save()
+                                    commandMethod(client, interaction)
+                                  }
+                                })
+                              }
+                            }
+                          }
+                        })
+                      })
+                      .catch((error) => {
+                        console.log(error);
+                      });
+
                   } else {
                     if (check) {
                       const DisabledCommand = new EmbedBuilder()
@@ -260,8 +270,47 @@ client.on('interactionCreate', interaction => {
                         .setColor('#f6f7f8')
                       if (check.Cmds.includes(interaction.commandName)) return interaction.reply({ embeds: [DisabledCommand] })
                       if (versionCheck.Important === 'Enabled') {
-                        commandMethod(client, interaction)
-                        // commandMethod(client, interaction)
+
+                        let config = {
+                          method: 'get',
+                          maxBodyLength: Infinity,
+                          url: 'https://discord.com/api/v10/applications/799231222303293461/entitlements',
+                          headers: {
+                            'Authorization': 'Bot Nzk5MjMxMjIyMzAzMjkzNDYx.GhGP2Z.g5SQL1Y5K2LCQxdmStCvUOMsg2swG0kvE_d3nA',
+                            'Cookie': '__cfruid=b38b869f2c3ab286225cf6b1d295d1e743902b36-1707385624; __dcfduid=03c368bcc66711eea872b635cedfef12; __sdcfduid=03c368bcc66711eea872b635cedfef120ae4ce1aa387d6e356eb8dfa23be6a0dba82319aee9107197c9c34b1cc4f7332; _cfuvid=NrOvjstiwNDYx44coJwkCSbtpSR6ftTeXfzJnyG10Zw-1707385624261-0-604800000'
+                          }
+                        };
+    
+                        axios.request(config)
+                          .then((response) => {
+                            response.data.forEach(async data => {
+                              let guildId = data.guild_id;
+    
+                              if (guildId === interaction.guild.id) {
+                                if (versionCheck.PaidGuild === 'No') {
+                                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: data.subscription_id, PremiumExpire: data.ends_at }, async (err4, data4) => {
+                                    if (err4) throw err;
+                                    if (data4) {
+                                      data5.save()
+                                      commandMethod(client, interaction)
+                                    }
+                                  })
+                                }
+                              } else {
+                                commandMethod(client, interaction)
+                              }
+    
+                            })
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          });
+
+                          
+
+
+
+
                         // const ImportantAnnouncement = new EmbedBuilder()
                         //   .setTitle('Imporant announcement from bot owner')
                         //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
@@ -272,24 +321,45 @@ client.on('interactionCreate', interaction => {
                         //   commandMethod(client, interaction)
                         // }, 2000);
                       } else {
-                        commandMethod(client, interaction)
+
+                        let config = {
+                          method: 'get',
+                          maxBodyLength: Infinity,
+                          url: 'https://discord.com/api/v10/applications/799231222303293461/entitlements',
+                          headers: {
+                            'Authorization': 'Bot Nzk5MjMxMjIyMzAzMjkzNDYx.GhGP2Z.g5SQL1Y5K2LCQxdmStCvUOMsg2swG0kvE_d3nA',
+                            'Cookie': '__cfruid=b38b869f2c3ab286225cf6b1d295d1e743902b36-1707385624; __dcfduid=03c368bcc66711eea872b635cedfef12; __sdcfduid=03c368bcc66711eea872b635cedfef120ae4ce1aa387d6e356eb8dfa23be6a0dba82319aee9107197c9c34b1cc4f7332; _cfuvid=NrOvjstiwNDYx44coJwkCSbtpSR6ftTeXfzJnyG10Zw-1707385624261-0-604800000'
+                          }
+                        };
+    
+                        axios.request(config)
+                          .then((response) => {
+                            response.data.forEach(async data => {
+                              let guildId = data.guild_id;
+    
+                              if (guildId === interaction.guild.id) {
+                                if (versionCheck.PaidGuild === 'No') {
+                                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: data.subscription_id, PremiumExpire: data.ends_at }, async (err4, data4) => {
+                                    if (err4) throw err;
+                                    if (data4) {
+                                      data5.save()
+                                      commandMethod(client, interaction)
+                                    }
+                                  })
+                                }
+                              } else {
+                                commandMethod(client, interaction)
+                              }
+    
+                            })
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          });
+
+
                       }
                     } else {
-                      if (versionCheck.Important === 'Enabled') {
-                        commandMethod(client, interaction)
-                        //  commandMethod(client, interaction)
-                        // const ImportantAnnouncement = new EmbedBuilder()
-                        //   .setTitle('Imporant announcement from bot owner')
-                        //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
-                        //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
-
-                        // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
-                        // setTimeout(() => {
-                        //   commandMethod(client, interaction)
-                        // }, 2000);
-                      } else {
-                        commandMethod(client, interaction)
-                      }
                     }
                   }
 
