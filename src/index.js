@@ -21,6 +21,7 @@ const fs = require('fs')
 const { sendMail } = require('send-email-api')
 const GiveawayDatabase = require('./schemas/christmas-giveaway')
 const axios = require('axios');
+const db = require('./schemas/commands')
 
 
 
@@ -31,7 +32,6 @@ const axios = require('axios');
 
 
 
-const db = require('./schemas/commands')
 const MainDatabase = require('./schemas/TicketData')
 const blacklist = require('./schemas/Blacklist-schema');
 const ClaimTicket = require('./schemas/ticketclaim');
@@ -91,7 +91,7 @@ client.on('guildCreate', guild => {
 
 
 client.on('guildDelete', guild => {
-  MainDatabase.findone({ ServerID: guild.id }, async (err1, data1) => {
+  MainDatabase.findOne({ ServerID: guild.id }, async (err1, data1) => {
     if (err1) throw err;
     if (data1) {
       if (data1.CustomBots === '1') {
@@ -280,12 +280,12 @@ client.on('interactionCreate', interaction => {
                             'Cookie': '__cfruid=b38b869f2c3ab286225cf6b1d295d1e743902b36-1707385624; __dcfduid=03c368bcc66711eea872b635cedfef12; __sdcfduid=03c368bcc66711eea872b635cedfef120ae4ce1aa387d6e356eb8dfa23be6a0dba82319aee9107197c9c34b1cc4f7332; _cfuvid=NrOvjstiwNDYx44coJwkCSbtpSR6ftTeXfzJnyG10Zw-1707385624261-0-604800000'
                           }
                         };
-    
+
                         axios.request(config)
                           .then((response) => {
                             response.data.forEach(async data => {
                               let guildId = data.guild_id;
-    
+
                               if (guildId === interaction.guild.id) {
                                 if (versionCheck.PaidGuild === 'No') {
                                   MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: data.subscription_id, PremiumExpire: data.ends_at }, async (err4, data4) => {
@@ -299,27 +299,12 @@ client.on('interactionCreate', interaction => {
                               } else {
                                 commandMethod(client, interaction)
                               }
-    
+
                             })
                           })
                           .catch((error) => {
                             console.log(error);
                           });
-
-                          
-
-
-
-
-                        // const ImportantAnnouncement = new EmbedBuilder()
-                        //   .setTitle('Imporant announcement from bot owner')
-                        //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
-                        //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
-
-                        // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
-                        // setTimeout(() => {
-                        //   commandMethod(client, interaction)
-                        // }, 2000);
                       } else {
 
                         let config = {
@@ -331,12 +316,12 @@ client.on('interactionCreate', interaction => {
                             'Cookie': '__cfruid=b38b869f2c3ab286225cf6b1d295d1e743902b36-1707385624; __dcfduid=03c368bcc66711eea872b635cedfef12; __sdcfduid=03c368bcc66711eea872b635cedfef120ae4ce1aa387d6e356eb8dfa23be6a0dba82319aee9107197c9c34b1cc4f7332; _cfuvid=NrOvjstiwNDYx44coJwkCSbtpSR6ftTeXfzJnyG10Zw-1707385624261-0-604800000'
                           }
                         };
-    
+
                         axios.request(config)
                           .then((response) => {
                             response.data.forEach(async data => {
                               let guildId = data.guild_id;
-    
+
                               if (guildId === interaction.guild.id) {
                                 if (versionCheck.PaidGuild === 'No') {
                                   MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: data.subscription_id, PremiumExpire: data.ends_at }, async (err4, data4) => {
@@ -350,7 +335,7 @@ client.on('interactionCreate', interaction => {
                               } else {
                                 commandMethod(client, interaction)
                               }
-    
+
                             })
                           })
                           .catch((error) => {
@@ -360,6 +345,81 @@ client.on('interactionCreate', interaction => {
 
                       }
                     } else {
+                      if (versionCheck.Important === 'Enabled') {
+
+                        let config = {
+                          method: 'get',
+                          maxBodyLength: Infinity,
+                          url: 'https://discord.com/api/v10/applications/799231222303293461/entitlements',
+                          headers: {
+                            'Authorization': 'Bot Nzk5MjMxMjIyMzAzMjkzNDYx.GhGP2Z.g5SQL1Y5K2LCQxdmStCvUOMsg2swG0kvE_d3nA',
+                            'Cookie': '__cfruid=b38b869f2c3ab286225cf6b1d295d1e743902b36-1707385624; __dcfduid=03c368bcc66711eea872b635cedfef12; __sdcfduid=03c368bcc66711eea872b635cedfef120ae4ce1aa387d6e356eb8dfa23be6a0dba82319aee9107197c9c34b1cc4f7332; _cfuvid=NrOvjstiwNDYx44coJwkCSbtpSR6ftTeXfzJnyG10Zw-1707385624261-0-604800000'
+                          }
+                        };
+
+                        axios.request(config)
+                          .then((response) => {
+                            response.data.forEach(async data => {
+                              let guildId = data.guild_id;
+
+                              if (guildId === interaction.guild.id) {
+                                if (versionCheck.PaidGuild === 'No') {
+                                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: data.subscription_id, PremiumExpire: data.ends_at }, async (err4, data4) => {
+                                    if (err4) throw err;
+                                    if (data4) {
+                                      data5.save()
+                                      commandMethod(client, interaction)
+                                    }
+                                  })
+                                }
+                              } else {
+                                commandMethod(client, interaction)
+                              }
+
+                            })
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          });
+                      } else {
+
+                        let config = {
+                          method: 'get',
+                          maxBodyLength: Infinity,
+                          url: 'https://discord.com/api/v10/applications/799231222303293461/entitlements',
+                          headers: {
+                            'Authorization': 'Bot Nzk5MjMxMjIyMzAzMjkzNDYx.GhGP2Z.g5SQL1Y5K2LCQxdmStCvUOMsg2swG0kvE_d3nA',
+                            'Cookie': '__cfruid=b38b869f2c3ab286225cf6b1d295d1e743902b36-1707385624; __dcfduid=03c368bcc66711eea872b635cedfef12; __sdcfduid=03c368bcc66711eea872b635cedfef120ae4ce1aa387d6e356eb8dfa23be6a0dba82319aee9107197c9c34b1cc4f7332; _cfuvid=NrOvjstiwNDYx44coJwkCSbtpSR6ftTeXfzJnyG10Zw-1707385624261-0-604800000'
+                          }
+                        };
+
+                        axios.request(config)
+                          .then((response) => {
+                            response.data.forEach(async data => {
+                              let guildId = data.guild_id;
+
+                              if (guildId === interaction.guild.id) {
+                                if (versionCheck.PaidGuild === 'No') {
+                                  MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PaidGuild: 'Yes', Tier: 'Premium', PremiumCode: data.subscription_id, PremiumExpire: data.ends_at }, async (err4, data4) => {
+                                    if (err4) throw err;
+                                    if (data4) {
+                                      data5.save()
+                                      commandMethod(client, interaction)
+                                    }
+                                  })
+                                }
+                              } else {
+                                commandMethod(client, interaction)
+                              }
+
+                            })
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          });
+
+
+                      }
                     }
                   }
 
