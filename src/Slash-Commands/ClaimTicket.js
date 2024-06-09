@@ -2,7 +2,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
 const ClaimTicket = require('../schemas/ticketclaim');
 const { findOneAndUpdate } = require('../schemas/ticketclaim');
-const { EmbedBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
+const { StringSelectMenuBuilder, ChannelType,  ComponentType, PermissionsBitField } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const MainDatabase = require('../schemas/TicketData');
 const timestamp = require('unix-timestamp');
@@ -97,8 +98,12 @@ module.exports.run = (client, interaction) => {
                                 MainChan.permissionOverwrites.set([
                                     {
                                         id: interaction.user.id,
-                                        allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
-                                    }
+                                        allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
+                                    },
+                                    {
+                                        id: interaction.guild.roles.everyone,
+                                        deny: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+                                      },
                                 ])
 
 
@@ -177,8 +182,12 @@ module.exports.run = (client, interaction) => {
                                         MainChan.permissionOverwrites.set([
                                             {
                                                 id: interaction.user.id,
-                                                allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
-                                            }
+                                                allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
+                                            },
+                                            {
+                                                id: interaction.guild.roles.everyone,
+                                                deny: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+                                              },
                                         ])
 
 
@@ -247,8 +256,12 @@ module.exports.run = (client, interaction) => {
                                                 MainChan.permissionOverwrites.set([
                                                     {
                                                         id: interaction.user.id,
-                                                        allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
-                                                    }
+                                                        allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
+                                                    },
+                                                    {
+                                                        id: interaction.guild.roles.everyone,
+                                                        deny: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+                                                      },
                                                 ])
                                             }
 
@@ -270,7 +283,7 @@ module.exports.run = (client, interaction) => {
                                                 MainChan.permissionOverwrites.set([
                                                     {
                                                         id: interaction.user.id,
-                                                        allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                                        allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
                                                     }
                                                 ])
 

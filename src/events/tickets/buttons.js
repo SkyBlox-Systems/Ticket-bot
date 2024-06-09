@@ -3,8 +3,8 @@ const Discord = require('discord.js');
 const { BotVersions } = require('../../../slappey.json')
 const MainDatabase = require('../../schemas/TicketData');
 const ClaimTicket = require('../../schemas/ticketclaim');
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, PermissionFlagsBits, ButtonStyle, ChannelType } = require('discord.js');
-const { Permissions } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
+const { StringSelectMenuBuilder, ChannelType,  ComponentType, PermissionsBitField } = require('discord.js');const { Permissions } = require('discord.js');
 const { MessageCollector, Collector } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const fs = require('fs').promises;
@@ -550,22 +550,22 @@ module.exports = class ReadyEvent extends BaseEvent {
                       interaction.channel.permissionOverwrites.set([
                         {
                           id: interaction.guild.roles.cache.find(roles => roles.id === `${data.ManagerRoleID}`),
-                          allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles],
-                          deny: [PermissionFlagsBits.ManageChannels]
+                          allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles],
+                          deny: [PermissionsBitField.Flags.ManageChannels]
                         }
                       ])
                       interaction.channel.permissionOverwrites.set([
                         {
                           id: ClaimUser,
-                          allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                          allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
                         }
                       ])
 
                       interaction.channel.permissionOverwrites.set([
                         {
                           id: UserID,
-                          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageChannels],
-                          deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.AttachFiles]
+                          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels],
+                          deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AttachFiles]
                         }
                       ])
                       const NoLocked = new EmbedBuilder()
@@ -613,22 +613,22 @@ module.exports = class ReadyEvent extends BaseEvent {
                       interaction.channel.permissionOverwrites.set([
                         {
                           id: interaction.guild.roles.cache.find(roles => roles.id === `${data.ManagerRoleID}`),
-                          allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles],
-                          deny: [PermissionFlagsBits.ManageChannels]
+                          allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles],
+                          deny: [PermissionsBitField.Flags.ManageChannels]
                         }
                       ])
                       interaction.channel.permissionOverwrites.set([
                         {
                           id: ClaimUser,
-                          allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                          allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
                         }
                       ])
 
                       interaction.channel.permissionOverwrites.set([
                         {
                           id: UserID,
-                          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageChannels],
-                          deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.AttachFiles]
+                          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels],
+                          deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AttachFiles]
                         }
                       ])
                       const NoLocked = new EmbedBuilder()
@@ -761,7 +761,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                           chan.permissionOverwrites.set([
                             {
                               id: newguild.roles.everyone,
-                              deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                              deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]
                             }
                           ])
                           const open = new EmbedBuilder()
@@ -869,14 +869,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                               chan.permissionOverwrites.set([
                                 {
                                   id: interaction.guild.roles.everyone,
-                                  deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                                  deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]
                                 }
                               ])
 
                               chan.permissionOverwrites.set([
                                 {
                                   id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
-                                  allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.AttachFiles]
+                                  allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.AttachFiles]
                                 }
                               ])
 
@@ -1071,20 +1071,20 @@ module.exports = class ReadyEvent extends BaseEvent {
                                         chan.permissionOverwrites.set([
                                           {
                                             id: interaction.guild.roles.everyone,
-                                            deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                                            deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]
                                           }
                                         ])
                                         chan.permissionOverwrites.set([
                                           {
                                             id: user,
-                                            allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                            allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
                                           }
                                         ])
 
                                         chan.permissionOverwrites.set([
                                           {
                                             id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
-                                            allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                            allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
                                           }
                                         ])
 
@@ -1265,14 +1265,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                                         chan.permissionOverwrites.set([
                                           {
                                             id: interaction.guild.roles.everyone,
-                                            deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]
+                                            deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]
                                           }
                                         ])
 
                                         chan.permissionOverwrites.set([
                                           {
                                             id: user,
-                                            allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                            allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
                                           }
                                         ])
 
@@ -1280,7 +1280,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                                         chan.permissionOverwrites.set([
                                           {
                                             id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
-                                            allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                            allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
                                           }
                                         ])
 
@@ -1466,14 +1466,14 @@ module.exports = class ReadyEvent extends BaseEvent {
                                     chan.permissionOverwrites.set([
                                       {
                                         id: user,
-                                        allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                        allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
                                       }
                                     ])
 
                                     chan.permissionOverwrites.set([
                                       {
                                         id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
-                                        allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.ManageChannels]
+                                        allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
                                       }
                                     ])
 
