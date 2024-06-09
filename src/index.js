@@ -20,16 +20,18 @@ const sellix = require("@sellix/node-sdk")(config.StoreCode);
 const fs = require('fs')
 const { sendMail } = require('send-email-api')
 const GiveawayDatabase = require('./schemas/christmas-giveaway')
-
-
-const Poster = new Stats.Client(client, {
-  stats_uri: 'https://devbot.ticketbots.co.uk',
-  authorizationkey: "testing",
-})
-
-
-
+const axios = require('axios');
 const db = require('./schemas/commands')
+
+
+
+// const Poster = new Stats.Client(client, {
+//   stats_uri: 'https://devbot.ticketbots.co.uk',
+//   authorizationkey: "testing",
+// })
+
+
+
 const MainDatabase = require('./schemas/TicketData')
 const blacklist = require('./schemas/Blacklist-schema');
 const ClaimTicket = require('./schemas/ticketclaim');
@@ -89,13 +91,13 @@ client.on('guildCreate', guild => {
 
 
 client.on('guildDelete', guild => {
-  MainDatabase.findone({ ServerID: guild.id }, async (err1, data1) => {
+  MainDatabase.findOne({ ServerID: guild.id }, async (err1, data1) => {
     if (err1) throw err;
     if (data1) {
       if (data1.CustomBots === '1') {
         // Do nothing
       }
-      if (data1.CustomBots === '0'){
+      if (data1.CustomBots === '0') {
         MainDatabase.findOneAndDelete({ ServerID: guild.id }, async (err01, data01) => {
           if (err01) throw err01;
           if (data01) {
@@ -210,88 +212,7 @@ client.on('interactionCreate', interaction => {
 
                   // New Update system
                 } else {
-                  // New Pro System
-                  if (versionCheck.PaidGuild === 'Yes') {
-                    if (versionCheck.PremiumCode === 'Old System') {
-                      commandMethod(client, interaction)
-                    } else {
-                      if (versionCheck.PremiumExpire < timestamp.now()) {
-                        console.log('1')
-                        const hardwarePayload = {
-                          key: versionCheck.PremiumCode,
-                          product_id: config.product_ids,
-                        };
-                        const toTimestamp = (strDate) => {
-                          const dt = new Date(strDate).getTime();
-                          return dt / 1000;
-                        }
-                        const hardware = await sellix.products.licensing.check(hardwarePayload);
-
-                        const PremiumExpireCode = (toTimestamp(hardware.expires_at))
-                        if (versionCheck.PremiumExpire !== PremiumExpireCode) {
-                          MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PremiumExpire: toTimestamp(hardware.expires_at) }, async (err200, data200) => {
-                            if (err200) throw err;
-                            if (data200) {
-                              data200.save()
-                              interaction.reply('This guild premium has been renewed!')
-                            }
-                          })
-                        } else {
-                          interaction.channel.send('This guild has not renewed their premium subscription. Premium has now been removed from the guild')
-                          MainDatabase.findOneAndUpdate({ ServerID: interaction.guild.id }, { PremiumExpire: '0', PaidGuild: 'No', Tier: 'Free' }, async (err200, data200) => {
-                            if (err200) throw err;
-                            if (data200) {
-                              data200.save()
-                            }
-                          })
-                        }
-
-                      } else {
-                        if (timestamp.now() <= versionCheck.PremiumExpire) {
-                          commandMethod(client, interaction)
-                        }
-                      }
-                    }
-                  } else {
-                    if (check) {
-                      const DisabledCommand = new EmbedBuilder()
-                        .setTitle('Disabled')
-                        .setDescription(`The following command **/${interaction.commandName}** has been disabled in the server by an administrator`)
-                        .setColor('#f6f7f8')
-                      if (check.Cmds.includes(interaction.commandName)) return interaction.reply({ embeds: [DisabledCommand] })
-                      if (versionCheck.Important === 'Enabled') {
-                        commandMethod(client, interaction)
-                        // commandMethod(client, interaction)
-                        // const ImportantAnnouncement = new EmbedBuilder()
-                        //   .setTitle('Imporant announcement from bot owner')
-                        //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
-                        //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
-
-                        // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
-                        // setTimeout(() => {
-                        //   commandMethod(client, interaction)
-                        // }, 2000);
-                      } else {
-                        commandMethod(client, interaction)
-                      }
-                    } else {
-                      if (versionCheck.Important === 'Enabled') {
-                        commandMethod(client, interaction)
-                        //  commandMethod(client, interaction)
-                        // const ImportantAnnouncement = new EmbedBuilder()
-                        //   .setTitle('Imporant announcement from bot owner')
-                        //   .setDescription('As you might of heard about what has happen on the 8th September. As a team, we have made a decision to disable all bots commands on the 18th of September all day. If you want to know why we are doing this, please click the link below. **COMMAND WILL BE SENT 2 SECONDS AFTER THIS MESSAGE! AND THIS MESSAGE WILL STAY UNTIL 18TH SEPTEMBER**')
-                        //   .addField('Link', '[Link](https://link.skybloxsystems.com/news1)')
-
-                        // await interaction.channel.send({ embeds: [ImportantAnnouncement], ephemeral: true })
-                        // setTimeout(() => {
-                        //   commandMethod(client, interaction)
-                        // }, 2000);
-                      } else {
-                        commandMethod(client, interaction)
-                      }
-                    }
-                  }
+                  commandMethod(client, interaction)
 
                 }
               }

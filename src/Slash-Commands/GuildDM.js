@@ -30,7 +30,7 @@ module.exports.run = (client, interaction) => {
             .setColor('RANDOM')
             .setTimestamp()
             .setTitle('Help')
-            .setDescription('You cannot use the following the command: `!servers`. The command is only available for the owner.')
+            .setDescription('You cannot use the following the command: `/guilddm`. The command is only available for the owner.')
         return interaction.reply(NotOwner)
     }
     interaction.reply('Server')

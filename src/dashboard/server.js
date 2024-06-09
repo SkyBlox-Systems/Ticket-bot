@@ -7,22 +7,22 @@ const StatsServer = new Stats.Server(app, {
   selfHost: false, // set it to true, to "self-host" the stats websites via your APP, by doing StatsServer.getStatsData(); | Data is sent via: "POST /stats" - that endpoint will be automatically assigned by the Server, if your app is a valid APP Server
   bannedUsers: [],
   bot: {
-      name: "Ticket Bot Dev",
+      name: "Ticket Bot Shard",
       icon: "https://i.ibb.co/rdkx8KZ/Ticket-Bot-Logo-With-Name.png",
       website: "https://ticketbots.co.uk",
       client_id: config.clientID,
       client_secret: config.ClientSecret
   },
-  stats_uri: "https://devbot.ticketbots.co.uk", //Base URL. Can be IP:PORT or Domains behind a proxy or just a Domain.
-  redirect_uri: "https://devbot.ticketbots.co.uk/login", //Landing Page
+  stats_uri: "https://shard1.ticketbots.co.uk", //Base URL. Can be IP:PORT or Domains behind a proxy or just a Domain.
+  redirect_uri: "https://shard1.ticketbots.co.uk/login", //Landing Page
   owners: ["406164395643633665"],
-  authorizationkey: "testing",
+  authorizationkey: "TicketBot",
 });
 
 
 StatsServer.on('error', console.log)
 
-app.listen(1002, () => {
+app.listen(1001, () => {
   console.log("Application started, listening on port 3000!");
 });
 

@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const Channel  = require('discord.js');
 const Discord = require('discord.js');
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
-var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
+const { StringSelectMenuBuilder, ChannelType,  ComponentType, PermissionsBitField } = require('discord.js');var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const ClaimTicket = require('../schemas/ticketclaim')
 const MainDatabase = require('../schemas/TicketData')
 const timestamp = require('unix-timestamp');
@@ -83,14 +83,14 @@ module.exports.run = (client, interaction) => {
                       chan.permissionOverwrites.set([
                         {
                           id: interaction.guild.roles.everyone,
-                          deny: [PermissionFlagsBits.Connect, PermissionFlagsBits.ViewChannel]
+                          deny: [PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.ViewChannel]
                         }
                       ])
 
                       chan.permissionOverwrites.set([
                         {
                           id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
-                          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.Connect, PermissionFlagsBits.ManageChannels]
+                          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.ManageChannels]
                         }
                       ])
       

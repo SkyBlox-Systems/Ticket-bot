@@ -5,7 +5,7 @@
   "token": "ODA0NjYzMDE2MTI0OTczMDc2.G5N6a7.jShBI33Eob97KIE0C1W7WkFZ7kU5mbQlsSLS1k",
   "prefix": "!",
   "BotOwnerID": "406164395643633665",
-  "BotVersions": "6.2",
+  "BotVersions": "6.3.2",
   "TranslateID": "AIzaSyA7ePbWzCp9PC890-nP5uGU4Kf41r0yYV4",
   "product_ids": "6297d688d34c6",
   "StoreCode": "vqV9atPtS87hpHF0PqhPYDHuNH19rZlElFOrAvf2OHAEoBRMg29Q6wo3oiBe29uQ",
@@ -13,5 +13,6 @@
   "EmailPassword": "hnShHGQhR6",
   "clientID": "804663016124973076",
   "ClientSecret": "NuhmnAT8JVuVyhJ9y36CecvaawaKoVqU",
-  "osTicketAPI": "214308812A1ECB07AC89DB3F3D793D3E"
+  "osTicketAPI": "9F847F7B3C6196963BFD2797B5DE7537"
+
 }
