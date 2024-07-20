@@ -4,7 +4,7 @@ const { BotVersions } = require('../../../slappey.json')
 const MainDatabase = require('../../schemas/TicketData');
 const ClaimTicket = require('../../schemas/ticketclaim');
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
-const { StringSelectMenuBuilder, ChannelType,  ComponentType, PermissionsBitField } = require('discord.js');const { Permissions } = require('discord.js');
+const { StringSelectMenuBuilder, ChannelType, ComponentType, PermissionsBitField } = require('discord.js'); const { Permissions } = require('discord.js');
 const { MessageCollector, Collector } = require('discord.js');
 var currentDateAndTime = new Date().toLocaleString('en-GB', { timeZone: 'UTC' });
 const fs = require('fs').promises;
@@ -547,6 +547,8 @@ module.exports = class ReadyEvent extends BaseEvent {
                     const ClaimUser = data1.ClaimUserID
                     const UserID = data1.id
                     if (data1.Locked === 'No') {
+
+
                       interaction.channel.permissionOverwrites.set([
                         {
                           id: interaction.guild.roles.cache.find(roles => roles.id === `${data.ManagerRoleID}`),
@@ -566,6 +568,12 @@ module.exports = class ReadyEvent extends BaseEvent {
                           id: UserID,
                           allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels],
                           deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AttachFiles]
+                        }
+                      ])
+                      interaction.channel.permissionOverwrites.set([
+                        {
+                          id: interaction.guild.roles.everyone,
+                          deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel],
                         }
                       ])
                       const NoLocked = new EmbedBuilder()
@@ -617,6 +625,7 @@ module.exports = class ReadyEvent extends BaseEvent {
                           deny: [PermissionsBitField.Flags.ManageChannels]
                         }
                       ])
+
                       interaction.channel.permissionOverwrites.set([
                         {
                           id: ClaimUser,
@@ -629,6 +638,12 @@ module.exports = class ReadyEvent extends BaseEvent {
                           id: UserID,
                           allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels],
                           deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AttachFiles]
+                        }
+                      ])
+                      interaction.channel.permissionOverwrites.set([
+                        {
+                          id: interaction.guild.roles.everyone,
+                          deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel],
                         }
                       ])
                       const NoLocked = new EmbedBuilder()
@@ -756,14 +771,23 @@ module.exports = class ReadyEvent extends BaseEvent {
                           return interaction.reply('No support manager role ID has been setup on the other guild')
                         const newguild = client.guilds.cache.get(data01.SecondServerID)
 
-                        newguild.channels.create({ name: names }).then(async (chan) => {
-                          chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been opened as from: ${currentDateAndTime} UTC.`)
-                          chan.permissionOverwrites.set([
+                        interaction.guild.channels.create({
+                          name: names,
+                          parent: Ticketcat,
+                          type: ChannelType.GuildText,
+                          permissionOverwrites: [
                             {
-                              id: newguild.roles.everyone,
-                              deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]
+                              id: interaction.guild.roles.everyone,
+                              deny: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+                            },
+                            {
+                              id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
+                              allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.AttachFiles],
                             }
-                          ])
+                          ]
+                        }).then(async (chan) => {
+                          chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been opened as from: ${currentDateAndTime} UTC.`)
+
                           const open = new EmbedBuilder()
                             .setColor('#f6f7f8')
                             .setTimestamp()
@@ -863,22 +887,24 @@ module.exports = class ReadyEvent extends BaseEvent {
                             }
                             if (data01.ROBLOX === 'Enabled')
                               return interaction.reply('ROBLOX support will not work as Mod Mail is enabled.')
-                            interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
-                              chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
+                            interaction.guild.channels.create({
+                              name: names,
+                              parent: Ticketcat,
+                              type: ChannelType.GuildText,
 
-                              chan.permissionOverwrites.set([
+                              permissionOverwrites: [
                                 {
                                   id: interaction.guild.roles.everyone,
-                                  deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]
-                                }
-                              ])
-
-                              chan.permissionOverwrites.set([
+                                  deny: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+                                },
                                 {
                                   id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
-                                  allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.AttachFiles]
+                                  allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.AttachFiles],
                                 }
-                              ])
+                              ]
+
+                            }).then(async (chan) => {
+                              chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
 
                               const open = new EmbedBuilder()
                                 .setColor('#f6f7f8')
@@ -1065,28 +1091,22 @@ module.exports = class ReadyEvent extends BaseEvent {
                                     const noblox = require('noblox.js')
                                     if (response.data.user.robloxId === undefined) {
                                       const RBLXusername = 'Not Linked to Bloxlink'
-                                      interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
-                                        chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
-
-                                        chan.permissionOverwrites.set([
+                                      interaction.guild.channels.create({
+                                        name: names,
+                                        parent: Ticketcat,
+                                        type: ChannelType.GuildText,
+                                        permissionOverwrites: [
                                           {
                                             id: interaction.guild.roles.everyone,
-                                            deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]
-                                          }
-                                        ])
-                                        chan.permissionOverwrites.set([
-                                          {
-                                            id: user,
-                                            allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
-                                          }
-                                        ])
-
-                                        chan.permissionOverwrites.set([
+                                            deny: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+                                          },
                                           {
                                             id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
-                                            allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
+                                            allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.AttachFiles],
                                           }
-                                        ])
+                                        ]
+                                      }).then(async (chan) => {
+                                        chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
 
                                         const open = new EmbedBuilder()
                                           .setColor('#f6f7f8')
@@ -1259,30 +1279,23 @@ module.exports = class ReadyEvent extends BaseEvent {
                                       })
                                     } else {
                                       const RBLXusername = noblox.getUsernameFromId(response.user.robloxId)
-                                      interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
-                                        chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
-
-                                        chan.permissionOverwrites.set([
+                                      interaction.guild.channels.create({
+                                        name: names,
+                                        parent: Ticketcat,
+                                        type: ChannelType.GuildText,
+                                        permissionOverwrites: [
                                           {
                                             id: interaction.guild.roles.everyone,
-                                            deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]
-                                          }
-                                        ])
-
-                                        chan.permissionOverwrites.set([
-                                          {
-                                            id: user,
-                                            allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
-                                          }
-                                        ])
-
-
-                                        chan.permissionOverwrites.set([
+                                            deny: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+                                          },
                                           {
                                             id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
-                                            allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
+                                            allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.AttachFiles],
                                           }
-                                        ])
+                                        ]
+                                      }).then(async (chan) => {
+                                        chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
+
 
 
                                         const open = new EmbedBuilder()
@@ -1461,21 +1474,22 @@ module.exports = class ReadyEvent extends BaseEvent {
 
                               } else {
                                 if (data01.ROBLOX === 'Disabled') {
-                                  interaction.guild.channels.create({ name: names, parent: Ticketcat }).then(async (chan) => {
-                                    chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
-                                    chan.permissionOverwrites.set([
+                                  interaction.guild.channels.create({
+                                    name: names,
+                                    parent: Ticketcat,
+                                    type: ChannelType.GuildText,
+                                    permissionOverwrites: [
                                       {
-                                        id: user,
-                                        allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
-                                      }
-                                    ])
-
-                                    chan.permissionOverwrites.set([
+                                        id: interaction.guild.roles.everyone,
+                                        deny: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+                                      },
                                       {
                                         id: interaction.guild.roles.cache.find(roles => roles.id === `${data01.ManagerRoleID}`),
-                                        allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AttachFiles, PermissionsBitField.Flags.ManageChannels]
+                                        allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.AttachFiles],
                                       }
-                                    ])
+                                    ]
+                                  }).then(async (chan) => {
+                                    chan.setTopic(`Your ticket ID is: ${interaction.user.id}. Your ticket has been open as from: ${currentDateAndTime} UTC.`)
 
                                     const open = new EmbedBuilder()
                                       .setColor('#f6f7f8')
